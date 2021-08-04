@@ -25,7 +25,10 @@
       "react-app",
       "react-app/jest",
       "airbnb"
-    ]
+    ],
+    "rules": {
+      "no-console": "off"
+    }
   },
   "browserslist": {
     "production": [
