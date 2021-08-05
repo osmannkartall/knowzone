@@ -7,6 +7,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
   },
+  toolbar: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
