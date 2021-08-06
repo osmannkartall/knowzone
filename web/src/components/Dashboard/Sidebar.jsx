@@ -51,7 +51,7 @@ const DrawerItem = ({ text, route, icon }) => (
   </ListItem>
 );
 
-const Dashboard = () => {
+const Sidebar = () => {
   const classes = useStyles();
 
   return (
@@ -80,4 +80,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Sidebar;
