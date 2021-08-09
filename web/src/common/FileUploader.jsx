@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
     height: 300,
     padding: 4,
     boxSizing: 'border-box',
+    justifyContent: 'center',
   },
   btn: {
     position: 'absolute',
