@@ -5,12 +5,15 @@ import Dashboard from './components/Dashboard/Dashboard';
 import Tips from './components/Tips';
 import BugFixes from './components/BugFixes';
 import YourPosts from './components/YourPosts';
-import { PRIMARY } from './constants/colors';
+import { PRIMARY, WHITE } from './constants/colors';
 
 const theme = createTheme({
   palette: {
     primary: {
       main: PRIMARY,
+    },
+    background: {
+      default: WHITE,
     },
   },
 });
