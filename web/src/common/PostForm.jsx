@@ -233,7 +233,7 @@ const PostForm = ({ title, open, setOpen }) => {
     </div>
   );
 
-  return <Modal open={open} onClose={handleClose}>{body}</Modal>;
+  return <Modal open={open} onClose={handleClose} disableRestoreFocus>{body}</Modal>;
 };
 
 export default PostForm;
