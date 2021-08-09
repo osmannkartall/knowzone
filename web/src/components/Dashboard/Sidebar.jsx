@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -10,6 +10,7 @@ import NoteOutlined from '@material-ui/icons/NoteOutlined';
 import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 import Button from '@material-ui/core/Button';
 import { GRAY3 } from '../../constants/colors';
+import PostForm from '../../common/PostForm';
 
 const drawerWidth = 240;
 
@@ -53,6 +54,9 @@ const DrawerItem = ({ text, route, icon }) => (
 
 const Sidebar = () => {
   const classes = useStyles();
+  const [open, setOpen] = useState(false);
+
+  const onClickCreate = () => setOpen(true);
 
   return (
     <Drawer
@@ -72,9 +76,15 @@ const Sidebar = () => {
             ))}
           </List>
         </div>
-        <Button className={classes.drawerBtn} variant="contained" color="primary">
+        <Button
+          className={classes.drawerBtn}
+          variant="contained"
+          color="primary"
+          onClick={onClickCreate}
+        >
           Create
         </Button>
+        <PostForm title="Create Post" open={open} setOpen={setOpen} />
       </div>
     </Drawer>
   );
