@@ -12,6 +12,7 @@ import {
 import Close from '@material-ui/icons/Close';
 import { WHITE, GRAY3, PRIMARY } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
+import FileUploader from './FileUploader';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -80,6 +81,7 @@ const FormContent = ({ title, handleClose }) => {
   const [solution, setSolution] = useState('');
   const [topics, setTopics] = useState([]);
   const [links, setLinks] = useState([]);
+  const [files, setFiles] = useState([]);
 
   const handleChangePostType = (event) => setPostType(event.target.value);
 
@@ -87,6 +89,7 @@ const FormContent = ({ title, handleClose }) => {
     const form = {
       postType,
       description,
+      files,
       topics,
       links,
     };
@@ -187,6 +190,9 @@ const FormContent = ({ title, handleClose }) => {
                   />
                 </Grid>
               ) : null}
+              <Grid item xs={12}>
+                <FileUploader files={files} setFiles={setFiles} />
+              </Grid>
               <Grid item xs={12}>
                 <Box border={1} borderColor="grey.400" borderRadius={5} className={classes.topics}>
                   <TagPicker tags={topics} setTags={setTopics} required />
