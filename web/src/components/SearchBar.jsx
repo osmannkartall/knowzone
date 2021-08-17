@@ -50,9 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const val = 'search this text';
-
-const SearchBar = ({ options }) => {
+const SearchBar = ({ value, handleChange, options }) => {
   const [anchorElSearch, setAnchorElSearch] = useState(null);
   const searchRef = useRef(null);
   const classes = useStyles();
@@ -62,9 +60,14 @@ const SearchBar = ({ options }) => {
 
   const handleCloseSearch = () => setAnchorElSearch(null);
 
+  const search = () => {
+    console.log('Navigate to search results');
+  };
+
   const handleOnPressEnter = (event) => {
-    if (event.key === 'Enter' && val) {
-      console.log('You pressed enter:', val);
+    if (event.key === 'Enter' && value) {
+      console.log('You pressed enter:', value);
+      search();
     }
   };
 
@@ -79,6 +82,7 @@ const SearchBar = ({ options }) => {
         className={classes.searchInput}
         onKeyPress={handleOnPressEnter}
         placeholder="Search..."
+        onChange={handleChange}
       />
       { options && (
         <>
@@ -126,6 +130,7 @@ const SearchBar = ({ options }) => {
 
 SearchBar.defaultProps = {
   options: true,
+  value: '',
 };
 
 export default SearchBar;

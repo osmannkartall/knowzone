@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Topbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [searchText, setSearchText] = useState('');
   const history = useHistory();
   const classes = useStyles();
 
@@ -62,13 +63,15 @@ const Topbar = () => {
     // history.push('/');
   };
 
+  const handleChangeSearchText = (event) => setSearchText(event.target.value);
+
   return (
     <AppBar elevation={0} position="fixed" className={classes.appBar}>
       <Toolbar>
         <Typography className={classes.title} variant="h6">
           Knowzone
         </Typography>
-        <SearchBar />
+        <SearchBar value={searchText} handleChange={handleChangeSearchText} />
         <div className={classes.accountBtn}>
           <IconButton
             aria-label="account of current user"
