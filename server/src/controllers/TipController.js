@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const TipModel = require('../models/Tip');
-const TipsRepository = require('../repositories/TipsRepository');
+const TipRepository = require('../repositories/TipRepository');
 
-const tipsRepository = new TipsRepository(TipModel);
+const tipRepository = new TipRepository(TipModel);
 
 const create = (req, res) => {
   // example usage: Don't send all the data in req.body to the service/repository layer.
@@ -13,33 +13,33 @@ const create = (req, res) => {
     description: req.body.description,
   };
 
-  const result = tipsRepository.create(tip);
+  const result = tipRepository.create(tip);
   res.send(result);
 };
 
 const findAll = async (_, res) => {
-  const result = await tipsRepository.findAll();
+  const result = await tipRepository.findAll();
   res.send(result);
 };
 
 const findById = async (req, res) => {
   const { id } = req.params;
-  const result = await tipsRepository.findById(id);
+  const result = await tipRepository.findById(id);
   res.send(result);
 };
 
 const updateById = async (req, res) => {
-  const result = await tipsRepository.updateById(req.params.id, req.body);
+  const result = await tipRepository.updateById(req.params.id, req.body);
   res.send(result);
 };
 
 const deleteById = async (req, res) => {
-  const result = await tipsRepository.deleteById(req.params.id);
+  const result = await tipRepository.deleteById(req.params.id);
   res.send(result);
 };
 
 const deleteAll = async (_, res) => {
-  const result = await tipsRepository.deleteAll();
+  const result = await tipRepository.deleteAll();
   res.send(result);
 };
 

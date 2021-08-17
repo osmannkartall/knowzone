@@ -1,5 +1,4 @@
 const BugFixModel = require('../models/BugFix');
-
 const BaseRepository = require('./BaseRepository');
 
 class BugFixRepository extends BaseRepository {

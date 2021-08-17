@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const config = require('./config');
-const tipsController = require('./controllers/TipsController');
+const tipController = require('./controllers/TipController');
 const helloController = require('./controllers/HelloController');
 const bugFixController = require('./controllers/BugFixController');
 
@@ -21,9 +21,10 @@ async function startDB() {
 }
 
 function addControllers(app) {
-  app.use(`${config.api.prefix}/tips`, tipsController);
+  // Add route names in plural form.
   app.use(`${config.api.prefix}/hello`, helloController);
-  app.use(`${config.api.prefix}/bugfix`, bugFixController);
+  app.use(`${config.api.prefix}/tips`, tipController);
+  app.use(`${config.api.prefix}/bugfixes`, bugFixController);
 }
 
 async function startExpress() {
