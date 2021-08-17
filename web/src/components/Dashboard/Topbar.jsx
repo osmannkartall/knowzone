@@ -5,12 +5,11 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import { GRAY1, GRAY3, GRAY4, PRIMARY, WHITE } from '../../constants/colors';
+import { GRAY1, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
+import SearchBar from '../SearchBar';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -18,45 +17,8 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
-    marginRight: theme.spacing(15),
+    marginRight: theme.spacing(18),
     color: PRIMARY,
-  },
-  searchWrapper: {
-    flexGrow: 1,
-  },
-  search: {
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: GRAY4,
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '50%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
-      width: '50%',
-    },
-  },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inputRoot: {
-    color: 'inherit',
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -64,26 +26,28 @@ const useStyles = makeStyles((theme) => ({
     color: GRAY1,
     borderBottom: `1px solid ${GRAY3}`,
   },
+  accountBtn: {
+    display: 'flex',
+    flexGrow: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
 }));
 
 const Topbar = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [searchText, setSearchText] = useState('');
   const history = useHistory();
   const classes = useStyles();
 
-  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const handleMenu = (event) => setAnchorEl(event.currentTarget);
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const handleClose = () => setAnchorEl(null);
 
   const onClickYourPosts = () => {
     handleClose();
-    console.log('your posts');
     history.push('your-posts');
   };
 
@@ -99,29 +63,16 @@ const Topbar = () => {
     // history.push('/');
   };
 
+  const handleChangeSearchText = (event) => setSearchText(event.target.value);
+
   return (
     <AppBar elevation={0} position="fixed" className={classes.appBar}>
       <Toolbar>
         <Typography className={classes.title} variant="h6">
           Knowzone
         </Typography>
-        <div className={classes.searchWrapper}>
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-              style={{ width: '100%' }}
-            />
-          </div>
-        </div>
-        <div>
+        <SearchBar value={searchText} handleChange={handleChangeSearchText} />
+        <div className={classes.accountBtn}>
           <IconButton
             aria-label="account of current user"
             aria-controls="menu-appbar"
