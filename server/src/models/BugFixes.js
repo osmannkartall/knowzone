@@ -17,6 +17,6 @@ bugFixesSchema.set('toJSON', {
   transform(_, ret) { delete ret._id; },
 });
 
-const BugFix = mongoose.model('BugFix', bugFixesSchema);
+const BugFixes = mongoose.model('BugFixes', bugFixesSchema);
 
-module.exports = BugFix;
+module.exports = BugFixes;
