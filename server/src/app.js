@@ -3,6 +3,7 @@ const express = require('express');
 const config = require('./config');
 const tipsController = require('./controllers/TipsController');
 const helloController = require('./controllers/HelloController');
+const bugFixController = require('./controllers/BugFixController');
 
 async function startDB() {
   try {
@@ -22,6 +23,7 @@ async function startDB() {
 function addControllers(app) {
   app.use(`${config.api.prefix}/tips`, tipsController);
   app.use(`${config.api.prefix}/hello`, helloController);
+  app.use(`${config.api.prefix}/bugfix`, bugFixController);
 }
 
 async function startExpress() {
