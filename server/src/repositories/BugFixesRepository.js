@@ -1,10 +1,10 @@
-const BugFixModel = require('../models/BugFixes');
+const BugFixesModel = require('../models/BugFixes');
 
 const BaseRepository = require('./BaseRepository');
 
 class BugFixesRepository extends BaseRepository {
   constructor() {
-    super(BugFixModel);
+    super(BugFixesModel);
   }
 }
 
