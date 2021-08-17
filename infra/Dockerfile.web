@@ -3,6 +3,8 @@ FROM node:14.17.4-alpine3.14 as build
 
 WORKDIR /app
 
+ENV DISABLE_ESLINT_PLUGIN=true
+
 COPY web/package*.json ./
 RUN npm ci
 COPY web/ ./
