@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const bugFixSchema = new mongoose.Schema(
+const bugFixesSchema = new mongoose.Schema(
   {
     owner: String,
     links: [String],
@@ -12,11 +12,11 @@ const bugFixSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-bugFixSchema.set('toJSON', {
+bugFixesSchema.set('toJSON', {
   virtuals: true,
   transform(_, ret) { delete ret._id; },
 });
 
-const BugFix = mongoose.model('BugFix', bugFixSchema);
+const BugFix = mongoose.model('BugFix', bugFixesSchema);
 
 module.exports = BugFix;

@@ -1,8 +1,8 @@
 const router = require('express').Router();
-const BugFixModel = require('../models/BugFix');
-const BugFixRepository = require('../repositories/BugFixRepository');
+const BugFixesModel = require('../models/BugFixes');
+const BugFixesRepository = require('../repositories/BugFixesRepository');
 
-const bugFixRepository = new BugFixRepository(BugFixModel);
+const bugFixesRepository = new BugFixesRepository(BugFixesModel);
 
 const create = (req, res) => {
   const bugFix = {
@@ -14,33 +14,33 @@ const create = (req, res) => {
     description: req.body.description,
   };
 
-  const result = bugFixRepository.create(bugFix);
+  const result = bugFixesRepository.create(bugFix);
   res.send(result);
 };
 
 const findAll = async (_, res) => {
-  const result = await bugFixRepository.findAll();
+  const result = await bugFixesRepository.findAll();
   res.send(result);
 };
 
 const findById = async (req, res) => {
   const { id } = req.params;
-  const result = await bugFixRepository.findById(id);
+  const result = await bugFixesRepository.findById(id);
   res.send(result);
 };
 
 const updateById = async (req, res) => {
-  const result = await bugFixRepository.updateById(req.params.id, req.body);
+  const result = await bugFixesRepository.updateById(req.params.id, req.body);
   res.send(result);
 };
 
 const deleteById = async (req, res) => {
-  const result = await bugFixRepository.deleteById(req.params.id);
+  const result = await bugFixesRepository.deleteById(req.params.id);
   res.send(result);
 };
 
 const deleteAll = async (_, res) => {
-  const result = await bugFixRepository.deleteAll();
+  const result = await bugFixesRepository.deleteAll();
   res.send(result);
 };
 
