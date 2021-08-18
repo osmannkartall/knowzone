@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import Tips from './components/Tips';
 import BugFixes from './components/BugFixes';
 import YourPosts from './components/YourPosts';
+import SearchResults from './components/SearchResults';
 import { PRIMARY, WHITE } from './constants/colors';
 
 const theme = createTheme({
@@ -34,6 +35,9 @@ function App() {
           </Route>
           <Route path="/your-posts">
             <Dashboard><YourPosts /></Dashboard>
+          </Route>
+          <Route path="/search-results">
+            <Dashboard><SearchResults /></Dashboard>
           </Route>
         </Switch>
       </BrowserRouter>
