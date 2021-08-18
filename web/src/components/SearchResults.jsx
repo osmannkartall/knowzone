@@ -12,9 +12,10 @@ const SearchResults = () => {
   console.log(queryParams);
 
   return (
-    <p>
-      Search Results
-    </p>
+    <div>
+      <h2>Search Results</h2>
+      {Object.entries(queryParams).map(([key, value]) => <p>{key}={value}</p>)}
+    </div>
   );
 };
 

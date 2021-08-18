@@ -1,6 +1,5 @@
-import { React, useState } from 'react';
+import { React } from 'react';
 import { makeStyles } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -34,98 +33,49 @@ const CONTAINER_STYLE = {
   marginBottom: 10,
 };
 
-const OPTIONS = ['Tip', 'Bug Fix'];
-
 const SearchOptionRow = ({ label, children }) => (
   <Grid container spacing={CONTAINER_SPACING} alignItems="center" style={CONTAINER_STYLE}>
-    <Grid item xs={2}>
+    <Grid item xs={3}>
       <Typography variant="subtitle2" color="textSecondary">
         {label}
       </Typography>
     </Grid>
-    <Grid item xs={10}>
+    <Grid item xs={9}>
       {children}
     </Grid>
   </Grid>
 );
 
-const SearchOptions = ({ searchText }) => {
+const SearchOptions = ({
+  postTypes,
+  options,
+  setTopics,
+  handleOptionChange,
+  handleDateChange,
+  handleResetOnClick,
+  handleSearchOnClick,
+}) => {
   const classes = useStyles();
-  const history = useHistory();
-  const [values, setValues] = useState({
-    option: '',
-    error: '',
-    solution: '',
-    description: '',
-    topics: [],
-    author: '',
-    createdStartDate: null,
-    createdEndDate: null,
-    modifiedStartDate: null,
-    modifiedEndDate: null,
-  });
-
-  const handleDateChange = (prop) => (date) => {
-    setValues({ ...values, [prop]: date });
-  };
-
-  const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
-  };
-
-  const handleResetOnClick = () => {
-    setValues({
-      option: '',
-      error: '',
-      solution: '',
-      description: '',
-      topics: [],
-      author: '',
-      createdStartDate: null,
-      createdEndDate: null,
-      modifiedStartDate: null,
-      modifiedEndDate: null,
-    });
-  };
-
-  const handleSearchOnClick = () => {
-    // Copy state object with spread operator to not mutate itself.
-    const tempValues = { ...values };
-
-    Object.entries(values).forEach(([key, value]) => {
-      if (!value || (Array.isArray(value) && !value.length)) {
-        delete tempValues[key];
-      }
-    });
-
-    const params = new URLSearchParams(tempValues);
-    if (searchText) {
-      params.append('searchText', searchText);
-    }
-
-    history.push({
-      pathname: '/search-results',
-      search: params.toString(),
-    });
-  };
 
   return (
     <div className={classes.root}>
       <SearchOptionRow label="Post Type">
         <Select
-          id="search-option-post-select"
-          name="option"
-          value={values.option}
-          onChange={handleChange('option')}
+          id="search-option-post-type-select"
+          name="postType"
+          value={options.postType}
+          onChange={handleOptionChange('postType')}
           fullWidth
         >
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          {OPTIONS ? OPTIONS.map((opt) => <MenuItem key={opt} value={opt}>{opt}</MenuItem>) : null}
+          {postTypes ? postTypes.map(
+            (opt) => <MenuItem key={opt} value={opt}>{opt}</MenuItem>,
+          ) : null}
         </Select>
       </SearchOptionRow>
-      {values.option !== 'Tip' ? (
+      {options.postType !== 'Tip' ? (
         <>
           <SearchOptionRow label="Error">
             <TextField
@@ -133,8 +83,8 @@ const SearchOptions = ({ searchText }) => {
               name="error"
               multiline
               maxRows={4}
-              value={values.error}
-              onChange={handleChange('error')}
+              value={options.error}
+              onChange={handleOptionChange('error')}
               fullWidth
             />
           </SearchOptionRow>
@@ -142,8 +92,8 @@ const SearchOptions = ({ searchText }) => {
             <TextField
               id="search-option-solution-text"
               name="solution"
-              value={values.solution}
-              onChange={handleChange('solution')}
+              value={options.solution}
+              onChange={handleOptionChange('solution')}
               fullWidth
             />
           </SearchOptionRow>
@@ -153,8 +103,8 @@ const SearchOptions = ({ searchText }) => {
         <TextField
           id="search-option-description-text"
           name="description"
-          value={values.description}
-          onChange={handleChange('description')}
+          value={options.description}
+          onChange={handleOptionChange('description')}
           fullWidth
         />
       </SearchOptionRow>
@@ -162,8 +112,8 @@ const SearchOptions = ({ searchText }) => {
         <TagPicker
           id="search-option-tag-picker"
           name="topics"
-          tags={values.topics}
-          setTags={(topics) => setValues({ ...values, topics })}
+          tags={options.topics}
+          setTags={setTopics}
           fullWidth
         />
       </SearchOptionRow>
@@ -171,8 +121,8 @@ const SearchOptions = ({ searchText }) => {
         <TextField
           id="search-option-author-text"
           name="author"
-          value={values.author}
-          onChange={handleChange('author')}
+          value={options.author}
+          onChange={handleOptionChange('author')}
           fullWidth
         />
       </SearchOptionRow>
@@ -188,7 +138,7 @@ const SearchOptions = ({ searchText }) => {
                 variant="inline"
                 format="dd/MM/yyyy"
                 margin="normal"
-                value={values.createdStartDate}
+                value={options.createdStartDate}
                 placeholder="Enter Date"
                 onChange={handleDateChange('createdStartDate')}
                 KeyboardButtonProps={{
@@ -207,7 +157,7 @@ const SearchOptions = ({ searchText }) => {
                 variant="inline"
                 format="dd/MM/yyyy"
                 margin="normal"
-                value={values.createdEndDate}
+                value={options.createdEndDate}
                 placeholder="Enter Date"
                 onChange={handleDateChange('createdEndDate')}
                 KeyboardButtonProps={{
@@ -230,7 +180,7 @@ const SearchOptions = ({ searchText }) => {
                 variant="inline"
                 format="dd/MM/yyyy"
                 margin="normal"
-                value={values.modifiedStartDate}
+                value={options.modifiedStartDate}
                 placeholder="Enter Date"
                 onChange={handleDateChange('modifiedStartDate')}
                 KeyboardButtonProps={{
@@ -249,7 +199,7 @@ const SearchOptions = ({ searchText }) => {
                 variant="inline"
                 format="dd/MM/yyyy"
                 margin="normal"
-                value={values.modifiedEndDate}
+                value={options.modifiedEndDate}
                 placeholder="Enter Date"
                 onChange={handleDateChange('modifiedEndDate')}
                 KeyboardButtonProps={{

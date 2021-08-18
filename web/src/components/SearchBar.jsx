@@ -1,10 +1,13 @@
 import React, { useState, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Popover, IconButton, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import TuneIcon from '@material-ui/icons/Tune';
+import SearchOptions from './SearchOptions';
 import { GRAY1, GRAY2, GRAY3, PRIMARY } from '../constants/colors';
 
 const SEARCH_WIDTH = 700;
+const POST_TYPES = ['Tip', 'Bug Fix'];
 
 const useStyles = makeStyles((theme) => ({
   searchWrapper: {
@@ -50,23 +53,80 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SearchBar = ({ value, handleChange, options }) => {
+const SearchBar = ({ searchText, handleChange, options }) => {
   const [anchorElSearch, setAnchorElSearch] = useState(null);
   const searchRef = useRef(null);
   const classes = useStyles();
   const openSearch = Boolean(anchorElSearch);
+  const history = useHistory();
+  const [searchOptions, setSearchOptions] = useState({
+    postType: '',
+    error: '',
+    solution: '',
+    description: '',
+    topics: [],
+    author: '',
+    createdStartDate: null,
+    createdEndDate: null,
+    modifiedStartDate: null,
+    modifiedEndDate: null,
+  });
 
   const handleMenuSearch = () => setAnchorElSearch(searchRef.current);
 
   const handleCloseSearch = () => setAnchorElSearch(null);
 
+  const handleDateChange = (prop) => (date) => {
+    setSearchOptions({ ...searchOptions, [prop]: date });
+  };
+
+  const handleOptionChange = (prop) => (event) => {
+    setSearchOptions({ ...searchOptions, [prop]: event.target.value });
+  };
+
+  const handleResetOnClick = () => {
+    setSearchOptions({
+      postType: '',
+      error: '',
+      solution: '',
+      description: '',
+      topics: [],
+      author: '',
+      createdStartDate: null,
+      createdEndDate: null,
+      modifiedStartDate: null,
+      modifiedEndDate: null,
+    });
+  };
+
   const search = () => {
-    console.log('Navigate to search results');
+    // Copy state object with spread operator to not mutate itself.
+    const tempSearchOptions = { ...searchOptions };
+
+    Object.entries(searchOptions).forEach(([key, value]) => {
+      if (!value || (Array.isArray(value) && !value.length)) {
+        delete tempSearchOptions[key];
+      }
+    });
+    const params = new URLSearchParams(tempSearchOptions);
+    if (searchText) {
+      params.append('searchText', searchText);
+    }
+    handleCloseSearch();
+    handleResetOnClick();
+    history.push({
+      pathname: '/search-results',
+      search: params.toString(),
+    });
+  };
+
+  const handleSearchOnClick = () => {
+    search();
   };
 
   const handleOnPressEnter = (event) => {
-    if (event.key === 'Enter' && value) {
-      console.log('You pressed enter:', value);
+    if (event.key === 'Enter' && searchText) {
+      console.log('You pressed enter:', searchText);
       search();
     }
   };
@@ -84,7 +144,7 @@ const SearchBar = ({ value, handleChange, options }) => {
         placeholder="Search..."
         onChange={handleChange}
       />
-      { options && (
+      {options && (
         <>
           <IconButton
             aria-label="search options"
@@ -112,13 +172,15 @@ const SearchBar = ({ value, handleChange, options }) => {
           >
             <div className={classes.searchOptionsWrapper}>
               <div className={classes.searchOptions}>
-                <p>Lorem ipsum</p>
-                <p>Lorem ipsum</p>
-                <p>Lorem ipsum</p>
-                <p>Lorem ipsum</p>
-                <p>Lorem ipsum</p>
-                <p>Lorem ipsum</p>
-                <p>Lorem ipsum</p>
+                <SearchOptions
+                  postTypes={POST_TYPES}
+                  options={searchOptions}
+                  setTopics={(topics) => setSearchOptions({ ...searchOptions, topics })}
+                  handleOptionChange={handleOptionChange}
+                  handleDateChange={handleDateChange}
+                  handleSearchOnClick={handleSearchOnClick}
+                  handleResetOnClick={handleResetOnClick}
+                />
               </div>
             </div>
           </Popover>
@@ -130,7 +192,7 @@ const SearchBar = ({ value, handleChange, options }) => {
 
 SearchBar.defaultProps = {
   options: true,
-  value: '',
+  searchText: '',
 };
 
 export default SearchBar;

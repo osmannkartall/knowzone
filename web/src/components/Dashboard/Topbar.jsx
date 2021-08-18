@@ -71,7 +71,7 @@ const Topbar = () => {
         <Typography className={classes.title} variant="h6">
           Knowzone
         </Typography>
-        <SearchBar value={searchText} handleChange={handleChangeSearchText} />
+        <SearchBar searchText={searchText} handleChange={handleChangeSearchText} />
         <div className={classes.accountBtn}>
           <IconButton
             aria-label="account of current user"
