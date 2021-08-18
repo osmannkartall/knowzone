@@ -9,6 +9,7 @@
     - [Testing Azure Container Registry](#testing-azure-container-registry)
   - [Creating an Azure Kubernetes Service cluster](#creating-an-azure-kubernetes-service-cluster)
     - [Stopping - Starting AKS cluster](#stopping---starting-aks-cluster)
+  - [Deploy Knowzone to AKS](#deploy-knowzone-to-aks)
 
 ## Pre-requisites
 
@@ -103,3 +104,56 @@ az aks stop --name ${CLUSTER_NAME} --resource-group ${RESOURCE_GROUP}
 # Start the cluster
 az aks start --name ${CLUSTER_NAME} --resource-group ${RESOURCE_GROUP}
 ```
+
+## Deploy Knowzone to AKS  
+
+To build and deploy the project to AKS, make sure you are logged in to ACR, and properly connected to AKS via kubectl.
+
+Change the **export** lines within `init.sh`. Descriptions are given below:  
+
+- REGISTRY_NAME: Full name for your registered ACR, e.g. myacr.azurecr.io  
+- FRONTEND_LB_PREFIX: Prefix to generate the load balancer domain for frontend, e.g. myfrontend (full domain will be myfrontend.REGION.cloudapp.azure.com - REGION is your AKS location, e.g. westeurope)  
+- BACKEND_LB_PREFIX: Similar to FRONTEND_LB_PREFIX, for backend
+- MONGO_PASSWORD: This will be put in Kubernetes secret, required for MongoDB creation and connection strings.
+- VERSION: Version tag for Docker images
+
+```bash
+export REGISTRY_NAME="YOUR-FULL-AZURE-REGISTRY-NAME"
+export FRONTEND_LB_PREFIX="YOUR-FRONTEND-PREFIX-URL"
+export BACKEND_LB_PREFIX="YOUR-BACKEND-PREFIX-URL"
+export MONGO_PASSWORD="YOUR-MONGO-PASSWORD"
+export VERSION="YOUR-VERSION"
+```
+
+After replacing the environment variable values, you can deploy the whole project with below commands.
+
+```bash
+cd infra
+
+# Generates manifests from templates
+./init.sh generate
+
+# Builds and pushes Docker images to ACR
+./init.sh build all
+
+# Deploys manifests to AKS
+./init.sh deploy all
+```
+
+Available command tree is listed below.  
+
+- **./init.sh**  
+  - **generate** *--Generate manifests from templates*  
+  - **build** *--Build images*  
+    - **frontend**  
+    - **backend**  
+    - **all**  
+    - **help**  
+  - **deploy** *--Deploy generated manifests*  
+    - **secret**  
+    - **mongo**  
+    - **frontend**  
+    - **backend**  
+    - **all**  
+  - **clean** *--Clean up generated manifests and cloned MongoDB repo*  
+  - **help**  
