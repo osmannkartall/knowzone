@@ -13,7 +13,7 @@ spec:
         app: backend
     spec:
       containers:
-      - name: react
+      - name: node
         image: ${REGISTRY_NAME}/knowzone-backend:${VERSION}
         resources:
           requests:
