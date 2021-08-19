@@ -9,7 +9,7 @@ module.exports = {
   port: parseInt(process.env.PORT, 10),
 
   corsOptions: {
-    origin: 'http://localhost:3000',
+    origin: process.env.REACT_URL,
   },
 
   databaseURL: process.env.MONGODB_URI,

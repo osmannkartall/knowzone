@@ -30,7 +30,7 @@ const YourPosts = () => {
     let mounted = true;
 
     if (mounted) {
-      fetch(`http://localhost:8000/api/search?owner=${ownerId}`)
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/search?owner=${ownerId}`)
         .then((res) => res.json())
         .then(
           (result) => {
