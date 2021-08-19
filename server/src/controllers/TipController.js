@@ -9,7 +9,7 @@ const create = (req, res) => {
   const tip = {
     owner: req.body.owner,
     links: req.body.links,
-    tags: req.body.tags,
+    topics: req.body.topics,
     description: req.body.description,
   };
 

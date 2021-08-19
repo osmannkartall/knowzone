@@ -4,15 +4,18 @@ const tipSchema = new mongoose.Schema(
   {
     owner: String,
     links: [String],
-    tags: [String],
+    topics: [String],
     description: String,
   },
   { timestamps: true },
 );
 
 tipSchema.set('toJSON', {
-  virtuals: true,
-  transform(_, ret) { delete ret._id; },
+  transform(_, ret) {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
 });
 
 const Tip = mongoose.model('Tip', tipSchema);

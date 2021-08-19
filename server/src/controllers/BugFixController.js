@@ -8,7 +8,7 @@ const create = (req, res) => {
   const bugFix = {
     owner: req.body.owner,
     links: req.body.links,
-    tags: req.body.tags,
+    topics: req.body.topics,
     error: req.body.error,
     solution: req.body.solution,
     description: req.body.description,

@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const express = require('express');
+const cors = require('cors');
 const config = require('./config');
 const tipController = require('./controllers/TipController');
 const helloController = require('./controllers/HelloController');
 const bugFixController = require('./controllers/BugFixController');
+const searchController = require('./controllers/SearchController');
 
 async function startDB() {
   try {
@@ -25,11 +27,14 @@ function addControllers(app) {
   app.use(`${config.api.prefix}/hello`, helloController);
   app.use(`${config.api.prefix}/tips`, tipController);
   app.use(`${config.api.prefix}/bugfixes`, bugFixController);
+  app.use(`${config.api.prefix}/search`, searchController);
 }
 
 async function startExpress() {
   const app = express();
-  const { port } = config;
+  const { port, corsOptions } = config;
+
+  app.use(cors(corsOptions));
 
   app.use(express.json());
 
