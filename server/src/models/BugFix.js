@@ -4,7 +4,7 @@ const bugFixSchema = new mongoose.Schema(
   {
     owner: String,
     links: [String],
-    tags: [String],
+    topics: [String],
     error: String,
     solution: String,
     description: String,
@@ -13,8 +13,11 @@ const bugFixSchema = new mongoose.Schema(
 );
 
 bugFixSchema.set('toJSON', {
-  virtuals: true,
-  transform(_, ret) { delete ret._id; },
+  transform(_, ret) {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
 });
 
 const BugFix = mongoose.model('BugFix', bugFixSchema);
