@@ -7,7 +7,7 @@ const tipRepository = new TipRepository(TipModel);
 const create = (req, res) => {
   // example usage: Don't send all the data in req.body to the service/repository layer.
   const tip = {
-    owner: req.body.ownerId,
+    owner: req.body.owner,
     links: req.body.links,
     topics: req.body.topics,
     description: req.body.description,
