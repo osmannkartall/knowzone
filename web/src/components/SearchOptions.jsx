@@ -13,9 +13,16 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import TagPicker from '../common/TagPicker/TagPicker';
 
+const MAX_HEIGHT = 498;
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+  },
+  top: {
+    maxHeight: MAX_HEIGHT,
+    overflowY: 'auto',
+    overflowX: 'hidden',
   },
   searchButtons: {
     display: 'flex',
@@ -27,10 +34,11 @@ const useStyles = makeStyles((theme) => ({
 
 const CONTAINER_SPACING = 4;
 
-// Avoids overlapping
 const CONTAINER_STYLE = {
   marginTop: 0,
   marginBottom: 10,
+  paddingRight: 20,
+  paddingLeft: 20,
 };
 
 const SearchOptionRow = ({ label, children }) => (
@@ -59,157 +67,159 @@ const SearchOptions = ({
 
   return (
     <div className={classes.root}>
-      <SearchOptionRow label="Post Type">
-        <Select
-          id="search-option-post-type-select"
-          name="postType"
-          value={options.postType}
-          onChange={handleOptionChange('postType')}
-          fullWidth
-        >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          {postTypes ? postTypes.map(
-            (opt) => <MenuItem key={opt} value={opt}>{opt}</MenuItem>,
-          ) : null}
-        </Select>
-      </SearchOptionRow>
-      {options.postType !== 'Tip' ? (
-        <>
-          <SearchOptionRow label="Error">
-            <TextField
-              id="search-option-error-text"
-              name="error"
-              multiline
-              maxRows={4}
-              value={options.error}
-              onChange={handleOptionChange('error')}
-              fullWidth
-            />
-          </SearchOptionRow>
-          <SearchOptionRow label="Solution">
-            <TextField
-              id="search-option-solution-text"
-              name="solution"
-              value={options.solution}
-              onChange={handleOptionChange('solution')}
-              fullWidth
-            />
-          </SearchOptionRow>
-        </>
-      ) : null}
-      <SearchOptionRow label="Description">
-        <TextField
-          id="search-option-description-text"
-          name="description"
-          value={options.description}
-          onChange={handleOptionChange('description')}
-          fullWidth
-        />
-      </SearchOptionRow>
-      <SearchOptionRow label="Topics">
-        <TagPicker
-          id="search-option-tag-picker"
-          name="topics"
-          tags={options.topics}
-          setTags={setTopics}
-          fullWidth
-        />
-      </SearchOptionRow>
-      <SearchOptionRow label="Author">
-        <TextField
-          id="search-option-author-text"
-          name="author"
-          value={options.author}
-          onChange={handleOptionChange('author')}
-          fullWidth
-        />
-      </SearchOptionRow>
-      <SearchOptionRow label="Date Created">
-        <Grid container spacing={CONTAINER_SPACING} justifyContent="space-between">
-          <Grid item xs>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                disableToolbar
-                disableFuture
-                id="search-option-created-start-date"
-                name="createdStartDate"
-                variant="inline"
-                format="dd/MM/yyyy"
-                margin="normal"
-                value={options.createdStartDate}
-                placeholder="Enter Date"
-                onChange={handleDateChange('createdStartDate')}
-                KeyboardButtonProps={{
-                  'aria-label': 'change date',
-                }}
+      <div className={classes.top}>
+        <SearchOptionRow label="Post Type">
+          <Select
+            id="search-option-post-type-select"
+            name="postType"
+            value={options.postType}
+            onChange={handleOptionChange('postType')}
+            fullWidth
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            {postTypes ? postTypes.map(
+              (opt) => <MenuItem key={opt} value={opt}>{opt}</MenuItem>,
+            ) : null}
+          </Select>
+        </SearchOptionRow>
+        {options.postType !== 'Tip' ? (
+          <>
+            <SearchOptionRow label="Error">
+              <TextField
+                id="search-option-error-text"
+                name="error"
+                multiline
+                maxRows={4}
+                value={options.error}
+                onChange={handleOptionChange('error')}
+                fullWidth
               />
-            </MuiPickersUtilsProvider>
-          </Grid>
-          <Grid item xs>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                disableToolbar
-                disableFuture
-                id="search-option-created-end-date"
-                name="createdEndDate"
-                variant="inline"
-                format="dd/MM/yyyy"
-                margin="normal"
-                value={options.createdEndDate}
-                placeholder="Enter Date"
-                onChange={handleDateChange('createdEndDate')}
-                KeyboardButtonProps={{
-                  'aria-label': 'change date',
-                }}
+            </SearchOptionRow>
+            <SearchOptionRow label="Solution">
+              <TextField
+                id="search-option-solution-text"
+                name="solution"
+                value={options.solution}
+                onChange={handleOptionChange('solution')}
+                fullWidth
               />
-            </MuiPickersUtilsProvider>
+            </SearchOptionRow>
+          </>
+        ) : null}
+        <SearchOptionRow label="Description">
+          <TextField
+            id="search-option-description-text"
+            name="description"
+            value={options.description}
+            onChange={handleOptionChange('description')}
+            fullWidth
+          />
+        </SearchOptionRow>
+        <SearchOptionRow label="Topics">
+          <TagPicker
+            id="search-option-tag-picker"
+            name="topics"
+            tags={options.topics}
+            setTags={setTopics}
+            fullWidth
+          />
+        </SearchOptionRow>
+        <SearchOptionRow label="Author">
+          <TextField
+            id="search-option-author-text"
+            name="author"
+            value={options.author}
+            onChange={handleOptionChange('author')}
+            fullWidth
+          />
+        </SearchOptionRow>
+        <SearchOptionRow label="Date Created">
+          <Grid container spacing={CONTAINER_SPACING} justifyContent="space-between">
+            <Grid item xs>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  disableToolbar
+                  disableFuture
+                  id="search-option-created-start-date"
+                  name="createdStartDate"
+                  variant="inline"
+                  format="dd/MM/yyyy"
+                  margin="normal"
+                  value={options.createdStartDate}
+                  placeholder="Enter Date"
+                  onChange={handleDateChange('createdStartDate')}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change date',
+                  }}
+                />
+              </MuiPickersUtilsProvider>
+            </Grid>
+            <Grid item xs>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  disableToolbar
+                  disableFuture
+                  id="search-option-created-end-date"
+                  name="createdEndDate"
+                  variant="inline"
+                  format="dd/MM/yyyy"
+                  margin="normal"
+                  value={options.createdEndDate}
+                  placeholder="Enter Date"
+                  onChange={handleDateChange('createdEndDate')}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change date',
+                  }}
+                />
+              </MuiPickersUtilsProvider>
+            </Grid>
           </Grid>
-        </Grid>
-      </SearchOptionRow>
-      <SearchOptionRow label="Date Modified">
-        <Grid container spacing={CONTAINER_SPACING} justifyContent="space-between">
-          <Grid item xs>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                disableToolbar
-                disableFuture
-                id="search-option-modified-start-date"
-                name="modifiedStartDate"
-                variant="inline"
-                format="dd/MM/yyyy"
-                margin="normal"
-                value={options.modifiedStartDate}
-                placeholder="Enter Date"
-                onChange={handleDateChange('modifiedStartDate')}
-                KeyboardButtonProps={{
-                  'aria-label': 'change date',
-                }}
-              />
-            </MuiPickersUtilsProvider>
+        </SearchOptionRow>
+        <SearchOptionRow label="Date Modified">
+          <Grid container spacing={CONTAINER_SPACING} justifyContent="space-between">
+            <Grid item xs>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  disableToolbar
+                  disableFuture
+                  id="search-option-modified-start-date"
+                  name="modifiedStartDate"
+                  variant="inline"
+                  format="dd/MM/yyyy"
+                  margin="normal"
+                  value={options.modifiedStartDate}
+                  placeholder="Enter Date"
+                  onChange={handleDateChange('modifiedStartDate')}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change date',
+                  }}
+                />
+              </MuiPickersUtilsProvider>
+            </Grid>
+            <Grid item xs>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  disableToolbar
+                  disableFuture
+                  id="search-option-modified-end-date"
+                  name="modifiedEndDate"
+                  variant="inline"
+                  format="dd/MM/yyyy"
+                  margin="normal"
+                  value={options.modifiedEndDate}
+                  placeholder="Enter Date"
+                  onChange={handleDateChange('modifiedEndDate')}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change date',
+                  }}
+                />
+              </MuiPickersUtilsProvider>
+            </Grid>
           </Grid>
-          <Grid item xs>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                disableToolbar
-                disableFuture
-                id="search-option-modified-end-date"
-                name="modifiedEndDate"
-                variant="inline"
-                format="dd/MM/yyyy"
-                margin="normal"
-                value={options.modifiedEndDate}
-                placeholder="Enter Date"
-                onChange={handleDateChange('modifiedEndDate')}
-                KeyboardButtonProps={{
-                  'aria-label': 'change date',
-                }}
-              />
-            </MuiPickersUtilsProvider>
-          </Grid>
-        </Grid>
-      </SearchOptionRow>
+        </SearchOptionRow>
+      </div>
       <Grid item xs={12}>
         <Divider />
       </Grid>

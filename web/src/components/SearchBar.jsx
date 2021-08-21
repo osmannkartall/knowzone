@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0, 2),
   },
   searchOptionsWrapper: {
+    flexGrow: 1,
     width: SEARCH_WIDTH,
     padding: theme.spacing(0.4),
   },
@@ -112,8 +113,10 @@ const SearchBar = ({ searchText, handleChange, options }) => {
     if (searchText) {
       params.append('searchText', searchText);
     }
+
     handleCloseSearch();
     handleResetOnClick();
+
     history.push({
       pathname: '/search-results',
       search: params.toString(),
@@ -171,17 +174,15 @@ const SearchBar = ({ searchText, handleChange, options }) => {
             }}
           >
             <div className={classes.searchOptionsWrapper}>
-              <div className={classes.searchOptions}>
-                <SearchOptions
-                  postTypes={POST_TYPES}
-                  options={searchOptions}
-                  setTopics={(topics) => setSearchOptions({ ...searchOptions, topics })}
-                  handleOptionChange={handleOptionChange}
-                  handleDateChange={handleDateChange}
-                  handleSearchOnClick={handleSearchOnClick}
-                  handleResetOnClick={handleResetOnClick}
-                />
-              </div>
+              <SearchOptions
+                postTypes={POST_TYPES}
+                options={searchOptions}
+                setTopics={(topics) => setSearchOptions({ ...searchOptions, topics })}
+                handleOptionChange={handleOptionChange}
+                handleDateChange={handleDateChange}
+                handleSearchOnClick={handleSearchOnClick}
+                handleResetOnClick={handleResetOnClick}
+              />
             </div>
           </Popover>
         </>
