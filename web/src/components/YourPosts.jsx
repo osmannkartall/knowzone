@@ -45,7 +45,7 @@ const YourPosts = () => {
     return function cleanup() {
       mounted = false;
     };
-  }, []);
+  }, [posts]);
 
   return (
     <div className={classes.root}>
