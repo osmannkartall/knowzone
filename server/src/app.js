@@ -6,6 +6,7 @@ const tipController = require('./controllers/TipController');
 const helloController = require('./controllers/HelloController');
 const bugFixController = require('./controllers/BugFixController');
 const searchController = require('./controllers/SearchController');
+const authController = require('./controllers/AuthController');
 
 async function startDB() {
   try {
@@ -28,6 +29,7 @@ function addControllers(app) {
   app.use(`${config.api.prefix}/tips`, tipController);
   app.use(`${config.api.prefix}/bugfixes`, bugFixController);
   app.use(`${config.api.prefix}/search`, searchController);
+  app.use(`${config.api.prefix}/`, authController);
 }
 
 async function startExpress() {
