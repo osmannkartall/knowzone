@@ -56,7 +56,7 @@ const Tips = () => {
               topics={p.topics}
               description={p.description}
             />
-          ))) : <p>No tip to show!</p>}
+          ))) : null}
       </Grid>
     </div>
   );

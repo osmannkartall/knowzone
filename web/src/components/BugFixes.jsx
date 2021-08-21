@@ -26,10 +26,9 @@ const BugFixes = () => {
 
   useEffect(() => {
     let mounted = true;
-    const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/bugfixes`;
 
     if (mounted) {
-      fetch(url)
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/bugfixes`)
         .then((response) => response.json())
         .then((data) => setPosts(data))
         .catch((error) => console.error(error));
@@ -59,7 +58,7 @@ const BugFixes = () => {
               error={p.error}
               solution={p.solution}
             />
-          ))) : <p>No bug fix to show!</p>}
+          ))) : null}
       </Grid>
     </div>
   );
