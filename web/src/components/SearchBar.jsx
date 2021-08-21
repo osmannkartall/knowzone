@@ -115,8 +115,6 @@ const SearchBar = ({ searchText, handleChange, options }) => {
     }
 
     handleCloseSearch();
-    handleResetOnClick();
-
     history.push({
       pathname: '/search-results',
       search: params.toString(),
