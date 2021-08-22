@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const tipSchema = new mongoose.Schema(
   {
-    owner: String,
+    owner: { id: mongoose.Schema.Types.ObjectId, username: String, name: String },
     links: [String],
     topics: [String],
     description: String,

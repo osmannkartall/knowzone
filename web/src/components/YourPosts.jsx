@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Post from './Post';
 import { GRAY1, GRAY3 } from '../constants/colors';
+import { AuthContext } from '../contexts/AuthContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,17 +21,16 @@ const useStyles = makeStyles((theme) => ({
 
 const image = 'https://www.cgi.com/sites/default/files/styles/hero_banner/public/space_astronaut.jpg?itok=k2oFRHrr';
 
-const ownerId = '1234566';
-
 const YourPosts = () => {
   const [posts, setPosts] = useState([]);
+  const [user] = useContext(AuthContext);
   const classes = useStyles();
 
   useEffect(() => {
     let mounted = true;
 
     if (mounted) {
-      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/search?owner=${ownerId}`)
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/search?owner=${user.id}`)
         .then((res) => res.json())
         .then(
           (result) => {
@@ -57,7 +57,7 @@ const YourPosts = () => {
               key={p.id}
               editable
               type={p.type}
-              owner={p.owner}
+              owner={p.owner.username}
               links={p.links}
               image={image}
               lastModifiedDate={p.updatedAt}
