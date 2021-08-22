@@ -47,7 +47,7 @@ const BugFixes = () => {
             <Post
               key={p.id}
               type="bugFix"
-              owner={p.owner}
+              owner={p.owner.username}
               links={p.links}
               image={SAMPLE_IMAGE_URL}
               lastModifiedDate={p.updatedAt}

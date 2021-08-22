@@ -46,7 +46,7 @@ const Tips = () => {
           posts.map((p) => (
             <Post
               key={p.id}
-              owner={p.owner}
+              owner={p.owner.username}
               links={p.links}
               image={SAMPLE_IMAGE_URL}
               lastModifiedDate={p.updatedAt}
