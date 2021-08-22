@@ -46,7 +46,6 @@ const BugFixes = () => {
           posts.map((p) => (
             <Post
               key={p.id}
-              editable
               type={p.type}
               owner={p.owner}
               links={p.links}
