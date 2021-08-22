@@ -46,7 +46,7 @@ const BugFixes = () => {
           posts.map((p) => (
             <Post
               key={p.id}
-              type={p.type}
+              type="bugFix"
               owner={p.owner}
               links={p.links}
               image={SAMPLE_IMAGE_URL}
