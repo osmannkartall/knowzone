@@ -4,8 +4,8 @@ const tempUser = {
   username: 'osmannkartall',
   email: 'mail@mail.mail',
   name: 'Osman Kartal',
-  bio: 'This is a bio',
-  id: '61211bd016d1c0389c1a0317',
+  bio: 'this is my bio',
+  id: '6123673a32e9c02678d5e5c1',
   isLoggedIn: false,
 };
 

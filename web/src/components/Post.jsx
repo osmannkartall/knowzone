@@ -78,7 +78,7 @@ const PostSection = ({ title, children }) => {
   );
 };
 
-const PostTopbar = ({ editable, owner }) => {
+const PostTopbar = ({ editable, owner, updatePost, deletePost }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -91,14 +91,14 @@ const PostTopbar = ({ editable, owner }) => {
     setAnchorEl(null);
   };
 
-  const onClickModify = () => {
+  const onClickUpdate = () => {
+    updatePost();
     handleClose();
-    console.log('modify');
   };
 
   const onClickDelete = () => {
+    deletePost();
     handleClose();
-    console.log('delete');
   };
 
   return (
@@ -107,7 +107,7 @@ const PostTopbar = ({ editable, owner }) => {
       {editable ? (
         <div>
           <IconButton
-            aria-label="modify post"
+            aria-label="update post"
             aria-controls="post-menu"
             aria-haspopup="true"
             onClick={handleMenu}
@@ -122,7 +122,7 @@ const PostTopbar = ({ editable, owner }) => {
             open={open}
             onClose={handleClose}
           >
-            <MenuItem onClick={onClickModify}>Modify</MenuItem>
+            <MenuItem onClick={onClickUpdate}>Update</MenuItem>
             <MenuItem onClick={onClickDelete}>Delete</MenuItem>
           </Menu>
         </div>
@@ -135,39 +135,39 @@ const Post = ({
   editable,
   type,
   owner,
-  links,
-  image,
-  lastModifiedDate,
-  insertDate,
-  topics,
-  description,
-  error,
-  solution,
+  content,
+  updatePost,
+  deletePost,
 }) => {
   const classes = useStyles();
-  const lastModifiedDateInfo = `Last Modified ${lastModifiedDate}`;
-  const insertDateInfo = `Created ${insertDate}`;
+  const lastModifiedDateInfo = `Last Modified ${content.lastModifiedDate}`;
+  const insertDateInfo = `Created ${content.insertDate}`;
 
   return (
     <Grid item xs={8}>
       <div className={classes.gridContainer}>
         <div className={classes.container}>
-          <PostTopbar editable={editable} owner={owner} />
-          <div className={classes.description}>{description}</div>
+          <PostTopbar
+            editable={editable}
+            owner={owner.username}
+            updatePost={updatePost}
+            deletePost={deletePost}
+          />
+          <div className={classes.description}>{content.description}</div>
           {type === 'bugFix' ? (
             <>
               <PostSection title="Error">
-                <div>{error}</div>
+                <div>{content.error}</div>
               </PostSection>
               <PostSection title="Solution">
-                <div>{solution}</div>
+                <div>{content.solution}</div>
               </PostSection>
             </>
           ) : null}
-          {image && (
+          {content.image && (
             <div className={classes.imgContainer}>
               <img
-                src={image}
+                src={content.image}
                 width="400"
                 height="300"
                 alt="post"
@@ -175,24 +175,24 @@ const Post = ({
               />
             </div>
           )}
-          {links && links.length ? (
+          {content.links && content.links.length ? (
             <PostSection title="Link">
               <ul>
-                {links.map((link) => (
+                {content.links.map((link) => (
                   <li key={link} className={classes.link}><a href={link}>{link}</a></li>
                 ))}
               </ul>
             </PostSection>
           ) : null}
           <div className={classes.timeInfo}>
-            {lastModifiedDate && <div>{lastModifiedDateInfo}</div>}
+            {content.lastModifiedDate && <div>{lastModifiedDateInfo}</div>}
             <div>●</div>
             <div>{insertDateInfo}</div>
           </div>
         </div>
         <Divider />
         <div className={classes.tagContainer}>
-          <TagPicker tags={topics} readOnly />
+          <TagPicker tags={content.topics} readOnly />
         </div>
       </div>
     </Grid>
