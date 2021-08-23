@@ -1,10 +1,16 @@
 #!/bin/bash
 
-export REGISTRY_NAME="YOUR-FULL-AZURE-REGISTRY-NAME"
-export FRONTEND_LB_PREFIX="YOUR-FRONTEND-PREFIX-URL"
+### EDIT BELOW ENVIRONMENT VARIABLES BEFORE USING THIS SCRIPT
+
+export REGISTRY_NAME="FULL-AZURE-REGISTRY-NAME"
+export FRONTEND_LB_PREFIX="FRONTEND-PREFIX-URL"
+export FRONTEND_URL="http://${FRONTEND_LB_PREFIX}.<LOCATION>.cloudapp.azure.com"
 export BACKEND_LB_PREFIX="YOUR-BACKEND-PREFIX-URL"
-export MONGO_PASSWORD="YOUR-MONGO-PASSWORD"
-export VERSION="YOUR-VERSION"
+export BACKEND_URL="http://${BACKEND_LB_PREFIX}.<LOCATION>.cloudapp.azure.com/api"
+export MONGO_PASSWORD="MONGO-PASSWORD"
+export VERSION="IMAGE-VERSION"
+
+#############################################################
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
@@ -23,14 +29,16 @@ generate-manifests() {
     log_green "Generating Kubernetes manifests from templates..."
     log_blue "Generated manifests will be under ${SCRIPT_DIR}/k8s-manifests/generated"
 
+    mkdir -p ${SCRIPT_DIR}/k8s-manifests/generated
+
     log_blue "Generating knowzone secret..."
     envsubst < ${SCRIPT_DIR}/k8s-manifests/knowzone-secret-template.yaml > ${SCRIPT_DIR}/k8s-manifests/generated/knowzone-secret.yaml
 
     log_blue "Generating backend manifest..." 
-    envsubst < ${SCRIPT_DIR}/k8s-manifests/backend-template.yaml > ${SCRIPT_DIR}/k8s-manifests/backend.yaml
+    envsubst < ${SCRIPT_DIR}/k8s-manifests/backend-template.yaml > ${SCRIPT_DIR}/k8s-manifests/generated/backend.yaml
 
     log_blue "Generating frontend manifest..." 
-    envsubst < ${SCRIPT_DIR}/k8s-manifests/frontend-template.yaml > ${SCRIPT_DIR}/k8s-manifests/frontend.yaml
+    envsubst < ${SCRIPT_DIR}/k8s-manifests/frontend-template.yaml > ${SCRIPT_DIR}/k8s-manifests/generated/frontend.yaml
 }
 
 build-backend() {
@@ -47,7 +55,7 @@ build-frontend() {
     log_green "Build and push frontend"
 
     log_blue "Building frontend image..."
-    docker build ${SCRIPT_DIR}/../ -f ${SCRIPT_DIR}/Dockerfile.web --tag ${REGISTRY_NAME}/knowzone-frontend:${VERSION}
+    docker build ${SCRIPT_DIR}/../ --build-arg KNOWZONE_BE_URI=${BACKEND_URL} -f ${SCRIPT_DIR}/Dockerfile.web --tag ${REGISTRY_NAME}/knowzone-frontend:${VERSION}
 
     log_blue "Pushing frontend to ${REGISTRY_NAME}..."
     docker push ${REGISTRY_NAME}/knowzone-frontend:${VERSION}

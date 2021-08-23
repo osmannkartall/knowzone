@@ -30,6 +30,8 @@ spec:
             secretKeyRef:
               name: mongodb-admin-kz-user
               key: connectionString.standardSrv
+        - name: REACT_URL
+          value: ${FRONTEND_URL}
         imagePullPolicy: Always
 ---
 apiVersion: v1
