@@ -22,26 +22,94 @@ const useStyles = makeStyles((theme) => ({
 
 const image = 'https://www.cgi.com/sites/default/files/styles/hero_banner/public/space_astronaut.jpg?itok=k2oFRHrr';
 
+const POST_TYPES = Object.freeze({
+  BUG_FIX: 'bugFix',
+  TIP: 'tip',
+});
+
 const YourPosts = () => {
   const [posts, setPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState({});
+  const [open, setOpen] = useState(false);
   const [user] = useContext(AuthContext);
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
 
-  const updatePost = (id) => {
+  const handleChangeForm = (key, value) => {
+    setSelectedPost((prevState) => ({ ...prevState, [key]: value }));
+  };
+
+  const setForUpdate = (id) => {
     const idx = posts.findIndex((p) => p.id === id);
+
     if (idx !== -1) {
       setSelectedPost({ ...posts[idx] });
       setOpen(true);
     }
   };
 
-  // TODO: Make delete request
-  const deletePost = (id) => {
+  const updatePost = () => {
+    let route = 'tips';
+    const newPost = {
+      description: selectedPost.description,
+      // files: form.files,
+      topics: selectedPost.topics,
+      links: selectedPost.links,
+      owner: selectedPost.owner,
+    };
+    if (selectedPost.type === POST_TYPES.BUG_FIX) {
+      newPost.error = selectedPost.error;
+      newPost.solution = selectedPost.solution;
+      route = 'bugFixes';
+    }
+    const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
+
+    fetch(url, {
+      headers: { 'Content-Type': 'application/json' },
+      method: 'PUT',
+      body: JSON.stringify(newPost),
+    })
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          console.log(result.message);
+          setOpen(false);
+
+          // Storing selectedPostId as state might avoid findIndex operation.
+          const idx = posts.findIndex((p) => p.id === selectedPost.id);
+          if (idx !== -1) {
+            const newPosts = [...posts];
+            newPosts[idx] = selectedPost;
+            setPosts(newPosts);
+          }
+        },
+        (error) => {
+          console.log(error.message);
+        },
+      );
+  };
+
+  const deletePost = (id, route) => {
     const idx = posts.findIndex((p) => p.id === id);
+
     if (idx !== -1) {
-      alert(`Delete post with id=${id}?`);
+      const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${id}`;
+
+      fetch(url, {
+        headers: { 'Content-Type': 'application/json' },
+        method: 'DELETE',
+      })
+        .then((res) => res.json())
+        .then(
+          (result) => {
+            console.log(result.message);
+            const newPosts = [...posts];
+            newPosts.splice(idx, 1);
+            setPosts(newPosts);
+          },
+          (error) => {
+            console.log(error.message);
+          },
+        );
     }
   };
 
@@ -87,12 +155,20 @@ const YourPosts = () => {
                 error: p.error,
                 solution: p.solution,
               }}
-              updatePost={() => updatePost(p.id)}
-              deletePost={() => deletePost(p.id)}
+              onClickUpdate={() => setForUpdate(p.id)}
+              onClickDelete={() => deletePost(p.id, p.type === 'tip' ? 'tips' : 'bugFixes')}
             />
           ))) : null}
       </Grid>
-      <PostForm title="Update Post" btnTitle="update" open={open} setOpen={setOpen} oldPost={selectedPost} />
+      <PostForm
+        title="Update Post"
+        btnTitle="update"
+        open={open}
+        setOpen={setOpen}
+        form={selectedPost}
+        handleChangeForm={handleChangeForm}
+        onClickBtn={updatePost}
+      />
     </div>
   );
 };

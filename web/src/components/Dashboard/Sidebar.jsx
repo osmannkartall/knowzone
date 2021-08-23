@@ -45,6 +45,11 @@ const drawerItemNames = [
   { text: 'Bug Fixes', route: '/bug-fixes', icon: <BugReportOutlined /> },
 ];
 
+const POST_TYPES = Object.freeze({
+  BUG_FIX: 'bugFix',
+  TIP: 'tip',
+});
+
 const DrawerItem = ({ text, route, icon }) => (
   <ListItem button component={Link} key={text} to={route}>
     <ListItemIcon>{icon}</ListItemIcon>
@@ -55,8 +60,25 @@ const DrawerItem = ({ text, route, icon }) => (
 const Sidebar = () => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [newPost, setNewPost] = useState({
+    description: '',
+    links: [],
+    topics: [],
+    owner: {},
+    error: '',
+    solution: '',
+    type: POST_TYPES.TIP,
+  });
+
+  const handleChangeForm = (key, value) => {
+    setNewPost((prevState) => ({ ...prevState, [key]: value }));
+  };
 
   const onClickCreate = () => setOpen(true);
+
+  const addPost = () => {
+    console.log(newPost);
+  };
 
   return (
     <Drawer
@@ -84,7 +106,14 @@ const Sidebar = () => {
         >
           Create
         </Button>
-        <PostForm title="Create Post" open={open} setOpen={setOpen} />
+        <PostForm
+          title="Create Post"
+          open={open}
+          setOpen={setOpen}
+          form={newPost}
+          handleChangeForm={handleChangeForm}
+          onClickBtn={addPost}
+        />
       </div>
     </Drawer>
   );

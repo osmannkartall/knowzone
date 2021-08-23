@@ -30,12 +30,12 @@ const findById = async (req, res) => {
 
 const updateById = async (req, res) => {
   const result = await tipRepository.updateById(req.params.id, req.body);
-  res.send(result);
+  res.json({ message: result });
 };
 
 const deleteById = async (req, res) => {
   const result = await tipRepository.deleteById(req.params.id);
-  res.send(result);
+  res.json({ message: result });
 };
 
 const deleteAll = async (_, res) => {

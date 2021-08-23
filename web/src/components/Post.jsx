@@ -78,28 +78,14 @@ const PostSection = ({ title, children }) => {
   );
 };
 
-const PostTopbar = ({ editable, owner, updatePost, deletePost }) => {
+const PostTopbar = ({ editable, owner, onClickUpdate, onClickDelete }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const handleMenu = (event) => setAnchorEl(event.currentTarget);
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const onClickUpdate = () => {
-    updatePost();
-    handleClose();
-  };
-
-  const onClickDelete = () => {
-    deletePost();
-    handleClose();
-  };
+  const handleClose = () => setAnchorEl(null);
 
   return (
     <div className={classes.postTopbar}>
@@ -122,8 +108,8 @@ const PostTopbar = ({ editable, owner, updatePost, deletePost }) => {
             open={open}
             onClose={handleClose}
           >
-            <MenuItem onClick={onClickUpdate}>Update</MenuItem>
-            <MenuItem onClick={onClickDelete}>Delete</MenuItem>
+            <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>Update</MenuItem>
+            <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>Delete</MenuItem>
           </Menu>
         </div>
       ) : null}
@@ -136,8 +122,8 @@ const Post = ({
   type,
   owner,
   content,
-  updatePost,
-  deletePost,
+  onClickUpdate,
+  onClickDelete,
 }) => {
   const classes = useStyles();
   const lastModifiedDateInfo = `Last Modified ${content.lastModifiedDate}`;
@@ -150,8 +136,8 @@ const Post = ({
           <PostTopbar
             editable={editable}
             owner={owner.username}
-            updatePost={updatePost}
-            deletePost={deletePost}
+            onClickUpdate={onClickUpdate}
+            onClickDelete={onClickDelete}
           />
           <div className={classes.description}>{content.description}</div>
           {type === 'bugFix' ? (
