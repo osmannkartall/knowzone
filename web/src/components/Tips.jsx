@@ -46,13 +46,15 @@ const Tips = () => {
           posts.map((p) => (
             <Post
               key={p.id}
-              owner={p.owner.username}
-              links={p.links}
-              image={SAMPLE_IMAGE_URL}
-              lastModifiedDate={p.updatedAt}
-              insertDate={p.createdAt}
-              topics={p.topics}
-              description={p.description}
+              owner={p.owner}
+              content={{
+                links: p.links,
+                image: SAMPLE_IMAGE_URL,
+                lastModifiedDate: p.updatedAt,
+                insertDate: p.createdAt,
+                topics: p.topics,
+                description: p.description,
+              }}
             />
           ))) : null}
       </Grid>

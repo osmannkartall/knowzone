@@ -24,12 +24,12 @@ class BaseRepository {
 
   async updateById(id, record) {
     await this.model.findByIdAndUpdate(id, record);
-    return 'Update a record by the id in the request';
+    return `Updated the record with the ${id}`;
   }
 
   async deleteById(id) {
     await this.model.findByIdAndRemove(id);
-    return 'Delete a record by id';
+    return `Deleted the record with the ${id}`;
   }
 
   async deleteAll() {

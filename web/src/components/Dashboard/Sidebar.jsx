@@ -11,6 +11,7 @@ import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 import Button from '@material-ui/core/Button';
 import { GRAY3 } from '../../constants/colors';
 import PostForm from '../../common/PostForm';
+import POST_TYPES from '../../constants/post-types';
 
 const drawerWidth = 240;
 
@@ -55,8 +56,25 @@ const DrawerItem = ({ text, route, icon }) => (
 const Sidebar = () => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [newPost, setNewPost] = useState({
+    description: '',
+    links: [],
+    topics: [],
+    owner: {},
+    error: '',
+    solution: '',
+    type: POST_TYPES.TIP.value,
+  });
+
+  const handleChangeForm = (key, value) => {
+    setNewPost((prevState) => ({ ...prevState, [key]: value }));
+  };
 
   const onClickCreate = () => setOpen(true);
+
+  const addPost = () => {
+    console.log(newPost);
+  };
 
   return (
     <Drawer
@@ -84,7 +102,14 @@ const Sidebar = () => {
         >
           Create
         </Button>
-        <PostForm title="Create Post" open={open} setOpen={setOpen} />
+        <PostForm
+          title="Create Post"
+          open={open}
+          setOpen={setOpen}
+          form={newPost}
+          handleChangeForm={handleChangeForm}
+          onClickBtn={addPost}
+        />
       </div>
     </Drawer>
   );

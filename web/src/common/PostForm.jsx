@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Grid,
   TextField,
@@ -13,6 +13,7 @@ import Close from '@material-ui/icons/Close';
 import { WHITE, GRAY3, PRIMARY } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
 import FileUploader from './FileUploader';
+import POST_TYPES from '../constants/post-types';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -68,38 +69,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const POST_TYPES = Object.freeze({
-  BUG_FIX: 'Bug Fix',
-  TIP: 'Tip',
-});
-
-const FormContent = ({ title, handleClose }) => {
+const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onClickBtn }) => {
   const classes = useStyles();
-  const [postType, setPostType] = useState(POST_TYPES.BUG_FIX);
-  const [description, setDescription] = useState('');
-  const [error, setError] = useState('');
-  const [solution, setSolution] = useState('');
-  const [topics, setTopics] = useState([]);
-  const [links, setLinks] = useState([]);
-  const [files, setFiles] = useState([]);
-
-  const handleChangePostType = (event) => setPostType(event.target.value);
-
-  const onClickShare = () => {
-    const form = {
-      postType,
-      description,
-      files,
-      topics,
-      links,
-    };
-
-    if (postType === POST_TYPES.BUG_FIX) {
-      form.error = error;
-      form.solution = solution;
-    }
-    alert(JSON.stringify(form));
-  };
 
   return (
     <div>
@@ -129,15 +100,14 @@ const FormContent = ({ title, handleClose }) => {
                   select
                   label="Post Type"
                   required
-                  value={postType}
-                  onChange={handleChangePostType}
+                  value={form.type}
+                  onChange={(e) => handleChangeForm('type', e.target.value)}
                   variant="outlined"
                   fullWidth
+                  disabled={form.id !== null && form.id !== undefined}
                 >
-                  {Object.values(POST_TYPES).map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
+                  {Object.values(POST_TYPES).map((opt) => (
+                    <MenuItem key={opt.value} value={opt.value}>{opt.name}</MenuItem>
                   ))}
                 </TextField>
               </Grid>
@@ -152,11 +122,11 @@ const FormContent = ({ title, handleClose }) => {
                   maxRows={4}
                   id="description"
                   label="Description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  value={form.description}
+                  onChange={(e) => handleChangeForm('description', e.target.value)}
                 />
               </Grid>
-              {postType === POST_TYPES.BUG_FIX ? (
+              {form.type === POST_TYPES.BUG_FIX.value ? (
                 <Grid item xs={12}>
                   <TextField
                     name="error"
@@ -168,12 +138,12 @@ const FormContent = ({ title, handleClose }) => {
                     maxRows={10}
                     id="error"
                     label="Error"
-                    value={error}
-                    onChange={(e) => setError(e.target.value)}
+                    value={form.error}
+                    onChange={(e) => handleChangeForm('error', e.target.value)}
                   />
                 </Grid>
               ) : null}
-              {postType === POST_TYPES.BUG_FIX ? (
+              {form.type === POST_TYPES.BUG_FIX.value ? (
                 <Grid item xs={12}>
                   <TextField
                     name="solution"
@@ -185,22 +155,33 @@ const FormContent = ({ title, handleClose }) => {
                     maxRows={10}
                     id="solution"
                     label="Solution"
-                    value={solution}
-                    onChange={(e) => setSolution(e.target.value)}
+                    value={form.solution}
+                    onChange={(e) => handleChangeForm('solution', e.target.value)}
                   />
                 </Grid>
               ) : null}
               <Grid item xs={12}>
-                <FileUploader files={files} setFiles={setFiles} />
+                <FileUploader
+                  files={form.files ? form.files : []}
+                  setFiles={(files) => handleChangeForm('files', files)}
+                />
               </Grid>
               <Grid item xs={12}>
                 <Box border={1} borderColor="grey.400" borderRadius={5} className={classes.topics}>
-                  <TagPicker tags={topics} setTags={setTopics} required />
+                  <TagPicker
+                    tags={form.topics}
+                    setTags={(topics) => handleChangeForm('topics', topics)}
+                    required
+                  />
                 </Box>
               </Grid>
               <Grid item xs={12}>
                 <Box border={1} borderColor="grey.400" borderRadius={5} className={classes.topics}>
-                  <TagPicker tags={links} setTags={setLinks} placeholder="Enter links" />
+                  <TagPicker
+                    tags={form.links}
+                    setTags={(links) => handleChangeForm('links', links)}
+                    placeholder="Enter links"
+                  />
                 </Box>
               </Grid>
             </>
@@ -209,8 +190,8 @@ const FormContent = ({ title, handleClose }) => {
             <>
               <Grid item xs={12}>
                 <div className={classes.bottomBar}>
-                  <Button variant="contained" color="primary" onClick={onClickShare}>
-                    Share
+                  <Button variant="contained" color="primary" onClick={onClickBtn}>
+                    {btnTitle}
                   </Button>
                 </div>
               </Grid>
@@ -222,18 +203,29 @@ const FormContent = ({ title, handleClose }) => {
   );
 };
 
-const PostForm = ({ title, open, setOpen }) => {
+const PostForm = ({ title, btnTitle, open, setOpen, form, handleChangeForm, onClickBtn }) => {
   const classes = useStyles();
 
   const handleClose = () => setOpen(false);
 
   const body = (
     <div className={classes.modal}>
-      <FormContent title={title} handleClose={handleClose} />
+      <FormContent
+        title={title}
+        btnTitle={btnTitle}
+        handleClose={handleClose}
+        form={form}
+        handleChangeForm={handleChangeForm}
+        onClickBtn={onClickBtn}
+      />
     </div>
   );
 
   return <Modal open={open} onClose={handleClose} disableRestoreFocus>{body}</Modal>;
+};
+
+PostForm.defaultProps = {
+  btnTitle: 'share',
 };
 
 export default PostForm;

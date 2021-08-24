@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import { Divider } from '@material-ui/core';
 import { GRAY3, GRAY4, PRIMARY } from '../constants/colors';
 import TagPicker from '../common/TagPicker/TagPicker';
+import POST_TYPES from '../constants/post-types';
 
 const useStyles = makeStyles((theme) => ({
   gridContainer: {
@@ -78,28 +79,14 @@ const PostSection = ({ title, children }) => {
   );
 };
 
-const PostTopbar = ({ editable, owner }) => {
+const PostTopbar = ({ editable, owner, onClickUpdate, onClickDelete }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const handleMenu = (event) => setAnchorEl(event.currentTarget);
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const onClickModify = () => {
-    handleClose();
-    console.log('modify');
-  };
-
-  const onClickDelete = () => {
-    handleClose();
-    console.log('delete');
-  };
+  const handleClose = () => setAnchorEl(null);
 
   return (
     <div className={classes.postTopbar}>
@@ -107,7 +94,7 @@ const PostTopbar = ({ editable, owner }) => {
       {editable ? (
         <div>
           <IconButton
-            aria-label="modify post"
+            aria-label="update post"
             aria-controls="post-menu"
             aria-haspopup="true"
             onClick={handleMenu}
@@ -122,8 +109,8 @@ const PostTopbar = ({ editable, owner }) => {
             open={open}
             onClose={handleClose}
           >
-            <MenuItem onClick={onClickModify}>Modify</MenuItem>
-            <MenuItem onClick={onClickDelete}>Delete</MenuItem>
+            <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>Update</MenuItem>
+            <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>Delete</MenuItem>
           </Menu>
         </div>
       ) : null}
@@ -135,39 +122,39 @@ const Post = ({
   editable,
   type,
   owner,
-  links,
-  image,
-  lastModifiedDate,
-  insertDate,
-  topics,
-  description,
-  error,
-  solution,
+  content,
+  onClickUpdate,
+  onClickDelete,
 }) => {
   const classes = useStyles();
-  const lastModifiedDateInfo = `Last Modified ${lastModifiedDate}`;
-  const insertDateInfo = `Created ${insertDate}`;
+  const lastModifiedDateInfo = `Last Modified ${content.lastModifiedDate}`;
+  const insertDateInfo = `Created ${content.insertDate}`;
 
   return (
     <Grid item xs={8}>
       <div className={classes.gridContainer}>
         <div className={classes.container}>
-          <PostTopbar editable={editable} owner={owner} />
-          <div className={classes.description}>{description}</div>
-          {type === 'bugFix' ? (
+          <PostTopbar
+            editable={editable}
+            owner={owner.username}
+            onClickUpdate={onClickUpdate}
+            onClickDelete={onClickDelete}
+          />
+          <div className={classes.description}>{content.description}</div>
+          {type === POST_TYPES.BUG_FIX.value ? (
             <>
               <PostSection title="Error">
-                <div>{error}</div>
+                <div>{content.error}</div>
               </PostSection>
               <PostSection title="Solution">
-                <div>{solution}</div>
+                <div>{content.solution}</div>
               </PostSection>
             </>
           ) : null}
-          {image && (
+          {content.image && (
             <div className={classes.imgContainer}>
               <img
-                src={image}
+                src={content.image}
                 width="400"
                 height="300"
                 alt="post"
@@ -175,24 +162,24 @@ const Post = ({
               />
             </div>
           )}
-          {links && links.length ? (
+          {content.links && content.links.length ? (
             <PostSection title="Link">
               <ul>
-                {links.map((link) => (
+                {content.links.map((link) => (
                   <li key={link} className={classes.link}><a href={link}>{link}</a></li>
                 ))}
               </ul>
             </PostSection>
           ) : null}
           <div className={classes.timeInfo}>
-            {lastModifiedDate && <div>{lastModifiedDateInfo}</div>}
+            {content.lastModifiedDate && <div>{lastModifiedDateInfo}</div>}
             <div>●</div>
             <div>{insertDateInfo}</div>
           </div>
         </div>
         <Divider />
         <div className={classes.tagContainer}>
-          <TagPicker tags={topics} readOnly />
+          <TagPicker tags={content.topics} readOnly />
         </div>
       </div>
     </Grid>

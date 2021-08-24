@@ -47,15 +47,17 @@ const BugFixes = () => {
             <Post
               key={p.id}
               type="bugFix"
-              owner={p.owner.username}
-              links={p.links}
-              image={SAMPLE_IMAGE_URL}
-              lastModifiedDate={p.updatedAt}
-              insertDate={p.createdAt}
-              topics={p.topics}
-              description={p.description}
-              error={p.error}
-              solution={p.solution}
+              owner={p.owner}
+              content={{
+                links: p.links,
+                image: SAMPLE_IMAGE_URL,
+                lastModifiedDate: p.updatedAt,
+                insertDate: p.createdAt,
+                topics: p.topics,
+                description: p.description,
+                error: p.error,
+                solution: p.solution,
+              }}
             />
           ))) : null}
       </Grid>
