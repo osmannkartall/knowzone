@@ -84,7 +84,7 @@ const SearchOptions = ({
             ))}
           </Select>
         </SearchOptionRow>
-        {options.postType === POST_TYPES.BUG_FIX.value ? (
+        {options.postType !== POST_TYPES.TIP.value ? (
           <>
             <SearchOptionRow label="Error">
               <TextField
