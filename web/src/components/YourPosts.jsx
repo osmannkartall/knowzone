@@ -5,6 +5,7 @@ import Post from './Post';
 import { GRAY1, GRAY3 } from '../constants/colors';
 import { AuthContext } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
+import POST_TYPES from '../constants/post-types';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,11 +22,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const image = 'https://www.cgi.com/sites/default/files/styles/hero_banner/public/space_astronaut.jpg?itok=k2oFRHrr';
-
-const POST_TYPES = Object.freeze({
-  BUG_FIX: 'bugFix',
-  TIP: 'tip',
-});
 
 const YourPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -56,7 +52,7 @@ const YourPosts = () => {
       links: selectedPost.links,
       owner: selectedPost.owner,
     };
-    if (selectedPost.type === POST_TYPES.BUG_FIX) {
+    if (selectedPost.type === POST_TYPES.BUG_FIX.value) {
       newPost.error = selectedPost.error;
       newPost.solution = selectedPost.solution;
       route = 'bugFixes';
@@ -156,7 +152,9 @@ const YourPosts = () => {
                 solution: p.solution,
               }}
               onClickUpdate={() => setForUpdate(p.id)}
-              onClickDelete={() => deletePost(p.id, p.type === 'tip' ? 'tips' : 'bugFixes')}
+              onClickDelete={
+                () => deletePost(p.id, p.type === POST_TYPES.TIP.value ? 'tips' : 'bugFixes')
+              }
             />
           ))) : null}
       </Grid>

@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import { Divider } from '@material-ui/core';
 import { GRAY3, GRAY4, PRIMARY } from '../constants/colors';
 import TagPicker from '../common/TagPicker/TagPicker';
+import POST_TYPES from '../constants/post-types';
 
 const useStyles = makeStyles((theme) => ({
   gridContainer: {
@@ -140,7 +141,7 @@ const Post = ({
             onClickDelete={onClickDelete}
           />
           <div className={classes.description}>{content.description}</div>
-          {type === 'bugFix' ? (
+          {type === POST_TYPES.BUG_FIX.value ? (
             <>
               <PostSection title="Error">
                 <div>{content.error}</div>

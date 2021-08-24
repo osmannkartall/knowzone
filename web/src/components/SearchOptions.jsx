@@ -12,6 +12,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import TagPicker from '../common/TagPicker/TagPicker';
+import POST_TYPES from '../constants/post-types';
 
 const MAX_HEIGHT = 498;
 
@@ -55,7 +56,6 @@ const SearchOptionRow = ({ label, children }) => (
 );
 
 const SearchOptions = ({
-  postTypes,
   options,
   setTopics,
   handleOptionChange,
@@ -79,12 +79,12 @@ const SearchOptions = ({
             <MenuItem value="">
               <em>None</em>
             </MenuItem>
-            {postTypes ? postTypes.map(
-              (opt) => <MenuItem key={opt} value={opt}>{opt}</MenuItem>,
-            ) : null}
+            {Object.values(POST_TYPES).map((opt) => (
+              <MenuItem key={opt.value} value={opt.value}>{opt.name}</MenuItem>
+            ))}
           </Select>
         </SearchOptionRow>
-        {options.postType !== 'Tip' ? (
+        {options.postType === POST_TYPES.BUG_FIX.value ? (
           <>
             <SearchOptionRow label="Error">
               <TextField

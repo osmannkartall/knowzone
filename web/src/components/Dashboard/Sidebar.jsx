@@ -11,6 +11,7 @@ import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 import Button from '@material-ui/core/Button';
 import { GRAY3 } from '../../constants/colors';
 import PostForm from '../../common/PostForm';
+import POST_TYPES from '../../constants/post-types';
 
 const drawerWidth = 240;
 
@@ -45,11 +46,6 @@ const drawerItemNames = [
   { text: 'Bug Fixes', route: '/bug-fixes', icon: <BugReportOutlined /> },
 ];
 
-const POST_TYPES = Object.freeze({
-  BUG_FIX: 'bugFix',
-  TIP: 'tip',
-});
-
 const DrawerItem = ({ text, route, icon }) => (
   <ListItem button component={Link} key={text} to={route}>
     <ListItemIcon>{icon}</ListItemIcon>
@@ -67,7 +63,7 @@ const Sidebar = () => {
     owner: {},
     error: '',
     solution: '',
-    type: POST_TYPES.TIP,
+    type: POST_TYPES.TIP.value,
   });
 
   const handleChangeForm = (key, value) => {

@@ -7,7 +7,6 @@ import SearchOptions from './SearchOptions';
 import { GRAY1, GRAY2, GRAY3, PRIMARY } from '../constants/colors';
 
 const SEARCH_WIDTH = 700;
-const POST_TYPES = ['Tip', 'Bug Fix'];
 
 const useStyles = makeStyles((theme) => ({
   searchWrapper: {
@@ -173,7 +172,6 @@ const SearchBar = ({ searchText, handleChange, options }) => {
           >
             <div className={classes.searchOptionsWrapper}>
               <SearchOptions
-                postTypes={POST_TYPES}
                 options={searchOptions}
                 setTopics={(topics) => setSearchOptions({ ...searchOptions, topics })}
                 handleOptionChange={handleOptionChange}

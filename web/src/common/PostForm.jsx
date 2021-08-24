@@ -13,6 +13,7 @@ import Close from '@material-ui/icons/Close';
 import { WHITE, GRAY3, PRIMARY } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
 import FileUploader from './FileUploader';
+import POST_TYPES from '../constants/post-types';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -68,11 +69,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const POST_TYPES = Object.freeze({
-  BUG_FIX: 'bugFix',
-  TIP: 'tip',
-});
-
 const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onClickBtn }) => {
   const classes = useStyles();
 
@@ -110,10 +106,8 @@ const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onC
                   fullWidth
                   disabled={form.id !== null && form.id !== undefined}
                 >
-                  {Object.values(POST_TYPES).map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
+                  {Object.values(POST_TYPES).map((opt) => (
+                    <MenuItem key={opt.value} value={opt.value}>{opt.name}</MenuItem>
                   ))}
                 </TextField>
               </Grid>
@@ -132,7 +126,7 @@ const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onC
                   onChange={(e) => handleChangeForm('description', e.target.value)}
                 />
               </Grid>
-              {form.type === POST_TYPES.BUG_FIX ? (
+              {form.type === POST_TYPES.BUG_FIX.value ? (
                 <Grid item xs={12}>
                   <TextField
                     name="error"
@@ -149,7 +143,7 @@ const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onC
                   />
                 </Grid>
               ) : null}
-              {form.type === POST_TYPES.BUG_FIX ? (
+              {form.type === POST_TYPES.BUG_FIX.value ? (
                 <Grid item xs={12}>
                   <TextField
                     name="solution"
