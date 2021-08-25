@@ -5,17 +5,8 @@ const BugFixRepository = require('../repositories/BugFixRepository');
 const bugFixRepository = new BugFixRepository(BugFixModel);
 
 const create = (req, res) => {
-  const bugFix = {
-    owner: req.body.owner,
-    links: req.body.links,
-    topics: req.body.topics,
-    error: req.body.error,
-    solution: req.body.solution,
-    description: req.body.description,
-  };
-
-  const result = bugFixRepository.create(bugFix);
-  res.send(result);
+  const result = bugFixRepository.create(req.body);
+  res.json({ message: result });
 };
 
 const findAll = async (_, res) => {

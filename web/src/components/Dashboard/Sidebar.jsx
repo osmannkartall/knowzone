@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -12,6 +12,8 @@ import Button from '@material-ui/core/Button';
 import { GRAY3 } from '../../constants/colors';
 import PostForm from '../../common/PostForm';
 import POST_TYPES from '../../constants/post-types';
+import { preparePost } from '../../utils';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const drawerWidth = 240;
 
@@ -56,11 +58,12 @@ const DrawerItem = ({ text, route, icon }) => (
 const Sidebar = () => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [user] = useContext(AuthContext);
   const [newPost, setNewPost] = useState({
     description: '',
     links: [],
     topics: [],
-    owner: {},
+    owner: { id: user.id, username: user.username, name: user.name },
     error: '',
     solution: '',
     type: POST_TYPES.TIP.value,
@@ -73,7 +76,23 @@ const Sidebar = () => {
   const onClickCreate = () => setOpen(true);
 
   const addPost = () => {
-    console.log(newPost);
+    const { post, route } = preparePost(newPost);
+
+    fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}`, {
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      body: JSON.stringify(post),
+    })
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          console.log(result.message);
+          setOpen(false);
+        },
+        (error) => {
+          console.log(error.message);
+        },
+      );
   };
 
   return (
