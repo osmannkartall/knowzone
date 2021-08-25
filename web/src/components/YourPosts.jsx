@@ -6,6 +6,7 @@ import { GRAY1, GRAY3 } from '../constants/colors';
 import { AuthContext } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
 import POST_TYPES from '../constants/post-types';
+import { preparePost } from '../utils';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,25 +45,13 @@ const YourPosts = () => {
   };
 
   const updatePost = () => {
-    let route = 'tips';
-    const newPost = {
-      description: selectedPost.description,
-      // files: form.files,
-      topics: selectedPost.topics,
-      links: selectedPost.links,
-      owner: selectedPost.owner,
-    };
-    if (selectedPost.type === POST_TYPES.BUG_FIX.value) {
-      newPost.error = selectedPost.error;
-      newPost.solution = selectedPost.solution;
-      route = 'bugFixes';
-    }
+    const { post, route } = preparePost(selectedPost);
     const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
 
     fetch(url, {
       headers: { 'Content-Type': 'application/json' },
       method: 'PUT',
-      body: JSON.stringify(newPost),
+      body: JSON.stringify(post),
     })
       .then((res) => res.json())
       .then(
