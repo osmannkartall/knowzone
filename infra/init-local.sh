@@ -15,7 +15,7 @@ log_green() { printf "\x1B[32m>> %s\x1B[39m\n" "$1"; }
 log_red() { printf "\x1B[31m>> %s\x1B[39m\n" "$1"; }
 log_blue() { printf "\x1B[94m>> %s\x1B[39m\n" "$1"; }
 
-if [[ "${#}" -gt 2 ]]
+if [[ "${#}" -gt 1 ]]
 then
     log_red "Invalid option. Type '`basename ${0}` help' for available commands."
     exit 1
@@ -36,7 +36,6 @@ interactive() {
         then
             deploy-secret
             deploy-mongo
-            log_blue "MongoDB initialization may take a few minutes after deployment."
             log_green "Run development environment with Tilt? [y/N]"
             read -p "" -n 1 -r
             echo
@@ -143,23 +142,12 @@ case "${1}" in
         interactive
         exit 0
         ;;
-    create-cluster)
-        create-cluster
-        exit 0
-        ;;
-    prepare)
-        generate-manifests
-        deploy-secret
-        deploy-mongo
-        exit 0
-        ;;
-    #start)
     clean)
         cleanup
         exit 0
         ;;
     help | -h | --help)
-        log_green "Usage: `basename ${0}` [generate|deploy|clean|help] [args ...]"
+        log_green "Usage: `basename ${0}` [run|clean|help]"
         log_green "Script to build and deploy Knowzone project on local machine."
         exit 0
         ;;
