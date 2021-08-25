@@ -13,7 +13,7 @@ class BaseRepository {
   }
 
   async findAll() {
-    const records = await this.model.find({});
+    const records = await this.model.find({}, null, { sort: { createdAt: -1 } });
     return records;
   }
 
