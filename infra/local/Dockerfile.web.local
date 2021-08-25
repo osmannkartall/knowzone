@@ -1,0 +1,19 @@
+# React app
+FROM node:14.17.4-alpine3.14
+WORKDIR /app
+
+COPY web/package*.json ./
+RUN npm i npm@7.21.0 -g 
+RUN npm install
+COPY web/ ./
+
+# ARG is passed upon build time
+ARG KNOWZONE_BE_URI
+ENV REACT_APP_KNOWZONE_BE_URI=${KNOWZONE_BE_URI}
+#ENV DISABLE_ESLINT_PLUGIN=true
+ENV ESLINT_NO_DEV_ERRORS=true
+ENV PORT=3000
+
+EXPOSE 3000
+
+ENTRYPOINT ["npm", "start"]

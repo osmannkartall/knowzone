@@ -1,0 +1,28 @@
+### Backend
+
+docker_build(
+  'localhost:5000/knowzone-backend',
+  '..', # build context,
+  dockerfile='local/Dockerfile.server.local',
+  live_update=[
+    fall_back_on(['../server/package.json', '../server/package-lock.json']),
+    sync('../server/', '/opt/node_app'),
+  ])
+
+k8s_yaml('local/generated/backend.yaml')
+k8s_resource('backend', port_forwards=8000)
+
+### Frontend
+
+docker_build(
+  'localhost:5000/knowzone-frontend',
+  '..', # build context,
+  dockerfile='local/Dockerfile.web.local',
+  build_args={'KNOWZONE_BE_URI':'http://localhost:8000/api'},
+  live_update=[
+    fall_back_on(['../web/package.json', '../web/package-lock.json']),
+    sync('../web/', '/app'),
+  ])
+
+k8s_yaml('local/generated/frontend.yaml')
+k8s_resource('frontend', port_forwards='3000:3000')
