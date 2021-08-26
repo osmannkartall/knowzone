@@ -36,6 +36,9 @@ interactive() {
         then
             deploy-secret
             deploy-mongo
+            log_blue "You can reach MongoDB on port 27018 with 'kubectl port-forward mongodb-0'"
+            log_blue "Use below connection string to interact with MongoDB instance after port forwarding"
+            log_blue "mongodb://kz-user:simplepassword@localhost:27018/admin?ssl=false"
             log_green "Run development environment with Tilt? [y/N]"
             read -p "" -n 1 -r
             echo

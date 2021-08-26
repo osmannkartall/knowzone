@@ -26,5 +26,3 @@ docker_build(
 
 k8s_yaml('local/generated/frontend.yaml')
 k8s_resource('frontend', port_forwards='3000:3000')
-
-local_resource('mongo-port-forward', 'kubectl port-forward mongodb-0 27018:27017')
