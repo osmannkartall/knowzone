@@ -15,7 +15,13 @@ const getPostsByOwner = async (req, res) => {
   }
 };
 
+/* eslint-disable no-unused-vars */
+const filter = async (req, res) => {
+  console.log(req.body);
+};
+
 // Retrieve all posts by owner
 router.get('/', getPostsByOwner);
+router.post('/filter', filter);
 
 module.exports = router;
