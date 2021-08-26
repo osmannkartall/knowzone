@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Popover, IconButton, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
@@ -59,6 +59,7 @@ const SearchBar = ({ searchText, handleChange, options }) => {
   const classes = useStyles();
   const openSearch = Boolean(anchorElSearch);
   const history = useHistory();
+  const [historyChanged, setHistoryChanged] = useState(false);
   const [searchOptions, setSearchOptions] = useState({
     postType: '',
     error: '',
@@ -99,6 +100,13 @@ const SearchBar = ({ searchText, handleChange, options }) => {
     });
   };
 
+  useEffect(() => {
+    if (historyChanged) {
+      handleResetOnClick();
+      setHistoryChanged(false);
+    }
+  }, [historyChanged]);
+
   const search = () => {
     // Copy state object with spread operator to not mutate itself.
     const tempSearchOptions = { ...searchOptions };
@@ -108,16 +116,14 @@ const SearchBar = ({ searchText, handleChange, options }) => {
         delete tempSearchOptions[key];
       }
     });
-    const params = new URLSearchParams(tempSearchOptions);
     if (searchText) {
-      params.append('searchText', searchText);
+      tempSearchOptions.searchText = searchText;
     }
 
     handleCloseSearch();
-    history.push({
-      pathname: '/search-results',
-      search: params.toString(),
-    });
+    const data = JSON.parse(JSON.stringify(tempSearchOptions));
+    history.replace('/search-results', data);
+    setHistoryChanged(true);
   };
 
   const handleSearchOnClick = () => {

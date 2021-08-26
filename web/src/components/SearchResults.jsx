@@ -1,16 +1,8 @@
-import { React, useState, useEffect } from 'react';
+import { React, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const SearchResults = () => {
   const location = useLocation();
-  const queryString = location.search;
-  const queryParamsParser = new URLSearchParams(queryString);
-  const queryParams = {};
-  queryParamsParser.forEach((v, k) => {
-    queryParams[k] = v;
-  });
-
-  console.log(queryParams);
 
   useEffect(() => {
     const route = 'search/filter';
@@ -19,12 +11,11 @@ const SearchResults = () => {
     fetch(url, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      body: JSON.stringify(queryParams),
+      body: JSON.stringify(location.state),
     })
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [location]);
 
   return (
     <div>

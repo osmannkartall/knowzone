@@ -18,6 +18,9 @@ const getPostsByOwner = async (req, res) => {
 /* eslint-disable no-unused-vars */
 const filter = async (req, res) => {
   console.log(req.body);
+  res.status(200).send({
+    message: 'sj',
+  });
 };
 
 // Retrieve all posts by owner
