@@ -150,6 +150,7 @@ const SearchOptions = ({
                   value={options.createdStartDate}
                   placeholder="Enter Date"
                   onChange={handleDateChange('createdStartDate')}
+                  maxDate={options.createdEndDate}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
@@ -169,6 +170,8 @@ const SearchOptions = ({
                   value={options.createdEndDate}
                   placeholder="Enter Date"
                   onChange={handleDateChange('createdEndDate')}
+                  minDate={options.createdStartDate}
+                  maxDate={Date.now()}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
@@ -192,6 +195,8 @@ const SearchOptions = ({
                   value={options.modifiedStartDate}
                   placeholder="Enter Date"
                   onChange={handleDateChange('modifiedStartDate')}
+                  minDate={options.createdStartDate}
+                  maxDate={options.modifiedEndDate}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
@@ -211,6 +216,8 @@ const SearchOptions = ({
                   value={options.modifiedEndDate}
                   placeholder="Enter Date"
                   onChange={handleDateChange('modifiedEndDate')}
+                  minDate={options.modifiedStartDate}
+                  maxDate={Date.now()}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
