@@ -1,5 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
 const TipModel = require('../models/Tip');
+const BugFixModel = require('../models/BugFix');
 
 class SearchService {
   // eslint-disable-next-line class-methods-use-this
@@ -21,6 +22,12 @@ class SearchService {
     ]);
 
     return posts;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async filter(info) {
+    console.log(info);
+    return { foo: 'bar' };
   }
 }
 

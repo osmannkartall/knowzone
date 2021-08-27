@@ -13,8 +13,9 @@ const SearchResults = () => {
       method: 'POST',
       body: JSON.stringify(location.state),
     })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+      .then((response) => response.json())
+      .then((data) => console.log(data.message))
+      .catch((error) => console.log(error));
   }, [location]);
 
   return (

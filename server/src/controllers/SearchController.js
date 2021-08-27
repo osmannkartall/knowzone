@@ -15,12 +15,16 @@ const getPostsByOwner = async (req, res) => {
   }
 };
 
-/* eslint-disable no-unused-vars */
 const filter = async (req, res) => {
-  console.log(req.body);
-  res.status(200).send({
-    message: 'sj',
-  });
+  const info = req.body;
+  if (info) {
+    const result = await searchService.filter(info);
+    res.json(result);
+  } else {
+    res.status(500).send({
+      message: 'No search filter info',
+    });
+  }
 };
 
 // Retrieve all posts by owner
