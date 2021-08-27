@@ -26,8 +26,6 @@ class SearchService {
 
   // eslint-disable-next-line class-methods-use-this
   async filter(info) {
-    const dateKeys = ['createdStartDate', 'createdEndDate', 'modifiedStartDate', 'modifiedEndDate'];
-
     let searchQuery = null;
     if ('searchText' in info) {
       searchQuery = { $regex: `\\b${info.searchText.trim()}\\b`, $options: 'i' };
@@ -64,7 +62,8 @@ class SearchService {
 
     if (!Object.keys(filterQuery.createdAt).length) {
       delete filterQuery.createdAt;
-    } else if (!Object.keys(filterQuery.updatedAt).length) {
+    }
+    if (!Object.keys(filterQuery.updatedAt).length) {
       delete filterQuery.updatedAt;
     }
 
@@ -89,14 +88,15 @@ class SearchService {
     }
 
     if (postType === 'bugFix') {
-      return BugFixModel.find(query).sort({ createdAt: -1, updatedAt: -1 });
+      return BugFixModel.find(query).sort({ createdAt: -1 });
       // eslint-disable-next-line no-else-return
     } else if (postType === 'tip') {
-      return TipModel.find(query).sort({ createdAt: -1, updatedAt: -1 });
+      return TipModel.find(query).sort({ createdAt: -1 });
     }
     const bugFixPosts = await BugFixModel.find(query);
     const tipPosts = await TipModel.find(query);
     const posts = Array.from(new Set(bugFixPosts.concat(tipPosts)));
+    posts.sort((a, b) => (new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1));
     return posts;
   }
 }
