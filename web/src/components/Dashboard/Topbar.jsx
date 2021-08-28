@@ -10,6 +10,7 @@ import Menu from '@material-ui/core/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { GRAY1, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
 import SearchBar from '../SearchBar';
+import { YOUR_POSTS } from '../../constants/frontend-routes';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -48,7 +49,7 @@ const Topbar = () => {
 
   const onClickYourPosts = () => {
     handleClose();
-    history.push('your-posts');
+    history.push(YOUR_POSTS);
   };
 
   const onClickAccount = () => {

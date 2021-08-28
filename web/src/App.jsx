@@ -8,6 +8,8 @@ import YourPosts from './components/YourPosts';
 import SearchResults from './components/SearchResults';
 import { PRIMARY, WHITE } from './constants/colors';
 import { AuthContext, AuthProvider } from './contexts/AuthContext';
+import { TIPS, BUG_FIXES, YOUR_POSTS, SEARCH_RESULTS } from './constants/frontend-routes';
+import { LOGIN } from './constants/api-routes';
 
 const theme = createTheme({
   palette: {
@@ -28,7 +30,7 @@ const Wrapper = () => {
     let mounted = true;
 
     if (mounted) {
-      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/login`, { method: 'POST' })
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${LOGIN}`, { method: 'POST' })
         .then((res) => res.json())
         .then(
           (result) => {
@@ -55,18 +57,18 @@ const Wrapper = () => {
     <BrowserRouter>
       <Switch>
         <Route exact path="/">
-          <Redirect to="/tips" />
+          <Redirect to={`/${TIPS}`} />
         </Route>
-        <Route path="/bug-fixes">
+        <Route path={`/${BUG_FIXES}`}>
           <Dashboard><BugFixes /></Dashboard>
         </Route>
-        <Route path="/tips">
+        <Route path={`/${TIPS}`}>
           <Dashboard><Tips /></Dashboard>
         </Route>
-        <Route path="/your-posts">
+        <Route path={`/${YOUR_POSTS}`}>
           <Dashboard><YourPosts /></Dashboard>
         </Route>
-        <Route path="/search-results">
+        <Route path={`/${SEARCH_RESULTS}`}>
           <Dashboard><SearchResults /></Dashboard>
         </Route>
         {/* <Dashboard /> */}

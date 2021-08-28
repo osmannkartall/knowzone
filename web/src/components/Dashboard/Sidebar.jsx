@@ -14,6 +14,7 @@ import PostForm from '../../common/PostForm';
 import POST_TYPES from '../../constants/post-types';
 import { preparePost } from '../../utils';
 import { AuthContext } from '../../contexts/AuthContext';
+import { BUG_FIXES, TIPS } from '../../constants/frontend-routes';
 
 const drawerWidth = 240;
 
@@ -44,8 +45,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const drawerItemNames = [
-  { text: 'Tips', route: '/tips', icon: <NoteOutlined /> },
-  { text: 'Bug Fixes', route: '/bug-fixes', icon: <BugReportOutlined /> },
+  { text: 'Tips', route: `/${TIPS}`, icon: <NoteOutlined /> },
+  { text: 'Bug Fixes', route: `/${BUG_FIXES}`, icon: <BugReportOutlined /> },
 ];
 
 const DrawerItem = ({ text, route, icon }) => (
