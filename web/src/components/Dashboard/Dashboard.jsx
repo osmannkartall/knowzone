@@ -1,5 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Topbar from './Topbar';
 import Sidebar from './Sidebar';
 
@@ -26,6 +28,7 @@ const Dashboard = ({ children }) => {
         <div className={classes.toolbar} />
         {children}
       </main>
+      <ToastContainer />
     </div>
   );
 };

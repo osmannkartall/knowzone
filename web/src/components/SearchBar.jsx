@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Popover, IconButton, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import TuneIcon from '@material-ui/icons/Tune';
+import { toast } from 'react-toastify';
 import SearchOptions from './SearchOptions';
 import { GRAY1, GRAY2, GRAY3, PRIMARY } from '../constants/colors';
 
@@ -100,6 +101,33 @@ const SearchBar = ({ searchText, handleChange, options }) => {
     });
   };
 
+  const checkAllSearchOptions = () => (
+    searchOptions.postType
+    || searchOptions.error
+    || searchOptions.solution
+    || searchOptions.description
+    || searchOptions.topics.length
+    || searchOptions.author
+    || searchOptions.createdStartDate
+    || searchOptions.createdEndDate
+    || searchOptions.modifiedStartDate
+    || searchOptions.modifiedEndDate
+    || searchText
+  );
+
+  const checkDates = () => {
+    if ((searchOptions.createdStartDate && searchOptions.createdEndDate)
+      && (searchOptions.createdStartDate > searchOptions.createdEndDate)) {
+      console.log(searchOptions.createdStartDate, searchOptions.createdEndDate);
+      return false;
+    }
+    if ((searchOptions.modifiedStartDate && searchOptions.modifiedEndDate)
+      && (searchOptions.modifiedStartDate > searchOptions.modifiedEndDate)) {
+      return false;
+    }
+    return true;
+  };
+
   useEffect(() => {
     if (historyChanged) {
       handleResetOnClick();
@@ -127,7 +155,27 @@ const SearchBar = ({ searchText, handleChange, options }) => {
   };
 
   const handleSearchOnClick = () => {
-    search();
+    if (!checkAllSearchOptions()) {
+      toast.error('Could not search! Type what to search or specify search options.', {
+        position: 'bottom-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: false,
+        progress: undefined,
+      });
+    } else if (!checkDates()) {
+      toast.error('Invalid dates!', {
+        position: 'bottom-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: false,
+        progress: undefined,
+      });
+    } else {
+      search();
+    }
   };
 
   const handleOnPressEnter = (event) => {

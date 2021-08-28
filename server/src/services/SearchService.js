@@ -48,13 +48,21 @@ class SearchService {
       } else if (k === 'topics') {
         filterQuery[k] = { $in: v.map((topic) => new RegExp(`\\b${topic.trim()}\\b`, 'i')) };
       } else if (k === 'createdStartDate') {
-        filterQuery.createdAt.$gte = new Date(info.createdStartDate);
+        const date = new Date(info.createdStartDate);
+        date.setUTCHours(0, 0, 0, 0);
+        filterQuery.createdAt.$gte = date;
       } else if (k === 'createdEndDate') {
-        filterQuery.createdAt.$lte = new Date(info.createdEndDate);
+        const date = new Date(info.createdEndDate);
+        date.setUTCHours(23, 59, 59, 999);
+        filterQuery.createdAt.$lte = date;
       } else if (k === 'modifiedStartDate') {
-        filterQuery.updatedAt.$gte = new Date(info.modifiedStartDate);
+        const date = new Date(info.modifiedStartDate);
+        date.setUTCHours(0, 0, 0, 0);
+        filterQuery.updatedAt.$gte = date;
       } else if (k === 'modifiedEndDate') {
-        filterQuery.updatedAt.$lte = new Date(info.modifiedEndDate);
+        const date = new Date(info.modifiedEndDate);
+        date.setUTCHours(23, 59, 59, 999);
+        filterQuery.updatedAt.$lte = date;
       } else {
         filterQuery[k] = { $regex: `\\b${v.trim()}\\b`, $options: 'i' };
       }
@@ -87,6 +95,7 @@ class SearchService {
       query = filterQuery;
     }
 
+    console.log(query);
     if (postType === 'bugFix') {
       return BugFixModel.find(query).sort({ createdAt: -1 });
       // eslint-disable-next-line no-else-return

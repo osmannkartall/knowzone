@@ -7,7 +7,6 @@ import TextField from '@material-ui/core/TextField';
 import DateFnsUtils from '@date-io/date-fns';
 import Typography from '@material-ui/core/Typography';
 
-import 'date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
