@@ -127,8 +127,14 @@ const Post = ({
   onClickDelete,
 }) => {
   const classes = useStyles();
-  const lastModifiedDateInfo = `Last Modified ${content.lastModifiedDate}`;
-  const insertDateInfo = `Created ${content.insertDate}`;
+
+  const convertDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return `${date.toLocaleString('en-GB')}`;
+  };
+
+  const lastModifiedDateInfo = `Last Modified ${convertDate(content.lastModifiedDate)}`;
+  const insertDateInfo = `Created ${convertDate(content.insertDate)}`;
 
   return (
     <Grid item xs={8}>
