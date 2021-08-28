@@ -118,7 +118,6 @@ const SearchBar = ({ searchText, handleChange, options }) => {
   const checkDates = () => {
     if ((searchOptions.createdStartDate && searchOptions.createdEndDate)
       && (searchOptions.createdStartDate > searchOptions.createdEndDate)) {
-      console.log(searchOptions.createdStartDate, searchOptions.createdEndDate);
       return false;
     }
     if ((searchOptions.modifiedStartDate && searchOptions.modifiedEndDate)
