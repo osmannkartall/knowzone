@@ -1,0 +1,43 @@
+name: Build and deploy backend to AKS
+
+on: workflow_dispatch
+
+env:
+  REGISTRY_NAME: ${{ secrets.REGISTRY_NAME }}
+  VERSION: ${{ github.sha }}
+  BACKEND_LB_PREFIX: ${{ secrets.BACKEND_LB_PREFIX }}
+  FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.REGISTRY_NAME }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Build and push image to ACR
+      id: build-image
+      run: |
+        docker build . -f infra/Dockerfile.server -t ${REGISTRY_NAME}/knowzone-backend:${VERSION}
+        docker push ${REGISTRY_NAME}/knowzone-backend:${VERSION}
+
+    - uses: azure/k8s-set-context@v1
+      with:
+        kubeconfig: ${{ secrets.KUBECONFIG }}
+      id: login
+
+    - name: Edit template manifests
+      run: |
+        envsubst < infra/k8s-manifests/backend-template.yaml > infra/k8s-manifests/backend.yaml
+
+    - uses: azure/k8s-deploy@v1
+      with:
+        namespace: default
+        manifests: |
+          infra/k8s-manifests/backend.yaml
