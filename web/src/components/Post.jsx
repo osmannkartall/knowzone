@@ -128,10 +128,7 @@ const Post = ({
 }) => {
   const classes = useStyles();
 
-  const convertDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return `${date.toLocaleString('en-GB')}`;
-  };
+  const convertDate = (dateStr) => new Date(dateStr).toLocaleString('en-GB');
 
   const lastModifiedDateInfo = `Last Modified ${convertDate(content.lastModifiedDate)}`;
   const insertDateInfo = `Created ${convertDate(content.insertDate)}`;
