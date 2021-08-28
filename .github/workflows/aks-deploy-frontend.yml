@@ -1,4 +1,4 @@
-name: Build and deploy to AKS
+name: Build and deploy frontend to AKS
 
 on: workflow_dispatch
 
@@ -35,7 +35,6 @@ jobs:
     - name: Edit template manifests
       run: |
         envsubst < infra/k8s-manifests/frontend-template.yaml > infra/k8s-manifests/frontend.yaml
-
 
     - uses: azure/k8s-deploy@v1
       with:
