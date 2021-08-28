@@ -6,6 +6,7 @@ import Tips from './components/Tips';
 import BugFixes from './components/BugFixes';
 import YourPosts from './components/YourPosts';
 import SearchResults from './components/SearchResults';
+import NotFound from './components/NotFound';
 import { PRIMARY, WHITE } from './constants/colors';
 import { AuthContext, AuthProvider } from './contexts/AuthContext';
 
@@ -70,6 +71,7 @@ const Wrapper = () => {
           <Dashboard><SearchResults /></Dashboard>
         </Route>
         {/* <Dashboard /> */}
+        <Route component={NotFound} />
       </Switch>
     </BrowserRouter>
   );
