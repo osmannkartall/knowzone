@@ -4,6 +4,7 @@ FROM node:14.17.4-alpine3.14 as build
 WORKDIR /app
 
 COPY web/package*.json ./
+RUN npm i npm@7.21.0 -g 
 RUN npm ci
 COPY web/ ./
 
