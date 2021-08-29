@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Popover, IconButton, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import TuneIcon from '@material-ui/icons/Tune';
+import { toast } from 'react-toastify';
 import SearchOptions from './SearchOptions';
 import { GRAY1, GRAY2, GRAY3, PRIMARY } from '../constants/colors';
 
@@ -59,6 +60,7 @@ const SearchBar = ({ searchText, handleChange, options }) => {
   const classes = useStyles();
   const openSearch = Boolean(anchorElSearch);
   const history = useHistory();
+  const [historyChanged, setHistoryChanged] = useState(false);
   const [searchOptions, setSearchOptions] = useState({
     postType: '',
     error: '',
@@ -99,6 +101,39 @@ const SearchBar = ({ searchText, handleChange, options }) => {
     });
   };
 
+  const checkAllSearchOptions = () => (
+    searchOptions.postType
+    || searchOptions.error
+    || searchOptions.solution
+    || searchOptions.description
+    || searchOptions.topics.length
+    || searchOptions.author
+    || searchOptions.createdStartDate
+    || searchOptions.createdEndDate
+    || searchOptions.modifiedStartDate
+    || searchOptions.modifiedEndDate
+    || searchText
+  );
+
+  const checkDates = () => {
+    if ((searchOptions.createdStartDate && searchOptions.createdEndDate)
+      && (searchOptions.createdStartDate > searchOptions.createdEndDate)) {
+      return false;
+    }
+    if ((searchOptions.modifiedStartDate && searchOptions.modifiedEndDate)
+      && (searchOptions.modifiedStartDate > searchOptions.modifiedEndDate)) {
+      return false;
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    if (historyChanged) {
+      handleResetOnClick();
+      setHistoryChanged(false);
+    }
+  }, [historyChanged]);
+
   const search = () => {
     // Copy state object with spread operator to not mutate itself.
     const tempSearchOptions = { ...searchOptions };
@@ -108,20 +143,38 @@ const SearchBar = ({ searchText, handleChange, options }) => {
         delete tempSearchOptions[key];
       }
     });
-    const params = new URLSearchParams(tempSearchOptions);
     if (searchText) {
-      params.append('searchText', searchText);
+      tempSearchOptions.searchText = searchText;
     }
 
     handleCloseSearch();
-    history.push({
-      pathname: '/search-results',
-      search: params.toString(),
-    });
+    const data = JSON.parse(JSON.stringify(tempSearchOptions));
+    history.replace('/search-results', data);
+    setHistoryChanged(true);
   };
 
   const handleSearchOnClick = () => {
-    search();
+    if (!checkAllSearchOptions()) {
+      toast.error('Could not search! Type what to search or specify search options.', {
+        position: 'bottom-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: false,
+        progress: undefined,
+      });
+    } else if (!checkDates()) {
+      toast.error('Invalid dates!', {
+        position: 'bottom-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: false,
+        progress: undefined,
+      });
+    } else {
+      search();
+    }
   };
 
   const handleOnPressEnter = (event) => {

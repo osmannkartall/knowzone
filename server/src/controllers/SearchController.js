@@ -15,7 +15,20 @@ const getPostsByOwner = async (req, res) => {
   }
 };
 
+const filter = async (req, res) => {
+  const info = req.body;
+  if (info) {
+    const result = await searchService.filter(info);
+    res.json(result);
+  } else {
+    res.status(500).send({
+      message: 'No search filter info',
+    });
+  }
+};
+
 // Retrieve all posts by owner
 router.get('/', getPostsByOwner);
+router.post('/filter', filter);
 
 module.exports = router;

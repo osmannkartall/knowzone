@@ -7,7 +7,6 @@ import TextField from '@material-ui/core/TextField';
 import DateFnsUtils from '@date-io/date-fns';
 import Typography from '@material-ui/core/Typography';
 
-import 'date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
@@ -150,6 +149,7 @@ const SearchOptions = ({
                   value={options.createdStartDate}
                   placeholder="Enter Date"
                   onChange={handleDateChange('createdStartDate')}
+                  maxDate={options.createdEndDate}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
@@ -169,6 +169,8 @@ const SearchOptions = ({
                   value={options.createdEndDate}
                   placeholder="Enter Date"
                   onChange={handleDateChange('createdEndDate')}
+                  minDate={options.createdStartDate}
+                  maxDate={Date.now()}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
@@ -192,6 +194,8 @@ const SearchOptions = ({
                   value={options.modifiedStartDate}
                   placeholder="Enter Date"
                   onChange={handleDateChange('modifiedStartDate')}
+                  minDate={options.createdStartDate}
+                  maxDate={options.modifiedEndDate}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
@@ -211,6 +215,8 @@ const SearchOptions = ({
                   value={options.modifiedEndDate}
                   placeholder="Enter Date"
                   onChange={handleDateChange('modifiedEndDate')}
+                  minDate={options.modifiedStartDate}
+                  maxDate={Date.now()}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
