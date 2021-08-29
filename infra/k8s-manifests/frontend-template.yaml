@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: frontend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: frontend
@@ -17,26 +17,11 @@ spec:
         image: ${REGISTRY_NAME}/knowzone-frontend:${VERSION}
         resources:
           requests:
-            memory: "128Mi"
-            cpu: "200m"
-          limits:
             memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /index.html
-            port: 80
-          initialDelaySeconds: 15
-          timeoutSeconds: 2
-          periodSeconds: 5
-          failureThreshold: 1
-        readinessProbe:
-          httpGet:
-            path: /index.html
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 5
-          failureThreshold: 1
+            cpu: "1400m"
+          limits:
+            memory: "768Mi"
+            cpu: "2000m"
         ports:
         - containerPort: 80
         imagePullPolicy: Always

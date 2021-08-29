@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -20,8 +20,23 @@ spec:
             memory: "128Mi"
             cpu: "200m"
           limits:
-            memory: "512Mi"
+            memory: "256Mi"
             cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 15
+          timeoutSeconds: 2
+          periodSeconds: 5
+          failureThreshold: 2
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          failureThreshold: 2
         ports:
         - containerPort: 8000
         env:
