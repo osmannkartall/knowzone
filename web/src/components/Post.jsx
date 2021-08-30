@@ -9,6 +9,7 @@ import { Divider } from '@material-ui/core';
 import { GRAY3, GRAY4, PRIMARY } from '../constants/colors';
 import TagPicker from '../common/TagPicker/TagPicker';
 import POST_TYPES from '../constants/post-types';
+import { convertDate } from '../utils';
 
 const useStyles = makeStyles((theme) => ({
   gridContainer: {
@@ -127,8 +128,6 @@ const Post = ({
   onClickDelete,
 }) => {
   const classes = useStyles();
-
-  const convertDate = (dateStr) => new Date(dateStr).toLocaleString('en-GB');
 
   const lastModifiedDateInfo = `Last Modified ${convertDate(content.lastModifiedDate)}`;
   const insertDateInfo = `Created ${convertDate(content.insertDate)}`;
