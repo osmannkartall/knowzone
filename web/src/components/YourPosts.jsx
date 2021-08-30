@@ -22,8 +22,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const image = 'https://www.cgi.com/sites/default/files/styles/hero_banner/public/space_astronaut.jpg?itok=k2oFRHrr';
-
 const YourPosts = () => {
   const [posts, setPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState({});
