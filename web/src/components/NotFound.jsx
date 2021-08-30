@@ -68,7 +68,11 @@ const NotFound = () => {
         404 - Page not found
       </h1>
       <p className={classes.message}>
-        The page you are looking for might have been removed or is temporarily unavailable.
+        The requested URL
+        {' '}
+        <b>{window.location.pathname}</b>
+        {' '}
+        was not found.
       </p>
       <Link to="/">
         <Button className={classes.button}>
