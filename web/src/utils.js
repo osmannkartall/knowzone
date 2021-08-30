@@ -26,16 +26,23 @@ export function convertDate(dateStr) {
   return new Date(dateStr).toLocaleString('en-GB');
 }
 
-export function bufferToBase64(content) {
-  if (content.data) {
+/**
+ * Converts buffer to Base64 string or returns itself if it is Base64 string already.
+ * Note: It is useful if the buffer used in the components comes from the backend in different ways.
+ * @param {(string|Object)} buffer - Buffer
+ * @param {(Object)} buffer.data - Buffer as byte array
+ * @returns Returns Base64 string representation of buffer.
+ */
+export function bufferToBase64(buffer) {
+  if (buffer.data) {
     return btoa(
-      content.data.reduce((data, byte) => data + String.fromCharCode(byte), ''),
+      buffer.data.reduce((data, byte) => data + String.fromCharCode(byte), ''),
     );
   }
-  return content;
+  return buffer;
 }
 
-export function createFileFromBase64(item) {
+export function createFile(item) {
   const c = bufferToBase64(item.content);
   const byteString = atob(c);
   const ab = byteString.length;

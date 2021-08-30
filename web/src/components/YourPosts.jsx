@@ -6,7 +6,7 @@ import { GRAY1, GRAY3 } from '../constants/colors';
 import { AuthContext } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
 import POST_TYPES from '../constants/post-types';
-import { preparePost, createFileFromBase64 } from '../utils';
+import { preparePost, createFile } from '../utils';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,7 +53,7 @@ const YourPosts = () => {
 
         for (let j = 0; j < v.length; j++) {
           if (!(v[j] instanceof File)) {
-            copyV[j] = createFileFromBase64(v[j]);
+            copyV[j] = createFile(v[j]);
           }
         }
         copyV.forEach((item) => {
