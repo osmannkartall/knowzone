@@ -55,11 +55,12 @@ const DrawerItem = ({ text, route, icon }) => (
   </ListItem>
 );
 
+
 const Sidebar = () => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [user] = useContext(AuthContext);
-  const [newPost, setNewPost] = useState({
+  const emptyPost = {
     description: '',
     links: [],
     topics: [],
@@ -68,7 +69,8 @@ const Sidebar = () => {
     error: '',
     solution: '',
     type: POST_TYPES.TIP.value,
-  });
+  };
+  const [newPost, setNewPost] = useState(emptyPost);
 
   const handleChangeForm = (key, value) => {
     setNewPost((prevState) => ({ ...prevState, [key]: value }));
@@ -103,6 +105,7 @@ const Sidebar = () => {
         (result) => {
           console.log(result.message);
           setOpen(false);
+          setNewPost(emptyPost);
         },
         (error) => {
           console.log(error.message);
