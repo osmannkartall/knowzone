@@ -6,6 +6,10 @@ const tipSchema = new mongoose.Schema(
     links: [String],
     topics: [String],
     description: String,
+    images: [{
+      name: String,
+      data: Buffer,
+    }],
   },
   { timestamps: true },
 );

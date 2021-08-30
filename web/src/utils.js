@@ -5,7 +5,7 @@ export function preparePost(form) {
   let route;
   const post = {
     description: form.description,
-    // files: form.files,
+    files: form.files,
     topics: form.topics,
     links: form.links,
     owner: form.owner,

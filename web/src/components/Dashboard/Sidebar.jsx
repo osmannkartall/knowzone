@@ -63,6 +63,7 @@ const Sidebar = () => {
     description: '',
     links: [],
     topics: [],
+    files: [],
     owner: { id: user.id, username: user.username, name: user.name },
     error: '',
     solution: '',
@@ -78,10 +79,21 @@ const Sidebar = () => {
   const addPost = () => {
     const { post, route } = preparePost(newPost);
 
+    const fd = new FormData();
+
+    Object.entries(post).forEach(([k, v]) => {
+      if (k === 'files') {
+        v.forEach((item) => {
+          fd.append('file', item);
+        });
+      } else {
+        fd.append(k, JSON.stringify(v));
+      }
+    });
+
     fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}`, {
-      headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      body: JSON.stringify(post),
+      body: fd,
     })
       .then((res) => res.json())
       .then(

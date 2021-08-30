@@ -1,12 +1,31 @@
 const router = require('express').Router();
+const multer = require('multer');
 const TipModel = require('../models/Tip');
 const TipRepository = require('../repositories/TipRepository');
 
 const tipRepository = new TipRepository(TipModel);
+const upload = multer({ storage: multer.memoryStorage() });
 
 const create = (req, res) => {
-  // example usage: Don't send all the data in req.body to the service/repository layer.
-  const result = tipRepository.create(req.body);
+  const tip = {};
+  const images = [];
+
+  if (req.body) {
+    Object.entries(req.body).forEach(([k, v]) => {
+      tip[k] = JSON.parse(v);
+    });
+  }
+
+  if (req.files) {
+    req.files.forEach((f) => {
+      if (f.originalname && f.buffer) {
+        images.push({ name: f.originalname, data: f.buffer });
+      }
+    });
+    tip.images = images;
+  }
+
+  const result = tipRepository.create(tip);
   res.json({ message: result });
 };
 
@@ -37,7 +56,7 @@ const deleteAll = async (_, res) => {
 };
 
 // Create a new tip post
-router.post('/', create);
+router.post('/', upload.array('file'), create);
 
 // Retrieve all tip posts
 router.get('/', findAll);
