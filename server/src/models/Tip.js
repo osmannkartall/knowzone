@@ -8,7 +8,8 @@ const tipSchema = new mongoose.Schema(
     description: String,
     images: [{
       name: String,
-      data: Buffer,
+      content: Buffer,
+      mime: String,
     }],
   },
   { timestamps: true },

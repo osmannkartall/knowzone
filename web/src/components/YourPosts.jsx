@@ -132,7 +132,7 @@ const YourPosts = () => {
               owner={p.owner}
               content={{
                 links: p.links,
-                image,
+                images: p.images,
                 lastModifiedDate: p.updatedAt,
                 insertDate: p.createdAt,
                 topics: p.topics,

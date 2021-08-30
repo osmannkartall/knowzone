@@ -63,7 +63,7 @@ const Sidebar = () => {
     description: '',
     links: [],
     topics: [],
-    files: [],
+    images: [],
     owner: { id: user.id, username: user.username, name: user.name },
     error: '',
     solution: '',
@@ -82,9 +82,9 @@ const Sidebar = () => {
     const fd = new FormData();
 
     Object.entries(post).forEach(([k, v]) => {
-      if (k === 'files') {
+      if (k === 'images') {
         v.forEach((item) => {
-          fd.append('file', item);
+          fd.append('image', item);
         });
       } else {
         fd.append(k, JSON.stringify(v));

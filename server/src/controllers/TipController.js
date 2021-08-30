@@ -18,8 +18,8 @@ const create = (req, res) => {
 
   if (req.files) {
     req.files.forEach((f) => {
-      if (f.originalname && f.buffer) {
-        images.push({ name: f.originalname, data: f.buffer });
+      if (f.originalname && f.buffer && f.mimetype) {
+        images.push({ name: f.originalname, content: f.buffer, mime: f.mimetype });
       }
     });
     tip.images = images;
@@ -56,7 +56,7 @@ const deleteAll = async (_, res) => {
 };
 
 // Create a new tip post
-router.post('/', upload.array('file'), create);
+router.post('/', upload.array('image'), create);
 
 // Retrieve all tip posts
 router.get('/', findAll);

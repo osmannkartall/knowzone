@@ -5,7 +5,7 @@ export function preparePost(form) {
   let route;
   const post = {
     description: form.description,
-    files: form.files,
+    images: form.images,
     topics: form.topics,
     links: form.links,
     owner: form.owner,
@@ -21,6 +21,16 @@ export function preparePost(form) {
 
   return { post, route };
 }
+
 export function convertDate(dateStr) {
   return new Date(dateStr).toLocaleString('en-GB');
+}
+
+export function bufferToBase64(content) {
+  if (content.data) {
+    return btoa(
+      content.data.reduce((data, byte) => data + String.fromCharCode(byte), ''),
+    );
+  }
+  return content;
 }
