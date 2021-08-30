@@ -1,11 +1,31 @@
 const router = require('express').Router();
+const multer = require('multer');
 const BugFixModel = require('../models/BugFix');
 const BugFixRepository = require('../repositories/BugFixRepository');
 
 const bugFixRepository = new BugFixRepository(BugFixModel);
+const upload = multer({ storage: multer.memoryStorage() });
 
 const create = (req, res) => {
-  const result = bugFixRepository.create(req.body);
+  const bugFix = {};
+  const images = [];
+
+  if (req.body) {
+    Object.entries(req.body).forEach(([k, v]) => {
+      bugFix[k] = JSON.parse(v);
+    });
+  }
+
+  if (req.files) {
+    req.files.forEach((f) => {
+      if (f.originalname && f.buffer && f.mimetype) {
+        images.push({ name: f.originalname, content: f.buffer, mime: f.mimetype });
+      }
+    });
+    bugFix.images = images;
+  }
+
+  const result = bugFixRepository.create(bugFix);
   res.json({ message: result });
 };
 
@@ -36,7 +56,7 @@ const deleteAll = async (_, res) => {
 };
 
 // Create a new bug fix post
-router.post('/', create);
+router.post('/', upload.array('image'), create);
 
 // Retrieve all bug fix posts
 router.get('/', findAll);

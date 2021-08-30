@@ -8,6 +8,11 @@ const bugFixSchema = new mongoose.Schema(
     error: String,
     solution: String,
     description: String,
+    images: [{
+      name: String,
+      content: Buffer,
+      mime: String,
+    }],
   },
   { timestamps: true },
 );
