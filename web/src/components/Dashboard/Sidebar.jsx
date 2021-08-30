@@ -78,13 +78,16 @@ const Sidebar = () => {
 
   const addPost = () => {
     const { post, route } = preparePost(newPost);
-
     const fd = new FormData();
 
     Object.entries(post).forEach(([k, v]) => {
       if (k === 'images') {
-        v.forEach((item) => {
-          fd.append('image', item);
+        v.forEach((image) => {
+          if (image.preview) {
+            // Revoke the data uri to avoid memory leaks
+            URL.revokeObjectURL(image.preview);
+          }
+          fd.append('image', image);
         });
       } else {
         fd.append(k, JSON.stringify(v));

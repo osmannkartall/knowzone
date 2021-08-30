@@ -41,8 +41,26 @@ const findById = async (req, res) => {
 };
 
 const updateById = async (req, res) => {
-  const result = await tipRepository.updateById(req.params.id, req.body);
-  res.json({ message: result });
+  const tip = {};
+  const images = [];
+
+  if (req.body) {
+    Object.entries(req.body).forEach(([k, v]) => {
+      tip[k] = JSON.parse(v);
+    });
+  }
+
+  if (req.files) {
+    req.files.forEach((f) => {
+      if (f.originalname && f.buffer && f.mimetype) {
+        images.push({ name: f.originalname, content: f.buffer, mime: f.mimetype });
+      }
+    });
+    tip.images = images;
+  }
+
+  const result = await tipRepository.updateById(req.params.id, tip);
+  res.json(result);
 };
 
 const deleteById = async (req, res) => {
@@ -65,7 +83,7 @@ router.get('/', findAll);
 router.get('/:id', findById);
 
 // Update a tip post with id
-router.put('/:id', updateById);
+router.put('/:id', upload.array('image'), updateById);
 
 // Delete a tip post with id
 router.delete('/:id', deleteById);

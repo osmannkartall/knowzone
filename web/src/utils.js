@@ -34,3 +34,16 @@ export function bufferToBase64(content) {
   }
   return content;
 }
+
+export function createFileFromBase64(item) {
+  const c = bufferToBase64(item.content);
+  const byteString = atob(c);
+  const ab = byteString.length;
+  const ia = new Uint8Array(ab);
+
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+
+  return new File([ia], item.name, { type: item.mime });
+}
