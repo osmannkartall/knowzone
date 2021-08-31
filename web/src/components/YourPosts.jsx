@@ -49,15 +49,12 @@ const YourPosts = () => {
 
     Object.entries(post).forEach(([k, v]) => {
       if (k === 'images') {
-        const copyV = Object.assign([], v);
-
-        for (let j = 0; j < v.length; j++) {
-          if (!(v[j] instanceof File)) {
-            copyV[j] = createFile(v[j]);
+        v.forEach((image) => {
+          let imageObject = image;
+          if (!(image instanceof File)) {
+            imageObject = createFile(image);
           }
-        }
-        copyV.forEach((item) => {
-          fd.append('image', item);
+          fd.append('image', imageObject);
         });
       } else {
         fd.append(k, JSON.stringify(v));
