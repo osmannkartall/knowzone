@@ -6,6 +6,7 @@ import Tips from './components/Tips';
 import BugFixes from './components/BugFixes';
 import YourPosts from './components/YourPosts';
 import SearchResults from './components/SearchResults';
+import NotFound from './components/NotFound';
 import { PRIMARY, WHITE } from './constants/colors';
 import { AuthContext, AuthProvider } from './contexts/AuthContext';
 
@@ -57,19 +58,21 @@ const Wrapper = () => {
         <Route exact path="/">
           <Redirect to="/tips" />
         </Route>
-        <Route path="/bug-fixes">
+        <Route exact path="/bug-fixes">
           <Dashboard><BugFixes /></Dashboard>
         </Route>
-        <Route path="/tips">
+        <Route exact path="/tips">
           <Dashboard><Tips /></Dashboard>
         </Route>
-        <Route path="/your-posts">
+        <Route exact path="/your-posts">
           <Dashboard><YourPosts /></Dashboard>
         </Route>
-        <Route path="/search-results">
+        <Route exact path="/search-results">
           <Dashboard><SearchResults /></Dashboard>
         </Route>
         {/* <Dashboard /> */}
+        <Route exact path="/404" component={NotFound} />
+        <Redirect to="/404" />
       </Switch>
     </BrowserRouter>
   );
