@@ -1,30 +1,12 @@
 const router = require('express').Router();
-const multer = require('multer');
 const BugFixModel = require('../models/BugFix');
 const BugFixRepository = require('../repositories/BugFixRepository');
+const { uploadImages, preparePost } = require('../middlewares/uploader');
 
 const bugFixRepository = new BugFixRepository(BugFixModel);
-const upload = multer({ storage: multer.memoryStorage() });
 
-const create = (req, res) => {
-  const bugFix = {};
-  const images = [];
-
-  if (req.body) {
-    Object.entries(req.body).forEach(([k, v]) => {
-      bugFix[k] = JSON.parse(v);
-    });
-  }
-
-  if (req.files) {
-    req.files.forEach((f) => {
-      if (f.originalname && f.buffer && f.mimetype) {
-        images.push({ name: f.originalname, content: f.buffer, mime: f.mimetype });
-      }
-    });
-    bugFix.images = images;
-  }
-
+const create = (_, res) => {
+  const bugFix = res.locals.post;
   const result = bugFixRepository.create(bugFix);
   res.json({ message: result });
 };
@@ -41,24 +23,7 @@ const findById = async (req, res) => {
 };
 
 const updateById = async (req, res) => {
-  const bugFix = {};
-  const images = [];
-
-  if (req.body) {
-    Object.entries(req.body).forEach(([k, v]) => {
-      bugFix[k] = JSON.parse(v);
-    });
-  }
-
-  if (req.files) {
-    req.files.forEach((f) => {
-      if (f.originalname && f.buffer && f.mimetype) {
-        images.push({ name: f.originalname, content: f.buffer, mime: f.mimetype });
-      }
-    });
-    bugFix.images = images;
-  }
-
+  const bugFix = res.locals.post;
   const result = await bugFixRepository.updateById(req.params.id, bugFix);
   res.json(result);
 };
@@ -74,7 +39,7 @@ const deleteAll = async (_, res) => {
 };
 
 // Create a new bug fix post
-router.post('/', upload.array('image'), create);
+router.post('/', uploadImages, preparePost, create);
 
 // Retrieve all bug fix posts
 router.get('/', findAll);
@@ -83,7 +48,7 @@ router.get('/', findAll);
 router.get('/:id', findById);
 
 // Update a bug fix post with id
-router.put('/:id', upload.array('image'), updateById);
+router.put('/:id', uploadImages, preparePost, updateById);
 
 // Delete a bug fix post with id
 router.delete('/:id', deleteById);

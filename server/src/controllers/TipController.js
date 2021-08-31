@@ -1,30 +1,12 @@
 const router = require('express').Router();
-const multer = require('multer');
 const TipModel = require('../models/Tip');
 const TipRepository = require('../repositories/TipRepository');
+const { uploadImages, preparePost } = require('../middlewares/uploader');
 
 const tipRepository = new TipRepository(TipModel);
-const upload = multer({ storage: multer.memoryStorage() });
 
-const create = (req, res) => {
-  const tip = {};
-  const images = [];
-
-  if (req.body) {
-    Object.entries(req.body).forEach(([k, v]) => {
-      tip[k] = JSON.parse(v);
-    });
-  }
-
-  if (req.files) {
-    req.files.forEach((f) => {
-      if (f.originalname && f.buffer && f.mimetype) {
-        images.push({ name: f.originalname, content: f.buffer, mime: f.mimetype });
-      }
-    });
-    tip.images = images;
-  }
-
+const create = (_, res) => {
+  const tip = res.locals.post;
   const result = tipRepository.create(tip);
   res.json({ message: result });
 };
@@ -41,24 +23,7 @@ const findById = async (req, res) => {
 };
 
 const updateById = async (req, res) => {
-  const tip = {};
-  const images = [];
-
-  if (req.body) {
-    Object.entries(req.body).forEach(([k, v]) => {
-      tip[k] = JSON.parse(v);
-    });
-  }
-
-  if (req.files) {
-    req.files.forEach((f) => {
-      if (f.originalname && f.buffer && f.mimetype) {
-        images.push({ name: f.originalname, content: f.buffer, mime: f.mimetype });
-      }
-    });
-    tip.images = images;
-  }
-
+  const tip = res.locals.post;
   const result = await tipRepository.updateById(req.params.id, tip);
   res.json(result);
 };
@@ -74,7 +39,7 @@ const deleteAll = async (_, res) => {
 };
 
 // Create a new tip post
-router.post('/', upload.array('image'), create);
+router.post('/', uploadImages, preparePost, create);
 
 // Retrieve all tip posts
 router.get('/', findAll);
@@ -83,7 +48,7 @@ router.get('/', findAll);
 router.get('/:id', findById);
 
 // Update a tip post with id
-router.put('/:id', upload.array('image'), updateById);
+router.put('/:id', uploadImages, preparePost, updateById);
 
 // Delete a tip post with id
 router.delete('/:id', deleteById);
