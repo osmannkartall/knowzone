@@ -1,11 +1,13 @@
 const router = require('express').Router();
 const BugFixModel = require('../models/BugFix');
 const BugFixRepository = require('../repositories/BugFixRepository');
+const { uploadImages, preparePost } = require('../middlewares/uploader');
 
 const bugFixRepository = new BugFixRepository(BugFixModel);
 
-const create = (req, res) => {
-  const result = bugFixRepository.create(req.body);
+const create = (_, res) => {
+  const bugFix = res.locals.post;
+  const result = bugFixRepository.create(bugFix);
   res.json({ message: result });
 };
 
@@ -21,8 +23,9 @@ const findById = async (req, res) => {
 };
 
 const updateById = async (req, res) => {
-  const result = await bugFixRepository.updateById(req.params.id, req.body);
-  res.json({ message: result });
+  const bugFix = res.locals.post;
+  const result = await bugFixRepository.updateById(req.params.id, bugFix);
+  res.json(result);
 };
 
 const deleteById = async (req, res) => {
@@ -36,7 +39,7 @@ const deleteAll = async (_, res) => {
 };
 
 // Create a new bug fix post
-router.post('/', create);
+router.post('/', uploadImages, preparePost, create);
 
 // Retrieve all bug fix posts
 router.get('/', findAll);
@@ -45,7 +48,7 @@ router.get('/', findAll);
 router.get('/:id', findById);
 
 // Update a bug fix post with id
-router.put('/:id', updateById);
+router.put('/:id', uploadImages, preparePost, updateById);
 
 // Delete a bug fix post with id
 router.delete('/:id', deleteById);

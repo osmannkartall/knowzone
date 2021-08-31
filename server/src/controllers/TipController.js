@@ -1,12 +1,13 @@
 const router = require('express').Router();
 const TipModel = require('../models/Tip');
 const TipRepository = require('../repositories/TipRepository');
+const { uploadImages, preparePost } = require('../middlewares/uploader');
 
 const tipRepository = new TipRepository(TipModel);
 
-const create = (req, res) => {
-  // example usage: Don't send all the data in req.body to the service/repository layer.
-  const result = tipRepository.create(req.body);
+const create = (_, res) => {
+  const tip = res.locals.post;
+  const result = tipRepository.create(tip);
   res.json({ message: result });
 };
 
@@ -22,8 +23,9 @@ const findById = async (req, res) => {
 };
 
 const updateById = async (req, res) => {
-  const result = await tipRepository.updateById(req.params.id, req.body);
-  res.json({ message: result });
+  const tip = res.locals.post;
+  const result = await tipRepository.updateById(req.params.id, tip);
+  res.json(result);
 };
 
 const deleteById = async (req, res) => {
@@ -37,7 +39,7 @@ const deleteAll = async (_, res) => {
 };
 
 // Create a new tip post
-router.post('/', create);
+router.post('/', uploadImages, preparePost, create);
 
 // Retrieve all tip posts
 router.get('/', findAll);
@@ -46,7 +48,7 @@ router.get('/', findAll);
 router.get('/:id', findById);
 
 // Update a tip post with id
-router.put('/:id', updateById);
+router.put('/:id', uploadImages, preparePost, updateById);
 
 // Delete a tip post with id
 router.delete('/:id', deleteById);

@@ -18,8 +18,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SAMPLE_IMAGE_URL = 'https://www.cgi.com/sites/default/files/styles/hero_banner/public/space_astronaut.jpg?itok=k2oFRHrr';
-
 const Tips = () => {
   const classes = useStyles();
   const [posts, setPosts] = useState([]);
@@ -49,7 +47,7 @@ const Tips = () => {
               owner={p.owner}
               content={{
                 links: p.links,
-                image: SAMPLE_IMAGE_URL,
+                images: p.images,
                 lastModifiedDate: p.updatedAt,
                 insertDate: p.createdAt,
                 topics: p.topics,

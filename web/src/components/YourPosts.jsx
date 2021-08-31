@@ -6,7 +6,7 @@ import { GRAY1, GRAY3 } from '../constants/colors';
 import { AuthContext } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
 import POST_TYPES from '../constants/post-types';
-import { preparePost } from '../utils';
+import { preparePost, createFile } from '../utils';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,8 +21,6 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
 }));
-
-const image = 'https://www.cgi.com/sites/default/files/styles/hero_banner/public/space_astronaut.jpg?itok=k2oFRHrr';
 
 const YourPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -47,23 +45,36 @@ const YourPosts = () => {
   const updatePost = () => {
     const { post, route } = preparePost(selectedPost);
     const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
+    const fd = new FormData();
+
+    Object.entries(post).forEach(([k, v]) => {
+      if (k === 'images') {
+        v.forEach((image) => {
+          let imageObject = image;
+          if (!(image instanceof File)) {
+            imageObject = createFile(image);
+          }
+          fd.append('image', imageObject);
+        });
+      } else {
+        fd.append(k, JSON.stringify(v));
+      }
+    });
 
     fetch(url, {
-      headers: { 'Content-Type': 'application/json' },
       method: 'PUT',
-      body: JSON.stringify(post),
+      body: fd,
     })
       .then((res) => res.json())
       .then(
         (result) => {
-          console.log(result.message);
           setOpen(false);
 
           // Storing selectedPostId as state might avoid findIndex operation.
           const idx = posts.findIndex((p) => p.id === selectedPost.id);
           if (idx !== -1) {
             const newPosts = [...posts];
-            newPosts[idx] = selectedPost;
+            newPosts[idx] = { ...result, type: selectedPost.type };
             setPosts(newPosts);
           }
         },
@@ -132,7 +143,7 @@ const YourPosts = () => {
               owner={p.owner}
               content={{
                 links: p.links,
-                image,
+                images: p.images,
                 lastModifiedDate: p.updatedAt,
                 insertDate: p.createdAt,
                 topics: p.topics,

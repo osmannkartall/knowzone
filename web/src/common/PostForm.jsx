@@ -162,8 +162,8 @@ const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onC
               ) : null}
               <Grid item xs={12}>
                 <FileUploader
-                  files={form.files ? form.files : []}
-                  setFiles={(files) => handleChangeForm('files', files)}
+                  files={form.images}
+                  setFiles={(images) => handleChangeForm('images', images)}
                 />
               </Grid>
               <Grid item xs={12}>
