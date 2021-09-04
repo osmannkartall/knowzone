@@ -7,7 +7,7 @@ import { AuthContext } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
 import POST_TYPES from '../constants/post-types';
 import { preparePost } from '../utils';
-import { SEARCH } from '../constants/api-routes';
+import { BE_ROUTES } from '../constants/routes';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -103,7 +103,7 @@ const YourPosts = () => {
     let mounted = true;
 
     if (mounted) {
-      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${SEARCH}?owner=${user.id}`)
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}?owner=${user.id}`)
         .then((res) => res.json())
         .then(
           (result) => {

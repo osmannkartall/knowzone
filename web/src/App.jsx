@@ -8,8 +8,7 @@ import YourPosts from './components/YourPosts';
 import SearchResults from './components/SearchResults';
 import { PRIMARY, WHITE } from './constants/colors';
 import { AuthContext, AuthProvider } from './contexts/AuthContext';
-import { TIPS, BUG_FIXES, YOUR_POSTS, SEARCH_RESULTS } from './constants/frontend-routes';
-import { LOGIN } from './constants/api-routes';
+import { FE_ROUTES, BE_ROUTES } from './constants/routes';
 
 const theme = createTheme({
   palette: {
@@ -30,7 +29,7 @@ const Wrapper = () => {
     let mounted = true;
 
     if (mounted) {
-      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${LOGIN}`, { method: 'POST' })
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.LOGIN}`, { method: 'POST' })
         .then((res) => res.json())
         .then(
           (result) => {
@@ -57,18 +56,18 @@ const Wrapper = () => {
     <BrowserRouter>
       <Switch>
         <Route exact path="/">
-          <Redirect to={`/${TIPS}`} />
+          <Redirect to={`/${FE_ROUTES.TIPS}`} />
         </Route>
-        <Route path={`/${BUG_FIXES}`}>
+        <Route path={`/${FE_ROUTES.BUG_FIXES}`}>
           <Dashboard><BugFixes /></Dashboard>
         </Route>
-        <Route path={`/${TIPS}`}>
+        <Route path={`/${FE_ROUTES.TIPS}`}>
           <Dashboard><Tips /></Dashboard>
         </Route>
-        <Route path={`/${YOUR_POSTS}`}>
+        <Route path={`/${FE_ROUTES.YOUR_POSTS}`}>
           <Dashboard><YourPosts /></Dashboard>
         </Route>
-        <Route path={`/${SEARCH_RESULTS}`}>
+        <Route path={`/${FE_ROUTES.SEARCH_RESULTS}`}>
           <Dashboard><SearchResults /></Dashboard>
         </Route>
         {/* <Dashboard /> */}

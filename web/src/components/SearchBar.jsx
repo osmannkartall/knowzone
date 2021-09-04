@@ -5,7 +5,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import TuneIcon from '@material-ui/icons/Tune';
 import SearchOptions from './SearchOptions';
 import { GRAY1, GRAY2, GRAY3, PRIMARY } from '../constants/colors';
-import { SEARCH_RESULTS } from '../constants/frontend-routes';
+import { FE_ROUTES } from '../constants/routes';
 
 const SEARCH_WIDTH = 700;
 
@@ -116,7 +116,7 @@ const SearchBar = ({ searchText, handleChange, options }) => {
 
     handleCloseSearch();
     history.push({
-      pathname: SEARCH_RESULTS,
+      pathname: FE_ROUTES.SEARCH_RESULTS,
       search: params.toString(),
     });
   };
