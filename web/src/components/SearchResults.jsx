@@ -27,18 +27,25 @@ const SearchResults = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    const route = 'search/filter';
-    const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}`;
+    let mounted = true;
 
-    fetch(url, {
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
-      body: JSON.stringify(location.state),
-    })
-      .then((response) => response.json())
-      .then((data) => setPosts(data))
-      .catch((error) => console.log(error));
-  }, [location]);
+    if (mounted) {
+      const route = 'search/filter';
+      const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}`;
+
+      fetch(url, {
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        body: JSON.stringify(location.state),
+      })
+        .then((response) => response.json())
+        .then((data) => setPosts(data))
+        .catch((error) => console.log(error));
+    }
+    return function cleanup() {
+      mounted = false;
+    };
+  }, [location.state]);
 
   return (
     <div className={classes.root}>
