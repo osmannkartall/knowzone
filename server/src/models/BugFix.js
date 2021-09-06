@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 const basePostObject = require('./BasePost');
-const { maxLengthMessage } = require('../utils');
+const { maxLengthMessage, transformToJSON } = require('../utils');
 
 const MAX_LEN_ERROR = 4000;
 const MAX_LEN_SOLUTION = 4000;
@@ -26,13 +26,7 @@ const bugFixSchema = new Schema(
   { timestamps: true },
 );
 
-bugFixSchema.set('toJSON', {
-  transform(_, ret) {
-    ret.id = ret._id;
-    delete ret._id;
-    delete ret.__v;
-  },
-});
+transformToJSON(bugFixSchema);
 
 const BugFix = model('BugFix', bugFixSchema);
 

@@ -1,18 +1,13 @@
 const { Schema, model } = require('mongoose');
 const basePostObject = require('./BasePost');
+const { transformToJSON } = require('../utils');
 
 const tipSchema = new Schema(
   { ...basePostObject },
   { timestamps: true },
 );
 
-tipSchema.set('toJSON', {
-  transform(_, ret) {
-    ret.id = ret._id;
-    delete ret._id;
-    delete ret.__v;
-  },
-});
+transformToJSON(tipSchema);
 
 const Tip = model('Tip', tipSchema);
 

@@ -10,8 +10,19 @@ function maxLengthMessage(len) {
   return `Received value longer than maximum allowed length(${len}).`;
 }
 
+function transformToJSON(schema) {
+  schema.set('toJSON', {
+    transform(_, ret) {
+      ret.id = ret._id;
+      delete ret._id;
+      delete ret.__v;
+    },
+  });
+}
+
 module.exports = {
   isMimeValid,
   isLengthBetween,
   maxLengthMessage,
+  transformToJSON,
 };
