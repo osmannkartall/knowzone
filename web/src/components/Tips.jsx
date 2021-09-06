@@ -28,6 +28,7 @@ const Tips = () => {
 
     if (mounted) {
       fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.TIPS}`)
+        .then((response) => response.json())
         .then((data) => setPosts(data))
         .catch((error) => console.error(error));
     }

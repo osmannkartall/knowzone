@@ -1,30 +1,33 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
+const basePostObject = require('./BasePost');
+const { maxLengthMessage, transformToJSON } = require('../utils');
 
-const bugFixSchema = new mongoose.Schema(
-  {
-    owner: { id: mongoose.Schema.Types.ObjectId, username: String, name: String },
-    links: [String],
-    topics: [String],
-    error: String,
-    solution: String,
-    description: String,
-    images: [{
-      name: String,
-      content: Buffer,
-      mime: String,
-    }],
+const MAX_LEN_ERROR = 4000;
+const MAX_LEN_SOLUTION = 4000;
+
+const bugFixObject = {
+  ...basePostObject,
+  ...{
+    error: {
+      type: String,
+      required: true,
+      maxLength: [MAX_LEN_ERROR, maxLengthMessage(MAX_LEN_ERROR)],
+    },
+    solution: {
+      type: String,
+      required: true,
+      maxLength: [MAX_LEN_SOLUTION, maxLengthMessage(MAX_LEN_SOLUTION)],
+    },
   },
+};
+
+const bugFixSchema = new Schema(
+  bugFixObject,
   { timestamps: true },
 );
 
-bugFixSchema.set('toJSON', {
-  transform(_, ret) {
-    ret.id = ret._id;
-    delete ret._id;
-    delete ret.__v;
-  },
-});
+transformToJSON(bugFixSchema);
 
-const BugFix = mongoose.model('BugFix', bugFixSchema);
+const BugFix = model('BugFix', bugFixSchema);
 
 module.exports = BugFix;

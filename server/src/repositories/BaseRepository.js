@@ -3,13 +3,17 @@ class BaseRepository {
     this.model = model;
   }
 
-  create(record) {
+  async create(record) {
+    let result;
+
     try {
-      this.model.create(record);
-      return 'created new record';
+      result = await this.model.create(record);
     } catch (err) {
-      return err.message;
+      console.log(err.name, err.message);
+      result = err.message;
     }
+
+    return result;
   }
 
   async findAll() {
