@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Popover, IconButton, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import TuneIcon from '@material-ui/icons/Tune';
@@ -54,13 +54,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SearchBar = ({ searchText, handleChange, options }) => {
+const SearchBar = ({ options }) => {
   const [anchorElSearch, setAnchorElSearch] = useState(null);
   const searchRef = useRef(null);
   const classes = useStyles();
   const openSearch = Boolean(anchorElSearch);
   const history = useHistory();
   const emptySearchOptions = {
+    searchText: '',
     postType: '',
     error: '',
     solution: '',
@@ -84,25 +85,13 @@ const SearchBar = ({ searchText, handleChange, options }) => {
     setSearchOptions({ ...searchOptions, [prop]: event.target.value })
   );
 
-  const handleResetOnClick = () => setSearchOptions(emptySearchOptions);
-
-  useEffect(() => {
-    let mounted = true;
-
-    if (mounted) {
-      if (history.location.pathname !== '/search-results') {
-        handleResetOnClick();
-      } else if (history.location.state !== 'undefined') {
-        setSearchOptions({ ...emptySearchOptions, ...history.location.state });
-      }
-    }
-    return function cleanup() {
-      mounted = false;
-    };
-  }, [history.location]);
+  const handleResetOnClick = () => {
+    setSearchOptions(emptySearchOptions);
+  };
 
   const checkAllSearchOptions = () => (
-    searchOptions.postType
+    searchOptions.searchText
+    || searchOptions.postType
     || searchOptions.error
     || searchOptions.solution
     || searchOptions.description
@@ -112,7 +101,6 @@ const SearchBar = ({ searchText, handleChange, options }) => {
     || searchOptions.createdEndDate
     || searchOptions.modifiedStartDate
     || searchOptions.modifiedEndDate
-    || searchText
   );
 
   const checkDates = () => {
@@ -136,9 +124,6 @@ const SearchBar = ({ searchText, handleChange, options }) => {
         delete tempSearchOptions[key];
       }
     });
-    if (searchText) {
-      tempSearchOptions.searchText = searchText;
-    }
 
     handleCloseSearch();
     const data = JSON.parse(JSON.stringify(tempSearchOptions));
@@ -147,36 +132,38 @@ const SearchBar = ({ searchText, handleChange, options }) => {
 
   const handleSearchOnClick = () => {
     if (!checkAllSearchOptions()) {
-      toast.error('Could not search! Type what to search or specify search options.', {
-        position: 'bottom-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        draggable: false,
-        progress: undefined,
-      });
+      toast.error('Could not search! Type what to search or specify search options.');
     } else if (!checkDates()) {
-      toast.error('Invalid dates!', {
-        position: 'bottom-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        draggable: false,
-        progress: undefined,
-      });
+      toast.error('Invalid dates!');
     } else {
       search();
     }
   };
 
   const handleOnPressEnter = (event) => {
-    if (event.key === 'Enter' && searchText) {
-      console.log('You pressed enter:', searchText);
+    if (event.key === 'Enter' && searchOptions.searchText) {
       search();
     }
   };
 
   const id = openSearch ? 'menu-search' : undefined;
+
+  useEffect(() => {
+    let mounted = true;
+
+    console.log(history);
+    if (mounted) {
+      if (history.location.pathname !== '/search-results' && checkAllSearchOptions()) {
+        handleResetOnClick();
+      } else if (history.location.state !== undefined) {
+        console.log(`Search Text: ${history.location.state.searchText}`);
+        setSearchOptions({ ...emptySearchOptions, ...history.location.state });
+      }
+    }
+    return function cleanup() {
+      mounted = false;
+    };
+  }, [history.location.pathname, history.location.state]);
 
   return (
     <div ref={searchRef} className={classes.searchWrapper}>
@@ -185,9 +172,10 @@ const SearchBar = ({ searchText, handleChange, options }) => {
       </div>
       <input
         className={classes.searchInput}
+        value={searchOptions.searchText}
         onKeyPress={handleOnPressEnter}
         placeholder="Search..."
-        onChange={handleChange}
+        onChange={handleOptionChange('searchText')}
       />
       {options && (
         <>
@@ -234,7 +222,6 @@ const SearchBar = ({ searchText, handleChange, options }) => {
 
 SearchBar.defaultProps = {
   options: true,
-  searchText: '',
 };
 
 export default SearchBar;
