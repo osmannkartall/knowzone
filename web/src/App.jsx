@@ -9,6 +9,7 @@ import SearchResults from './components/SearchResults';
 import NotFound from './components/NotFound';
 import { PRIMARY, WHITE } from './constants/colors';
 import { AuthContext, AuthProvider } from './contexts/AuthContext';
+import { FE_ROUTES, BE_ROUTES } from './constants/routes';
 
 const theme = createTheme({
   palette: {
@@ -29,7 +30,7 @@ const Wrapper = () => {
     let mounted = true;
 
     if (mounted) {
-      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/login`, { method: 'POST' })
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.LOGIN}`, { method: 'POST' })
         .then((res) => res.json())
         .then(
           (result) => {
@@ -56,23 +57,23 @@ const Wrapper = () => {
     <BrowserRouter>
       <Switch>
         <Route exact path="/">
-          <Redirect to="/tips" />
+          <Redirect to={`/${FE_ROUTES.TIPS}`} />
         </Route>
-        <Route exact path="/bug-fixes">
+        <Route path={`/${FE_ROUTES.BUG_FIXES}`}>
           <Dashboard><BugFixes /></Dashboard>
         </Route>
-        <Route exact path="/tips">
+        <Route path={`/${FE_ROUTES.TIPS}`}>
           <Dashboard><Tips /></Dashboard>
         </Route>
-        <Route exact path="/your-posts">
+        <Route path={`/${FE_ROUTES.YOUR_POSTS}`}>
           <Dashboard><YourPosts /></Dashboard>
         </Route>
-        <Route exact path="/search-results">
+        <Route path={`/${FE_ROUTES.SEARCH_RESULTS}`}>
           <Dashboard><SearchResults /></Dashboard>
         </Route>
         {/* <Dashboard /> */}
-        <Route exact path="/404" component={NotFound} />
-        <Redirect to="/404" />
+        <Route exact path={`/${FE_ROUTES.NOT_FOUND}`} component={NotFound} />
+        <Redirect to={`/${FE_ROUTES.NOT_FOUND}`} />
       </Switch>
     </BrowserRouter>
   );

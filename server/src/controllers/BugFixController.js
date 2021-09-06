@@ -5,9 +5,9 @@ const { uploadImages, preparePost } = require('../middlewares/uploader');
 
 const bugFixRepository = new BugFixRepository(BugFixModel);
 
-const create = (_, res) => {
+const create = async (_, res) => {
   const bugFix = res.locals.post;
-  const result = bugFixRepository.create(bugFix);
+  const result = await bugFixRepository.create(bugFix);
   res.json({ message: result });
 };
 
