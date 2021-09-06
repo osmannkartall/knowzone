@@ -1,10 +1,14 @@
 import { Button, makeStyles } from '@material-ui/core';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import CloudUpload from '@material-ui/icons/CloudUpload';
 import { GRAY2, GRAY3, GRAY4, PRIMARY } from '../constants/colors';
+import { bufferToBase64 } from '../utils';
 
 const NUM_MAX_FILES = 2;
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
+const ACCEPTED_TYPES = 'image/jpeg, image/png, image/gif'; // 'image/*' to allow all image sub types
+
 const THUMB_WIDTH = 300;
 const THUMB_HEIGHT = 300;
 const activeStyle = { borderColor: '#2196f3' };
@@ -82,7 +86,7 @@ const FileUploader = ({ files, setFiles }) => {
     isDragAccept,
     isDragReject,
   } = useDropzone({
-    accept: 'image/*',
+    accept: ACCEPTED_TYPES,
     onDrop: (acceptedFiles) => {
       if (acceptedFiles && acceptedFiles.length) {
         setFiles(acceptedFiles.map((file) => Object.assign(file, {
@@ -91,6 +95,7 @@ const FileUploader = ({ files, setFiles }) => {
       }
     },
     maxFiles: NUM_MAX_FILES,
+    maxSize: MAX_FILE_SIZE,
     onDropRejected: (uploadedFiles) => {
       if (uploadedFiles && uploadedFiles.length > NUM_MAX_FILES)
         alert(`You cannot upload more than ${NUM_MAX_FILES} files.`);
@@ -123,9 +128,13 @@ const FileUploader = ({ files, setFiles }) => {
       <div className={classes.thumb}>
         <div className={classes.thumbInner}>
           <img
-            src={file.preview}
+            src={
+              file.preview
+                ? file.preview
+                : `data:${file.mime};base64,${bufferToBase64(file.content)}`
+            }
             className={classes.img}
-            alt="img"
+            alt={file.name}
           />
         </div>
       </div>
@@ -139,17 +148,6 @@ const FileUploader = ({ files, setFiles }) => {
       </Button>
     </div>
   ));
-
-  useEffect(() => {
-    let mounted = true;
-
-    if (mounted)
-      files.forEach((file) => URL.revokeObjectURL(file.preview));
-
-    return function cleanup() {
-      mounted = false;
-    };
-  }, [files]);
 
   return (
     <section className="container">

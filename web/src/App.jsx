@@ -6,6 +6,7 @@ import Tips from './components/Tips';
 import BugFixes from './components/BugFixes';
 import YourPosts from './components/YourPosts';
 import SearchResults from './components/SearchResults';
+import NotFound from './components/NotFound';
 import { PRIMARY, WHITE } from './constants/colors';
 import { AuthContext, AuthProvider } from './contexts/AuthContext';
 import { FE_ROUTES, BE_ROUTES } from './constants/routes';
@@ -71,6 +72,8 @@ const Wrapper = () => {
           <Dashboard><SearchResults /></Dashboard>
         </Route>
         {/* <Dashboard /> */}
+        <Route exact path="/404" component={NotFound} />
+        <Redirect to="/404" />
       </Switch>
     </BrowserRouter>
   );

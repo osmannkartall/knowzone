@@ -23,8 +23,10 @@ class BaseRepository {
   }
 
   async updateById(id, record) {
-    await this.model.findByIdAndUpdate(id, record);
-    return `Updated the record with the ${id}`;
+    const result = await this.model.findByIdAndUpdate(id, record, {
+      new: true,
+    });
+    return result;
   }
 
   async deleteById(id) {

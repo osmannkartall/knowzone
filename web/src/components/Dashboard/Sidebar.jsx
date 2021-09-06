@@ -56,19 +56,22 @@ const DrawerItem = ({ text, route, icon }) => (
   </ListItem>
 );
 
+
 const Sidebar = () => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [user] = useContext(AuthContext);
-  const [newPost, setNewPost] = useState({
+  const emptyPost = {
     description: '',
     links: [],
     topics: [],
+    images: [],
     owner: { id: user.id, username: user.username, name: user.name },
     error: '',
     solution: '',
     type: POST_TYPES.TIP.value,
-  });
+  };
+  const [newPost, setNewPost] = useState(emptyPost);
 
   const handleChangeForm = (key, value) => {
     setNewPost((prevState) => ({ ...prevState, [key]: value }));
@@ -78,17 +81,32 @@ const Sidebar = () => {
 
   const addPost = () => {
     const { post, route } = preparePost(newPost);
+    const fd = new FormData();
+
+    Object.entries(post).forEach(([k, v]) => {
+      if (k === 'images') {
+        v.forEach((image) => {
+          if (image.preview) {
+            // Revoke the data uri to avoid memory leaks
+            URL.revokeObjectURL(image.preview);
+          }
+          fd.append('image', image);
+        });
+      } else {
+        fd.append(k, JSON.stringify(v));
+      }
+    });
 
     fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}`, {
-      headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      body: JSON.stringify(post),
+      body: fd,
     })
       .then((res) => res.json())
       .then(
         (result) => {
           console.log(result.message);
           setOpen(false);
+          setNewPost(emptyPost);
         },
         (error) => {
           console.log(error.message);

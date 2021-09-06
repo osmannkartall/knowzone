@@ -183,13 +183,13 @@ case "${1}" in
                 exit 0
                 ;;
             help | -h | --help)
-                log_green "Usage: `basename ${0}` deploy [mongo|frontend|backend|all]"
+                log_green "Usage: `basename ${0}` deploy [secret|mongo|frontend|backend|all]"
                 log_green "Deploys manifests to Kubernetes."
                 exit 0
                 ;;
             *)
                 log_red "Invalid option."
-                log_red "Usage: `basename ${0}` deploy [mongo|frontend|backend|all]"
+                log_red "Usage: `basename ${0}` deploy [secret|mongo|frontend|backend|all]"
                 exit 1
                 ;;
         esac

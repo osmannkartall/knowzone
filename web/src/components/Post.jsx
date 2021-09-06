@@ -9,6 +9,7 @@ import { Divider } from '@material-ui/core';
 import { GRAY3, GRAY4, PRIMARY } from '../constants/colors';
 import TagPicker from '../common/TagPicker/TagPicker';
 import POST_TYPES from '../constants/post-types';
+import { convertDate, bufferToBase64 } from '../utils';
 
 const useStyles = makeStyles((theme) => ({
   gridContainer: {
@@ -62,9 +63,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   imgContainer: {
+    display: 'flex',
+    flexDirection: 'row',
     marginTop: theme.spacing(2),
     overflow: 'auto',
-    maxWidth: 400,
+    maxWidth: 1000,
   },
 }));
 
@@ -127,8 +130,9 @@ const Post = ({
   onClickDelete,
 }) => {
   const classes = useStyles();
-  const lastModifiedDateInfo = `Last Modified ${content.lastModifiedDate}`;
-  const insertDateInfo = `Created ${content.insertDate}`;
+
+  const lastModifiedDateInfo = `Last Modified ${convertDate(content.lastModifiedDate)}`;
+  const insertDateInfo = `Created ${convertDate(content.insertDate)}`;
 
   return (
     <Grid item xs={8}>
@@ -151,17 +155,22 @@ const Post = ({
               </PostSection>
             </>
           ) : null}
-          {content.image && (
+          {content.images && content.images.length ? (
             <div className={classes.imgContainer}>
-              <img
-                src={content.image}
-                width="400"
-                height="300"
-                alt="post"
-                style={{ borderRadius: 4, overflow: 'auto' }}
-              />
+              {
+                content.images.map((i) => (
+                  <img
+                    key={i._id}
+                    src={`data:${i.mime};base64,${bufferToBase64(i.content)}`}
+                    width="300"
+                    height="200"
+                    alt={i.name}
+                    style={{ borderRadius: 4, overflow: 'auto', marginRight: 10 }}
+                  />
+                ))
+              }
             </div>
-          )}
+          ) : null}
           {content.links && content.links.length ? (
             <PostSection title="Link">
               <ul>

@@ -8,8 +8,6 @@ ARG PORT=8000
 ENV PORT $PORT
 EXPOSE $PORT
 
-RUN npm i npm@7.21.0 -g 
-
 RUN mkdir /opt/node_app && chown node:node /opt/node_app
 WORKDIR /opt/node_app
 

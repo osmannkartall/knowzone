@@ -69,3 +69,37 @@ Run the application.
 ```bash
 npm start
 ```
+
+# Running on local Kubernetes cluster  
+
+## Pre-requisites  
+
+- [Docker](https://docs.docker.com/engine/install)  
+- [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)  
+- [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation)  
+- [Tilt](https://docs.tilt.dev/install.html)  
+
+Make sure they are in the path by running:  
+
+```bash
+docker --version
+kubectl version --client
+kind --version
+tilt version
+```
+
+## Running Startup Script  
+
+```bash
+cd infra
+./init-local.sh run
+```
+
+Startup script is divided into 4 steps:  
+
+1. Create a Kind cluster  
+2. Generate Kubernetes manifests  
+3. Deploy secret and MongoDB operator  
+4. Run Tilt developer environment  
+
+You can quit Tilt by pressing Ctrl-C. This does not remove the environment, you can start the development environment again with `tilt up`. If you want to remove the whole infrastructure, run `./init-local.sh clean`. This tears down the Kind cluster, removes the generated manifests and the cloned MongoDB repository.  
