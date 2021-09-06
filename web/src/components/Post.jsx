@@ -164,7 +164,7 @@ const Post = ({
                     src={`data:${i.mime};base64,${bufferToBase64(i.content)}`}
                     width="300"
                     height="200"
-                    alt={i.name}
+                    alt={i.name ? i.name : 'image'}
                     style={{ borderRadius: 4, overflow: 'auto', marginRight: 10 }}
                   />
                 ))
