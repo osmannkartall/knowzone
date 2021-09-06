@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Popover, IconButton, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import TuneIcon from '@material-ui/icons/Tune';
@@ -60,7 +60,7 @@ const SearchBar = ({ searchText, handleChange, options }) => {
   const classes = useStyles();
   const openSearch = Boolean(anchorElSearch);
   const history = useHistory();
-  const [searchOptions, setSearchOptions] = useState({
+  const emptySearchOptions = {
     postType: '',
     error: '',
     solution: '',
@@ -71,34 +71,35 @@ const SearchBar = ({ searchText, handleChange, options }) => {
     createdEndDate: null,
     modifiedStartDate: null,
     modifiedEndDate: null,
-  });
+  };
+  const [searchOptions, setSearchOptions] = useState(emptySearchOptions);
 
   const handleMenuSearch = () => setAnchorElSearch(searchRef.current);
 
   const handleCloseSearch = () => setAnchorElSearch(null);
 
-  const handleDateChange = (prop) => (date) => {
-    setSearchOptions({ ...searchOptions, [prop]: date });
-  };
+  const handleDateChange = (prop) => (date) => setSearchOptions({ ...searchOptions, [prop]: date });
 
-  const handleOptionChange = (prop) => (event) => {
-    setSearchOptions({ ...searchOptions, [prop]: event.target.value });
-  };
+  const handleOptionChange = (prop) => (event) => (
+    setSearchOptions({ ...searchOptions, [prop]: event.target.value })
+  );
 
-  const handleResetOnClick = () => {
-    setSearchOptions({
-      postType: '',
-      error: '',
-      solution: '',
-      description: '',
-      topics: [],
-      author: '',
-      createdStartDate: null,
-      createdEndDate: null,
-      modifiedStartDate: null,
-      modifiedEndDate: null,
-    });
-  };
+  const handleResetOnClick = () => setSearchOptions(emptySearchOptions);
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted) {
+      if (history.location.pathname !== '/search-results') {
+        handleResetOnClick();
+      } else if (history.location.state !== 'undefined') {
+        setSearchOptions({ ...emptySearchOptions, ...history.location.state });
+      }
+    }
+    return function cleanup() {
+      mounted = false;
+    };
+  }, [history.location]);
 
   const checkAllSearchOptions = () => (
     searchOptions.postType
@@ -141,7 +142,7 @@ const SearchBar = ({ searchText, handleChange, options }) => {
 
     handleCloseSearch();
     const data = JSON.parse(JSON.stringify(tempSearchOptions));
-    history.replace('/search-results', data);
+    history.push('/search-results', data);
   };
 
   const handleSearchOnClick = () => {
