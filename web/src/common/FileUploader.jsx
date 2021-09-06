@@ -88,10 +88,13 @@ const FileUploader = ({ files, setFiles }) => {
   } = useDropzone({
     accept: ACCEPTED_TYPES,
     onDrop: (acceptedFiles) => {
-      if (acceptedFiles && acceptedFiles.length) {
-        setFiles(acceptedFiles.map((file) => Object.assign(file, {
+      if (acceptedFiles && acceptedFiles.length + files.length <= NUM_MAX_FILES) {
+        const newFiles = acceptedFiles.map((file) => Object.assign(file, {
           preview: URL.createObjectURL(file),
-        })));
+        }));
+        setFiles([...files, ...newFiles]);
+      } else {
+        alert(`You cannot upload more than ${NUM_MAX_FILES} files.`);
       }
     },
     maxFiles: NUM_MAX_FILES,
