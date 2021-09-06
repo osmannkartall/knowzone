@@ -29,24 +29,23 @@ const Wrapper = () => {
   useEffect(() => {
     let mounted = true;
 
-    if (mounted) {
-      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.LOGIN}`, { method: 'POST' })
-        .then((res) => res.json())
-        .then(
-          (result) => {
+    fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.LOGIN}`, { method: 'POST' })
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          if (mounted) {
             console.log(result.message);
-
             const newUser = { ...user };
             newUser.isLoggedIn = true;
             // get user id from db later.
             // newUser.id = result.id;
             setUser(newUser);
-          },
-          (error) => {
-            console.log(error.message);
-          },
-        );
-    }
+          }
+        },
+        (error) => {
+          console.log(error.message);
+        },
+      );
 
     return function cleanup() {
       mounted = false;

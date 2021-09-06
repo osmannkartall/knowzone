@@ -26,12 +26,15 @@ const BugFixes = () => {
   useEffect(() => {
     let mounted = true;
 
-    if (mounted) {
-      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.BUG_FIXES}`)
-        .then((response) => response.json())
-        .then((data) => setPosts(data))
-        .catch((error) => console.error(error));
-    }
+    fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.BUG_FIXES}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (mounted) {
+          setPosts(data);
+        }
+      })
+      .catch((error) => console.error(error));
+
     return function cleanup() {
       mounted = false;
     };
