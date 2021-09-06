@@ -6,6 +6,7 @@ import TuneIcon from '@material-ui/icons/Tune';
 import { toast } from 'react-toastify';
 import SearchOptions from './SearchOptions';
 import { GRAY1, GRAY2, GRAY3, PRIMARY } from '../constants/colors';
+import { FE_ROUTES } from '../constants/routes';
 
 const SEARCH_WIDTH = 700;
 
@@ -149,7 +150,7 @@ const SearchBar = ({ searchText, handleChange, options }) => {
 
     handleCloseSearch();
     const data = JSON.parse(JSON.stringify(tempSearchOptions));
-    history.replace('/search-results', data);
+    history.replace(FE_ROUTES.SEARCH_RESULTS, data);
     setHistoryChanged(true);
   };
 

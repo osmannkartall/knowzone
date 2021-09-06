@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Post from './Post';
 import { GRAY1, GRAY3 } from '../constants/colors';
+import { BE_ROUTES } from '../constants/routes';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,8 +27,7 @@ const Tips = () => {
     let mounted = true;
 
     if (mounted) {
-      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/tips`)
-        .then((response) => response.json())
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.TIPS}`)
         .then((data) => setPosts(data))
         .catch((error) => console.error(error));
     }
