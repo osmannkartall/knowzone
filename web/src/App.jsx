@@ -72,8 +72,8 @@ const Wrapper = () => {
           <Dashboard><SearchResults /></Dashboard>
         </Route>
         {/* <Dashboard /> */}
-        <Route exact path="/404" component={NotFound} />
-        <Redirect to="/404" />
+        <Route exact path={`/${FE_ROUTES.NOT_FOUND}`} component={NotFound} />
+        <Redirect to={`/${FE_ROUTES.NOT_FOUND}`} />
       </Switch>
     </BrowserRouter>
   );
