@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Popover, IconButton, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import TuneIcon from '@material-ui/icons/Tune';
@@ -61,6 +61,7 @@ const SearchBar = ({ options }) => {
   const classes = useStyles();
   const openSearch = Boolean(anchorElSearch);
   const history = useHistory();
+  const location = useLocation();
   const emptySearchOptions = {
     searchText: '',
     postType: '',
@@ -152,19 +153,17 @@ const SearchBar = ({ options }) => {
   useEffect(() => {
     let mounted = true;
 
-    console.log(history);
     if (mounted) {
-      if (history.location.pathname !== '/search-results' && checkAllSearchOptions()) {
+      if (location.pathname !== '/search-results' && checkAllSearchOptions()) {
         handleResetOnClick();
-      } else if (history.location.state !== undefined) {
-        console.log(`Search Text: ${history.location.state.searchText}`);
-        setSearchOptions({ ...emptySearchOptions, ...history.location.state });
+      } else if (location.state !== undefined) {
+        setSearchOptions({ ...emptySearchOptions, ...location.state });
       }
     }
     return function cleanup() {
       mounted = false;
     };
-  }, [history.location.pathname, history.location.state]);
+  }, [location.pathname, location.state]);
 
   return (
     <div ref={searchRef} className={classes.searchWrapper}>
