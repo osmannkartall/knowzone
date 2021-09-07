@@ -102,7 +102,7 @@ const PostSection = ({ title, children }) => {
   );
 };
 
-const PostTopbar = ({ editable, type, onClickUpdate, onClickDelete }) => {
+const PostTopbar = ({ showType, editable, type, onClickUpdate, onClickDelete }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -112,7 +112,7 @@ const PostTopbar = ({ editable, type, onClickUpdate, onClickDelete }) => {
   const handleClose = () => setAnchorEl(null);
 
   return (
-    editable ? (
+    showType ? (
       <>
         <div className={classes.postTopbar}>
           <div className={classes.postTypeContainer}>
@@ -121,28 +121,32 @@ const PostTopbar = ({ editable, type, onClickUpdate, onClickDelete }) => {
               { type === POST_TYPES.BUG_FIX.value ? POST_TYPES.BUG_FIX.name : POST_TYPES.TIP.name }
             </div>
           </div>
-          <div>
-            <IconButton
-              aria-label="update post"
-              aria-controls="post-menu"
-              aria-haspopup="true"
-              onClick={handleMenu}
-              className={classes.actionBtn}
-              style={{ width: 30, height: 30 }}
-            >
-              <MoreHoriz />
-            </IconButton>
-            <Menu
-              id="post-menu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={open}
-              onClose={handleClose}
-            >
-              <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>Update</MenuItem>
-              <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>Delete</MenuItem>
-            </Menu>
-          </div>
+          {
+            editable && (
+              <div>
+                <IconButton
+                  aria-label="update post"
+                  aria-controls="post-menu"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  className={classes.actionBtn}
+                  style={{ width: 30, height: 30 }}
+                >
+                  <MoreHoriz />
+                </IconButton>
+                <Menu
+                  id="post-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={open}
+                  onClose={handleClose}
+                >
+                  <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>Update</MenuItem>
+                  <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>Delete</MenuItem>
+                </Menu>
+              </div>
+            )
+          }
         </div>
         <Divider />
       </>
@@ -161,6 +165,7 @@ const OwnerTopbar = ({ owner }) => {
 };
 
 const Post = ({
+  showType,
   editable,
   type,
   owner,
@@ -177,6 +182,7 @@ const Post = ({
     <Grid item xs={8}>
       <div className={classes.gridContainer}>
         <PostTopbar
+          showType={showType}
           editable={editable}
           type={type}
           onClickUpdate={onClickUpdate}
