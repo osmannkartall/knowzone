@@ -27,19 +27,22 @@ const SearchResults = () => {
   useEffect(() => {
     let mounted = true;
 
-    if (mounted) {
-      const route = 'search/filter';
-      const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}`;
+    const route = 'search/filter';
+    const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}`;
 
-      fetch(url, {
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-        body: JSON.stringify(location.state),
+    fetch(url, {
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      body: JSON.stringify(location.state),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (mounted) {
+          setPosts(data);
+        }
       })
-        .then((response) => response.json())
-        .then((data) => setPosts(data))
-        .catch((error) => console.log(error));
-    }
+      .catch((error) => console.log(error));
+
     return function cleanup() {
       mounted = false;
     };
