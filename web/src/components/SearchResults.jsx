@@ -27,6 +27,8 @@ const SearchResults = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
+    let mounted = true;
+
     const route = 'search/filter';
     const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}`;
 
@@ -36,8 +38,16 @@ const SearchResults = () => {
       body: JSON.stringify(location.state),
     })
       .then((response) => response.json())
-      .then((data) => setPosts(data))
+      .then((data) => {
+        if (mounted) {
+          setPosts(data);
+        }
+      })
       .catch((error) => console.log(error));
+
+    return function cleanup() {
+      mounted = false;
+    };
   }, [location]);
 
   return (

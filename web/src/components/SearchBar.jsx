@@ -129,10 +129,16 @@ const SearchBar = ({ searchText, handleChange, options }) => {
   };
 
   useEffect(() => {
-    if (historyChanged) {
+    let mounted = true;
+
+    if (historyChanged && mounted) {
       handleResetOnClick();
       setHistoryChanged(false);
     }
+
+    return function cleanup() {
+      mounted = false;
+    };
   }, [historyChanged]);
 
   const search = () => {
