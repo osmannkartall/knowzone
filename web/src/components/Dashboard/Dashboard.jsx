@@ -28,7 +28,12 @@ const Dashboard = ({ children }) => {
         <div className={classes.toolbar} />
         {children}
       </main>
-      <ToastContainer />
+      <ToastContainer
+        position="bottom-right"
+        autoClose={4000}
+        draggable={false}
+        progressStyle={undefined}
+      />
     </div>
   );
 };
