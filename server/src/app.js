@@ -24,7 +24,7 @@ async function startDB() {
 }
 
 function addControllers(app) {
-  // Add route names in plural form.
+  // Add route names for repositories in plural form.
   app.use(`${config.api.prefix}/hello`, helloController);
   app.use(`${config.api.prefix}/tips`, tipController);
   app.use(`${config.api.prefix}/bugfixes`, bugFixController);
