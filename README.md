@@ -30,7 +30,6 @@
 * ESLint by Dirk Baeumer
 * ES7 React/Redux/GraphQL/React-Native snippets by dsznajder
 * react native tools by Microsoft (This is not necessary for the web project)
-* Prettier - Code formatter by Prettier
 
 # Running
 
@@ -51,6 +50,8 @@ Run the application on your development environment.
 # under the scripts object in server/package.json
 npm run dev
 ```
+
+[See the details of the architecture used in the Node.js project.](https://github.com/osmannkartall/knowzone/blob/master/server/ARCHITECTURE.MD)
 
 ## React
 
