@@ -95,6 +95,8 @@ const FileUploader = ({ files, setFiles }) => {
           preview: URL.createObjectURL(file),
         }));
         setFiles([...files, ...newFiles]);
+      } else {
+        toast.error('Too many files', { position: 'top-center' });
       }
     },
     maxFiles: NUM_MAX_FILES,
