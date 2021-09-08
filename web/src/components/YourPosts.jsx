@@ -166,7 +166,7 @@ const YourPosts = () => {
     <div className={classes.root}>
       <h2>Your Posts</h2>
       <Grid container spacing={3}>
-        {posts && posts.length ? (
+        {Array.isArray(posts) && posts.length ? (
           posts.map((p) => (
             <Post
               key={p.id}

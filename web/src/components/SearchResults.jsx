@@ -52,7 +52,7 @@ const SearchResults = () => {
     <div className={classes.root}>
       <h2>Search Results</h2>
       <Grid container spacing={3}>
-        {posts && posts.length ? (
+        {Array.isArray(posts) && posts.length ? (
           posts.map((p) => (
             <Post
               key={p.id}

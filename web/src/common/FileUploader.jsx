@@ -88,7 +88,8 @@ const FileUploader = ({ files, setFiles }) => {
   } = useDropzone({
     accept: ACCEPTED_TYPES,
     onDrop: (acceptedFiles) => {
-      if (acceptedFiles && acceptedFiles.length + files.length <= NUM_MAX_FILES) {
+      if (Array.isArray(acceptedFiles) && Array.isArray(files)
+        && acceptedFiles.length + files.length <= NUM_MAX_FILES) {
         const newFiles = acceptedFiles.map((file) => Object.assign(file, {
           preview: URL.createObjectURL(file),
         }));
@@ -100,7 +101,7 @@ const FileUploader = ({ files, setFiles }) => {
     maxFiles: NUM_MAX_FILES,
     maxSize: MAX_FILE_SIZE,
     onDropRejected: (uploadedFiles) => {
-      if (uploadedFiles && uploadedFiles.length > NUM_MAX_FILES)
+      if (Array.isArray(uploadedFiles) && uploadedFiles.length > NUM_MAX_FILES)
         alert(`You cannot upload more than ${NUM_MAX_FILES} files.`);
     },
   });
@@ -154,7 +155,7 @@ const FileUploader = ({ files, setFiles }) => {
 
   return (
     <section className="container">
-      {files && files.length < NUM_MAX_FILES ? (
+      {Array.isArray(files) && files.length < NUM_MAX_FILES ? (
         <div {...getRootProps({ style })}>
           <input {...getInputProps()} />
           <CloudUpload />

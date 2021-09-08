@@ -201,7 +201,7 @@ const Post = ({
               </PostSection>
             </>
           ) : null}
-          {content.images && content.images.length ? (
+          {Array.isArray(content.images) && content.images.length ? (
             <div className={classes.imgContainer}>
               {
                 content.images.map((i) => (
@@ -217,7 +217,7 @@ const Post = ({
               }
             </div>
           ) : null}
-          {content.links && content.links.length ? (
+          {Array.isArray(content.links) && content.links.length ? (
             <PostSection title="Link">
               <ul>
                 {content.links.map((link) => (
