@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Dialog, DialogActions, DialogTitle, Button } from '@material-ui/core';
-import Post from './Post';
+import Post from '../common/Post';
 import { AuthContext } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
 import POST_TYPES from '../constants/post-types';

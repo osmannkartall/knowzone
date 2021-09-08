@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Post from './Post';
+import Post from '../common/Post';
 import { BE_ROUTES } from '../constants/routes';
 import POST_TYPES from '../constants/post-types';
 import ContentWrapper from '../common/ContentWrapper';
