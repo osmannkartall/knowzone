@@ -106,7 +106,7 @@ const YourPosts = () => {
 
   const deletePost = () => {
     if (selectedPost && selectedPost.type && selectedPost.id) {
-      const route = selectedPost.type === POST_TYPES.TIP.value ? 'tips' : 'bugFixes';
+      const route = selectedPost.type === POST_TYPES.TIP.value ? BE_ROUTES.TIPS : BE_ROUTES.BUG_FIXES;
       const idx = posts.findIndex((p) => p.id === selectedPost.id);
 
       if (idx !== -1) {

@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Post from './Post';
 import { GRAY1, GRAY3 } from '../constants/colors';
 import { BE_ROUTES } from '../constants/routes';
+import POST_TYPES from '../constants/post-types';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,7 +49,7 @@ const BugFixes = () => {
           posts.map((p) => (
             <Post
               key={p.id}
-              type="bugFix"
+              type={POST_TYPES.BUG_FIX.value}
               owner={p.owner}
               content={{
                 links: p.links,
