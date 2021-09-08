@@ -56,6 +56,7 @@ const SearchResults = () => {
           posts.map((p) => (
             <Post
               key={p.id}
+              showType
               type={p.error || p.solution ? 'bugFix' : 'tip'}
               owner={p.owner}
               content={{

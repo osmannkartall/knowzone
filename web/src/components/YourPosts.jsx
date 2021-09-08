@@ -170,6 +170,7 @@ const YourPosts = () => {
           posts.map((p) => (
             <Post
               key={p.id}
+              showType
               editable
               type={p.type}
               owner={p.owner}
