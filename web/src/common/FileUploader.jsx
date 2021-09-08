@@ -2,6 +2,7 @@ import { Button, makeStyles } from '@material-ui/core';
 import React, { useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import CloudUpload from '@material-ui/icons/CloudUpload';
+import { toast } from 'react-toastify';
 import { GRAY2, GRAY3, GRAY4, PRIMARY } from '../constants/colors';
 import { bufferToBase64 } from '../utils';
 
@@ -77,7 +78,7 @@ const baseStyle = {
 const FileUploader = ({ files, setFiles }) => {
   const classes = useStyles();
   const infoTitle = 'Drag n drop some images here, or click to select';
-  const infoSubtitle = `(Maximum ${NUM_MAX_FILES} files)`;
+  const infoSubtitle = `(You can select ${NUM_MAX_FILES} files and the maximum size of a single file is 1 MB)`;
 
   const {
     getRootProps,
@@ -94,15 +95,12 @@ const FileUploader = ({ files, setFiles }) => {
           preview: URL.createObjectURL(file),
         }));
         setFiles([...files, ...newFiles]);
-      } else {
-        alert(`You cannot upload more than ${NUM_MAX_FILES} files.`);
       }
     },
     maxFiles: NUM_MAX_FILES,
     maxSize: MAX_FILE_SIZE,
     onDropRejected: (uploadedFiles) => {
-      if (Array.isArray(uploadedFiles) && uploadedFiles.length > NUM_MAX_FILES)
-        alert(`You cannot upload more than ${NUM_MAX_FILES} files.`);
+      toast.error(uploadedFiles[0].errors[0].message, { position: 'top-center' });
     },
   });
 
