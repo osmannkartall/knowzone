@@ -86,7 +86,7 @@ For Windows, running the cluster outside of WSL can cause performance issues. In
 
 Since we are using Kind, you can skip these steps in the Tilt installation:
 * In the preferences, click Enable Kubernetes
-* Make Docker for Windows your local Kubernetes cluster: kubectl config use-context docker-desktop
+* Make Docker for Windows(or Mac) your local Kubernetes cluster: kubectl config use-context docker-desktop
 
 Make sure they are in the path by running:  
 
