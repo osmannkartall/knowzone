@@ -9,7 +9,7 @@ import { Divider } from '@material-ui/core';
 import NoteOutlined from '@material-ui/icons/NoteOutlined';
 import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 import { GRAY3, GRAY4, PRIMARY } from '../constants/colors';
-import TagPicker from '../common/TagPicker/TagPicker';
+import TagPicker from './TagPicker/TagPicker';
 import POST_TYPES from '../constants/post-types';
 import { convertDate, bufferToBase64 } from '../utils';
 
@@ -201,7 +201,7 @@ const Post = ({
               </PostSection>
             </>
           ) : null}
-          {content.images && content.images.length ? (
+          {Array.isArray(content.images) && content.images.length ? (
             <div className={classes.imgContainer}>
               {
                 content.images.map((i) => (
@@ -217,7 +217,7 @@ const Post = ({
               }
             </div>
           ) : null}
-          {content.links && content.links.length ? (
+          {Array.isArray(content.links) && content.links.length ? (
             <PostSection title="Link">
               <ul>
                 {content.links.map((link) => (

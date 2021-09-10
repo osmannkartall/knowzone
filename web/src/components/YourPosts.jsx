@@ -1,33 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import {
-  Grid,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Button,
-} from '@material-ui/core';
-import Post from './Post';
-import { GRAY1, GRAY3 } from '../constants/colors';
+import { Dialog, DialogActions, DialogTitle, Button } from '@material-ui/core';
+import Post from '../common/Post';
 import { AuthContext } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
 import POST_TYPES from '../constants/post-types';
 import { preparePost, createFile } from '../utils';
 import { BE_ROUTES } from '../constants/routes';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    color: GRAY1,
-  },
-  gridContainer: {
-    border: `1px solid ${GRAY3}`,
-    borderRadius: 4,
-  },
-  container: {
-    padding: theme.spacing(2),
-  },
-}));
+import ContentWrapper from '../common/ContentWrapper';
 
 const YourPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -36,7 +15,6 @@ const YourPosts = () => {
   const [action, setAction] = useState('update');
   const [openDialog, setOpenDialog] = useState(false);
   const [user] = useContext(AuthContext);
-  const classes = useStyles();
 
   const handleClose = () => setOpenDialog(false);
 
@@ -106,7 +84,7 @@ const YourPosts = () => {
 
   const deletePost = () => {
     if (selectedPost && selectedPost.type && selectedPost.id) {
-      const route = selectedPost.type === POST_TYPES.TIP.value ? 'tips' : 'bugFixes';
+      const route = selectedPost.type === POST_TYPES.TIP.value ? BE_ROUTES.TIPS : BE_ROUTES.BUG_FIXES;
       const idx = posts.findIndex((p) => p.id === selectedPost.id);
 
       if (idx !== -1) {
@@ -163,10 +141,9 @@ const YourPosts = () => {
   }, []);
 
   return (
-    <div className={classes.root}>
-      <h2>Your Posts</h2>
-      <Grid container spacing={3}>
-        {posts && posts.length ? (
+    <>
+      <ContentWrapper title="Your Posts">
+        {Array.isArray(posts) && posts.length ? (
           posts.map((p) => (
             <Post
               key={p.id}
@@ -188,7 +165,7 @@ const YourPosts = () => {
               onClickDelete={() => setForDelete(p)}
             />
           ))) : null}
-      </Grid>
+      </ContentWrapper>
       <PostForm
         title="Update Post"
         btnTitle="update"
@@ -221,7 +198,7 @@ const YourPosts = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </>
   );
 };
 
