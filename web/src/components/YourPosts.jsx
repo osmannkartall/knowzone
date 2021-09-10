@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Dialog, DialogActions, DialogTitle, Button } from '@material-ui/core';
+import { toast } from 'react-toastify';
 import Post from '../common/Post';
 import { AuthContext } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
 import POST_TYPES from '../constants/post-types';
-import { preparePost, createFile } from '../utils';
+import { createFile, diff, isObjectEmpty, isEqual } from '../utils';
 import { BE_ROUTES } from '../constants/routes';
 import ContentWrapper from '../common/ContentWrapper';
 
@@ -38,47 +39,46 @@ const YourPosts = () => {
     }
   };
 
-  const updatePost = () => {
-    if (selectedPost && selectedPost.id) {
-      const { post, route } = preparePost(selectedPost);
-      const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
-      const fd = new FormData();
+  const updatePost = async () => {
+    try {
+      if (selectedPost && selectedPost.id) {
+        const idx = posts.findIndex((p) => p.id === selectedPost.id);
+        if (idx !== -1 && !isEqual(selectedPost, posts[idx])) {
+          const changes = diff(posts[idx], selectedPost);
+          const route = selectedPost.type === POST_TYPES.BUG_FIX.value ? BE_ROUTES.BUG_FIXES : BE_ROUTES.TIPS;
 
-      Object.entries(post).forEach(([k, v]) => {
-        if (k === 'images') {
-          v.forEach((image) => {
-            let imageObject = image;
-            if (!(image instanceof File)) {
-              imageObject = createFile(image);
-            }
-            fd.append('image', imageObject);
-          });
-        } else {
-          fd.append(k, JSON.stringify(v));
+          if (changes && !isObjectEmpty(changes)) {
+            const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
+            const fd = new FormData();
+            changes.saveImage = changes.images !== undefined;
+
+            Object.entries(changes).forEach(([k, v]) => {
+              if (k === 'images') {
+                v.forEach((image) => {
+                  let imageObject = image;
+                  if (!(image instanceof File)) {
+                    imageObject = createFile(image);
+                  }
+                  fd.append('image', imageObject);
+                });
+              } else {
+                fd.append(k, JSON.stringify(v));
+              }
+            });
+
+            const response = await fetch(url, { method: 'PUT', body: fd });
+            const result = await response.json();
+            const newPosts = [...posts];
+            newPosts[idx] = { ...result, type: selectedPost.type };
+            setPosts(newPosts);
+          }
         }
-      });
-
-      fetch(url, {
-        method: 'PUT',
-        body: fd,
-      })
-        .then((res) => res.json())
-        .then(
-          (result) => {
-            setOpenForm(false);
-            // Storing selectedPostId as state might avoid findIndex operation.
-            const idx = posts.findIndex((p) => p.id === selectedPost.id);
-            if (idx !== -1) {
-              const newPosts = [...posts];
-              newPosts[idx] = { ...result, type: selectedPost.type };
-              setPosts(newPosts);
-              setOpenDialog(false);
-            }
-          },
-          (error) => {
-            console.log(error.message);
-          },
-        );
+      }
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setOpenForm(false);
+      setOpenDialog(false);
     }
   };
 

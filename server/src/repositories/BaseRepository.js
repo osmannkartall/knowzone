@@ -26,10 +26,9 @@ class BaseRepository {
     return record;
   }
 
-  async updateById(id, record) {
-    const result = await this.model.findByIdAndUpdate(id, record, {
-      new: true,
-    });
+  async updateById(id, update) {
+    const filter = { _id: id };
+    const result = await this.model.findOneAndUpdate(filter, update, { new: true });
     return result;
   }
 
