@@ -30,7 +30,6 @@
 * ESLint by Dirk Baeumer
 * ES7 React/Redux/GraphQL/React-Native snippets by dsznajder
 * react native tools by Microsoft (This is not necessary for the web project)
-* Prettier - Code formatter by Prettier
 
 # Running
 
@@ -52,6 +51,8 @@ Run the application on your development environment.
 npm run dev
 ```
 
+[See the details of the architecture used in the Node.js project.](https://github.com/osmannkartall/knowzone/blob/master/server/ARCHITECTURE.MD)
+
 ## React
 
 ```bash
@@ -72,12 +73,20 @@ npm start
 
 # Running on local Kubernetes cluster  
 
+For Windows, running the cluster outside of WSL can cause performance issues. Install the tools in WSL and run the cluster in WSL.
+
 ## Pre-requisites  
 
 - [Docker](https://docs.docker.com/engine/install)  
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)  
 - [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation)  
-- [Tilt](https://docs.tilt.dev/install.html)  
+- [Tilt](https://docs.tilt.dev/install.html)
+
+### Notes
+
+Since we are using Kind, you can skip these steps in the Tilt installation:
+* In the preferences, click Enable Kubernetes
+* Make Docker for Windows(or Mac) your local Kubernetes cluster: kubectl config use-context docker-desktop
 
 Make sure they are in the path by running:  
 

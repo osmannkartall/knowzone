@@ -1,131 +1,139 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Post from './Post';
-import { GRAY1, GRAY3 } from '../constants/colors';
+import { Dialog, DialogActions, DialogTitle, Button } from '@material-ui/core';
+import { toast } from 'react-toastify';
+import Post from '../common/Post';
 import { AuthContext } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
 import POST_TYPES from '../constants/post-types';
-import { preparePost, createFile } from '../utils';
+import { createFile, diff, isObjectEmpty, isEqual } from '../utils';
 import { BE_ROUTES } from '../constants/routes';
-
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    color: GRAY1,
-  },
-  gridContainer: {
-    border: `1px solid ${GRAY3}`,
-    borderRadius: 4,
-  },
-  container: {
-    padding: theme.spacing(2),
-  },
-}));
+import ContentWrapper from '../common/ContentWrapper';
 
 const YourPosts = () => {
   const [posts, setPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState({});
-  const [open, setOpen] = useState(false);
+  const [openForm, setOpenForm] = useState(false);
+  const [action, setAction] = useState('update');
+  const [openDialog, setOpenDialog] = useState(false);
   const [user] = useContext(AuthContext);
-  const classes = useStyles();
+
+  const handleClose = () => setOpenDialog(false);
 
   const handleChangeForm = (key, value) => {
     setSelectedPost((prevState) => ({ ...prevState, [key]: value }));
   };
 
-  const setForUpdate = (id) => {
-    const idx = posts.findIndex((p) => p.id === id);
-
-    if (idx !== -1) {
-      setSelectedPost({ ...posts[idx] });
-      setOpen(true);
+  const setForUpdate = (post) => {
+    setAction('update');
+    if (post) {
+      setSelectedPost({ ...post });
+      setOpenForm(true);
     }
   };
 
-  const updatePost = () => {
-    const { post, route } = preparePost(selectedPost);
-    const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
-    const fd = new FormData();
+  const setForDelete = (post) => {
+    setAction('delete');
+    if (post) {
+      setSelectedPost({ ...post });
+      setOpenDialog(true);
+    }
+  };
 
-    Object.entries(post).forEach(([k, v]) => {
-      if (k === 'images') {
-        v.forEach((image) => {
-          let imageObject = image;
-          if (!(image instanceof File)) {
-            imageObject = createFile(image);
-          }
-          fd.append('image', imageObject);
-        });
-      } else {
-        fd.append(k, JSON.stringify(v));
-      }
-    });
+  const updatePost = async () => {
+    try {
+      if (selectedPost && selectedPost.id) {
+        const idx = posts.findIndex((p) => p.id === selectedPost.id);
+        if (idx !== -1 && !isEqual(selectedPost, posts[idx])) {
+          const changes = diff(posts[idx], selectedPost);
+          const route = selectedPost.type === POST_TYPES.BUG_FIX.value ? BE_ROUTES.BUG_FIXES : BE_ROUTES.TIPS;
 
-    fetch(url, {
-      method: 'PUT',
-      body: fd,
-    })
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          setOpen(false);
+          if (changes && !isObjectEmpty(changes)) {
+            const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
+            const fd = new FormData();
+            changes.saveImage = changes.images !== undefined;
 
-          // Storing selectedPostId as state might avoid findIndex operation.
-          const idx = posts.findIndex((p) => p.id === selectedPost.id);
-          if (idx !== -1) {
+            Object.entries(changes).forEach(([k, v]) => {
+              if (k === 'images') {
+                v.forEach((image) => {
+                  let imageObject = image;
+                  if (!(image instanceof File)) {
+                    imageObject = createFile(image);
+                  }
+                  fd.append('image', imageObject);
+                });
+              } else {
+                fd.append(k, JSON.stringify(v));
+              }
+            });
+
+            const response = await fetch(url, { method: 'PUT', body: fd });
+            const result = await response.json();
             const newPosts = [...posts];
             newPosts[idx] = { ...result, type: selectedPost.type };
             setPosts(newPosts);
           }
-        },
-        (error) => {
-          console.log(error.message);
-        },
-      );
+        }
+      }
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setOpenForm(false);
+      setOpenDialog(false);
+    }
   };
 
-  const deletePost = (id, route) => {
-    const idx = posts.findIndex((p) => p.id === id);
+  const deletePost = () => {
+    if (selectedPost && selectedPost.type && selectedPost.id) {
+      const route = selectedPost.type === POST_TYPES.TIP.value ? BE_ROUTES.TIPS : BE_ROUTES.BUG_FIXES;
+      const idx = posts.findIndex((p) => p.id === selectedPost.id);
 
-    if (idx !== -1) {
-      const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${id}`;
+      if (idx !== -1) {
+        const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
 
-      fetch(url, {
-        headers: { 'Content-Type': 'application/json' },
-        method: 'DELETE',
-      })
-        .then((res) => res.json())
-        .then(
-          (result) => {
-            console.log(result.message);
-            const newPosts = [...posts];
-            newPosts.splice(idx, 1);
-            setPosts(newPosts);
-          },
-          (error) => {
-            console.log(error.message);
-          },
-        );
+        fetch(url, {
+          headers: { 'Content-Type': 'application/json' },
+          method: 'DELETE',
+        })
+          .then((res) => res.json())
+          .then(
+            (result) => {
+              console.log(result.message);
+              const newPosts = [...posts];
+              newPosts.splice(idx, 1);
+              setPosts(newPosts);
+              setOpenDialog(false);
+            },
+            (error) => {
+              console.log(error.message);
+            },
+          );
+      }
+    }
+  };
+
+  const handleConfirm = () => {
+    if (action === 'update') {
+      updatePost();
+    } else if (action === 'delete') {
+      deletePost();
     }
   };
 
   useEffect(() => {
     let mounted = true;
 
-    if (mounted) {
-      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}?owner=${user.id}`)
-        .then((res) => res.json())
-        .then(
-          (result) => {
-            setPosts(result);
-          },
-          (error) => {
-            console.log(error.message);
-          },
-        );
-    }
+    fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}?owner=${user.id}`)
+      .then((res) => res.json())
+      .then(
+        (data) => {
+          if (mounted) {
+            setPosts(data);
+          }
+        },
+        (error) => {
+          console.log(error.message);
+        },
+      );
 
     return function cleanup() {
       mounted = false;
@@ -133,13 +141,13 @@ const YourPosts = () => {
   }, []);
 
   return (
-    <div className={classes.root}>
-      <h2>Your Posts</h2>
-      <Grid container spacing={3}>
-        {posts && posts.length ? (
+    <>
+      <ContentWrapper title="Your Posts">
+        {Array.isArray(posts) && posts.length ? (
           posts.map((p) => (
             <Post
               key={p.id}
+              showType
               editable
               type={p.type}
               owner={p.owner}
@@ -153,23 +161,44 @@ const YourPosts = () => {
                 error: p.error,
                 solution: p.solution,
               }}
-              onClickUpdate={() => setForUpdate(p.id)}
-              onClickDelete={
-                () => deletePost(p.id, p.type === POST_TYPES.TIP.value ? 'tips' : 'bugFixes')
-              }
+              onClickUpdate={() => setForUpdate(p)}
+              onClickDelete={() => setForDelete(p)}
             />
           ))) : null}
-      </Grid>
+      </ContentWrapper>
       <PostForm
         title="Update Post"
         btnTitle="update"
-        open={open}
-        setOpen={setOpen}
+        open={openForm}
+        setOpen={setOpenForm}
         form={selectedPost}
         handleChangeForm={handleChangeForm}
-        onClickBtn={updatePost}
+        onClickBtn={() => setOpenDialog(true)}
       />
-    </div>
+      <Dialog
+        open={openDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {`Are you sure you want to ${action} the post?`}
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleConfirm}
+            color={action === 'update' ? 'primary' : 'secondary'}
+            autoFocus
+          >
+            {action}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

@@ -6,8 +6,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Grid from '@material-ui/core/Grid';
 import { Divider } from '@material-ui/core';
+import NoteOutlined from '@material-ui/icons/NoteOutlined';
+import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 import { GRAY3, GRAY4, PRIMARY } from '../constants/colors';
-import TagPicker from '../common/TagPicker/TagPicker';
+import TagPicker from './TagPicker/TagPicker';
 import POST_TYPES from '../constants/post-types';
 import { convertDate, bufferToBase64 } from '../utils';
 
@@ -26,7 +28,8 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: theme.spacing(2),
+    margin: theme.spacing(2),
+    alignItems: 'center',
   },
   postSectionContent: {
     backgroundColor: GRAY4,
@@ -69,6 +72,23 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
     maxWidth: 1000,
   },
+  postTypeContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    color: PRIMARY,
+  },
+  postTypeText: {
+    fontWeight: 'bold',
+    marginLeft: theme.spacing(1),
+  },
+  ownerTopbar: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing(2),
+    alignItems: 'center',
+  },
 }));
 
 const PostSection = ({ title, children }) => {
@@ -82,7 +102,7 @@ const PostSection = ({ title, children }) => {
   );
 };
 
-const PostTopbar = ({ editable, owner, onClickUpdate, onClickDelete }) => {
+const PostTopbar = ({ showType, editable, type, onClickUpdate, onClickDelete }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -92,36 +112,60 @@ const PostTopbar = ({ editable, owner, onClickUpdate, onClickDelete }) => {
   const handleClose = () => setAnchorEl(null);
 
   return (
-    <div className={classes.postTopbar}>
-      <div className={classes.owner}>{owner}</div>
-      {editable ? (
-        <div>
-          <IconButton
-            aria-label="update post"
-            aria-controls="post-menu"
-            aria-haspopup="true"
-            onClick={handleMenu}
-            className={classes.actionBtn}
-          >
-            <MoreHoriz />
-          </IconButton>
-          <Menu
-            id="post-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={open}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>Update</MenuItem>
-            <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>Delete</MenuItem>
-          </Menu>
+    showType ? (
+      <>
+        <div className={classes.postTopbar}>
+          <div className={classes.postTypeContainer}>
+            { type === POST_TYPES.BUG_FIX.value ? <BugReportOutlined /> : <NoteOutlined /> }
+            <div className={classes.postTypeText}>
+              { type === POST_TYPES.BUG_FIX.value ? POST_TYPES.BUG_FIX.name : POST_TYPES.TIP.name }
+            </div>
+          </div>
+          {
+            editable && (
+              <div>
+                <IconButton
+                  aria-label="update post"
+                  aria-controls="post-menu"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  className={classes.actionBtn}
+                  style={{ width: 30, height: 30 }}
+                >
+                  <MoreHoriz />
+                </IconButton>
+                <Menu
+                  id="post-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={open}
+                  onClose={handleClose}
+                >
+                  <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>Update</MenuItem>
+                  <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>Delete</MenuItem>
+                </Menu>
+              </div>
+            )
+          }
         </div>
-      ) : null}
+        <Divider />
+      </>
+    ) : null
+  );
+};
+
+const OwnerTopbar = ({ owner }) => {
+  const classes = useStyles();
+
+  return (
+    <div className={classes.ownerTopbar}>
+      <div className={classes.owner}>{owner}</div>
     </div>
   );
 };
 
 const Post = ({
+  showType,
   editable,
   type,
   owner,
@@ -137,13 +181,15 @@ const Post = ({
   return (
     <Grid item xs={8}>
       <div className={classes.gridContainer}>
+        <PostTopbar
+          showType={showType}
+          editable={editable}
+          type={type}
+          onClickUpdate={onClickUpdate}
+          onClickDelete={onClickDelete}
+        />
         <div className={classes.container}>
-          <PostTopbar
-            editable={editable}
-            owner={owner.username}
-            onClickUpdate={onClickUpdate}
-            onClickDelete={onClickDelete}
-          />
+          <OwnerTopbar owner={owner.username} />
           <div className={classes.description}>{content.description}</div>
           {type === POST_TYPES.BUG_FIX.value ? (
             <>
@@ -155,7 +201,7 @@ const Post = ({
               </PostSection>
             </>
           ) : null}
-          {content.images && content.images.length ? (
+          {Array.isArray(content.images) && content.images.length ? (
             <div className={classes.imgContainer}>
               {
                 content.images.map((i) => (
@@ -171,7 +217,7 @@ const Post = ({
               }
             </div>
           ) : null}
-          {content.links && content.links.length ? (
+          {Array.isArray(content.links) && content.links.length ? (
             <PostSection title="Link">
               <ul>
                 {content.links.map((link) => (

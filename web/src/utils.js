@@ -1,5 +1,8 @@
+/* eslint-disable guard-for-in */
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable import/prefer-default-export */
 import POST_TYPES from './constants/post-types';
+import { BE_ROUTES } from './constants/routes';
 
 export function preparePost(form) {
   let route;
@@ -14,9 +17,9 @@ export function preparePost(form) {
   if (form.type === POST_TYPES.BUG_FIX.value) {
     post.error = form.error;
     post.solution = form.solution;
-    route = 'bugFixes';
+    route = BE_ROUTES.BUG_FIXES;
   } else if (form.type === POST_TYPES.TIP.value) {
-    route = 'tips';
+    route = BE_ROUTES.TIPS;
   }
 
   return { post, route };
@@ -53,4 +56,56 @@ export function createFile(item) {
   }
 
   return new File([ia], item.name, { type: item.mime });
+}
+
+/**
+ * Finds the changed values in the old object.
+ * @param {(Object)} oldObj - Object
+ * @param {(Object)} newObj - Object with same fields as oldObj
+ * @returns Returns the diff object containing only the fields with the new values or
+ * returns empty object if there is no difference or
+ * returns undefined if one of the objects has different field than other or at least
+ * one of the parameters is not Object.
+ */
+export function diff(oldObj, newObj) {
+  if (oldObj.constructor !== Object || newObj.constructor !== Object) {
+    return undefined;
+  }
+
+  let diffObj = {};
+
+  if (oldObj && newObj) {
+    for (const prop in oldObj) {
+      if (Object.prototype.hasOwnProperty.call(oldObj, prop)
+          && Object.prototype.hasOwnProperty.call(newObj, prop)) {
+        if (JSON.stringify(oldObj[prop]) !== JSON.stringify(newObj[prop])) {
+          diffObj[prop] = newObj[prop];
+        }
+      } else {
+        diffObj = undefined;
+        break;
+      }
+    }
+  }
+
+  return diffObj;
+}
+
+export function isObjectEmpty(obj) {
+  if (obj.constructor !== Object) {
+    return undefined;
+  }
+
+  for (const _ in obj) {
+    return false;
+  }
+
+  return true;
+}
+
+export function isEqual(obj1, obj2) {
+  if (obj1.constructor !== Object || obj2.constructor !== Object) {
+    return undefined;
+  }
+  return JSON.stringify(obj1) === JSON.stringify(obj2);
 }

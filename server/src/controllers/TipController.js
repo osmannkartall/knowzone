@@ -6,7 +6,7 @@ const { uploadImages, preparePost } = require('../middlewares/uploader');
 const tipRepository = new TipRepository(TipModel);
 
 const create = async (_, res) => {
-  const tip = res.locals.post;
+  const tip = res.locals.data;
   const result = await tipRepository.create(tip);
   res.json({ message: result });
 };
@@ -23,8 +23,7 @@ const findById = async (req, res) => {
 };
 
 const updateById = async (req, res) => {
-  const tip = res.locals.post;
-  const result = await tipRepository.updateById(req.params.id, tip);
+  const result = await tipRepository.updateById(req.params.id, res.locals.data);
   res.json(result);
 };
 

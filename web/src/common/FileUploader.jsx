@@ -2,6 +2,7 @@ import { Button, makeStyles } from '@material-ui/core';
 import React, { useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import CloudUpload from '@material-ui/icons/CloudUpload';
+import { toast } from 'react-toastify';
 import { GRAY2, GRAY3, GRAY4, PRIMARY } from '../constants/colors';
 import { bufferToBase64 } from '../utils';
 
@@ -77,7 +78,7 @@ const baseStyle = {
 const FileUploader = ({ files, setFiles }) => {
   const classes = useStyles();
   const infoTitle = 'Drag n drop some images here, or click to select';
-  const infoSubtitle = `(Maximum ${NUM_MAX_FILES} files)`;
+  const infoSubtitle = `(You can select ${NUM_MAX_FILES} files and the maximum size of a single file is 1 MB)`;
 
   const {
     getRootProps,
@@ -88,17 +89,20 @@ const FileUploader = ({ files, setFiles }) => {
   } = useDropzone({
     accept: ACCEPTED_TYPES,
     onDrop: (acceptedFiles) => {
-      if (acceptedFiles && acceptedFiles.length) {
-        setFiles(acceptedFiles.map((file) => Object.assign(file, {
+      if (Array.isArray(acceptedFiles) && Array.isArray(files)
+        && acceptedFiles.length + files.length <= NUM_MAX_FILES) {
+        const newFiles = acceptedFiles.map((file) => Object.assign(file, {
           preview: URL.createObjectURL(file),
-        })));
+        }));
+        setFiles([...files, ...newFiles]);
+      } else {
+        toast.error('Too many files', { position: 'top-center' });
       }
     },
     maxFiles: NUM_MAX_FILES,
     maxSize: MAX_FILE_SIZE,
     onDropRejected: (uploadedFiles) => {
-      if (uploadedFiles && uploadedFiles.length > NUM_MAX_FILES)
-        alert(`You cannot upload more than ${NUM_MAX_FILES} files.`);
+      toast.error(uploadedFiles[0].errors[0].message, { position: 'top-center' });
     },
   });
 
@@ -151,7 +155,7 @@ const FileUploader = ({ files, setFiles }) => {
 
   return (
     <section className="container">
-      {files && files.length < NUM_MAX_FILES ? (
+      {Array.isArray(files) && files.length < NUM_MAX_FILES ? (
         <div {...getRootProps({ style })}>
           <input {...getInputProps()} />
           <CloudUpload />
