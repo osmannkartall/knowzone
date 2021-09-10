@@ -5,23 +5,24 @@ const upload = multer({ storage: multer.memoryStorage() });
 const uploadImages = upload.array('image');
 
 const preparePost = (req, res, next) => {
-  const post = {};
+  const { saveImage, ...rest } = req.body;
+  const data = {};
   const images = [];
 
-  if (req.body) {
-    Object.entries(req.body).forEach(([k, v]) => {
-      post[k] = JSON.parse(v);
-    });
+  if (rest) {
+    Object.entries(rest).forEach(([k, v]) => { data[k] = JSON.parse(v); });
   }
-  if (req.files) {
+
+  if (req.files && (saveImage === undefined || JSON.parse(saveImage))) {
     req.files.forEach((f) => {
       if (f.originalname && f.buffer && f.mimetype) {
         images.push({ name: f.originalname, content: f.buffer, mime: f.mimetype });
       }
     });
-    post.images = images;
+    data.images = images;
   }
-  res.locals.post = post;
+
+  res.locals.data = data;
 
   next();
 };
