@@ -3,6 +3,7 @@ import ReactTagInput from '@pathofdev/react-tag-input';
 import '@pathofdev/react-tag-input/build/index.css';
 import './TagPicker.css';
 import { Box, makeStyles } from '@material-ui/core';
+import uniq from 'lodash/uniq';
 
 const ERROR_COLOR = '#f44336';
 const TAG_BOX_COLOR = 'grey.400';
@@ -37,9 +38,10 @@ const TagPicker = ({ tags, setTags, readOnly, placeholder, required, unique }) =
 
   const handleTagsOnChange = (newTags) => {
     if (unique) {
-      const tagSet = new Set(newTags);
-      const invalid = tagSet.size !== newTags.length;
-      if (!invalid) {
+      const uniqArr = uniq(newTags);
+      const invalid = newTags.length !== uniqArr.length;
+
+      if (!invalid || ((newTags.length - uniqArr.length) === 1 && !isInvalid)) {
         setTags(newTags);
       }
       setIsInvalid(invalid);
