@@ -38,7 +38,7 @@ const SearchResults = () => {
           <Post
             key={p.id}
             showType
-            type={p.error || p.solution ? 'bugFix' : 'tip'}
+            type={p.error || p.solution ? 'bugfix' : 'tip'}
             owner={p.owner}
             content={{
               links: p.links,

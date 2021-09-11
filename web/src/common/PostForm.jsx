@@ -106,7 +106,7 @@ const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onC
                   fullWidth
                   disabled={form.id !== null && form.id !== undefined}
                 >
-                  {Object.values(POST_TYPES).map((opt) => (
+                  {Array.from(POST_TYPES).map(([, opt]) => (
                     <MenuItem key={opt.value} value={opt.value}>{opt.name}</MenuItem>
                   ))}
                 </TextField>
@@ -126,7 +126,7 @@ const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onC
                   onChange={(e) => handleChangeForm('description', e.target.value)}
                 />
               </Grid>
-              {form.type === POST_TYPES.BUG_FIX.value ? (
+              {form.type === POST_TYPES.get('bugfix').value ? (
                 <Grid item xs={12}>
                   <TextField
                     name="error"
@@ -143,7 +143,7 @@ const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onC
                   />
                 </Grid>
               ) : null}
-              {form.type === POST_TYPES.BUG_FIX.value ? (
+              {form.type === POST_TYPES.get('bugfix').value ? (
                 <Grid item xs={12}>
                   <TextField
                     name="solution"

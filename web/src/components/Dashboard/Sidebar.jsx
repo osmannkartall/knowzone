@@ -6,15 +6,12 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import NoteOutlined from '@material-ui/icons/NoteOutlined';
-import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 import Button from '@material-ui/core/Button';
 import { GRAY3 } from '../../constants/colors';
 import PostForm from '../../common/PostForm';
 import POST_TYPES from '../../constants/post-types';
 import { preparePost } from '../../utils';
 import { AuthContext } from '../../contexts/AuthContext';
-import { FE_ROUTES } from '../../constants/routes';
 
 const drawerWidth = 240;
 
@@ -45,8 +42,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const drawerItemNames = [
-  { text: 'Tips', route: `/${FE_ROUTES.TIPS}`, icon: <NoteOutlined /> },
-  { text: 'Bug Fixes', route: `/${FE_ROUTES.BUG_FIXES}`, icon: <BugReportOutlined /> },
+  {
+    text: POST_TYPES.get('tip').pluralName,
+    route: POST_TYPES.get('tip').route,
+    icon: POST_TYPES.get('tip').icon,
+  },
+  {
+    text: POST_TYPES.get('bugfix').pluralName,
+    route: POST_TYPES.get('bugfix').route,
+    icon: POST_TYPES.get('bugfix').icon,
+  },
 ];
 
 const DrawerItem = ({ text, route, icon }) => (
@@ -55,7 +60,6 @@ const DrawerItem = ({ text, route, icon }) => (
     <ListItemText primary={text} />
   </ListItem>
 );
-
 
 const Sidebar = () => {
   const classes = useStyles();
@@ -69,7 +73,7 @@ const Sidebar = () => {
     owner: { id: user.id, username: user.username, name: user.name },
     error: '',
     solution: '',
-    type: POST_TYPES.TIP.value,
+    type: POST_TYPES.get('tip').value,
   };
   const [newPost, setNewPost] = useState(emptyPost);
 
