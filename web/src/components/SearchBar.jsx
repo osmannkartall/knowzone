@@ -44,10 +44,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     color: GRAY2,
   },
-  searchOptions: {
-    flexGrow: 1,
-    padding: theme.spacing(0, 2),
-  },
   searchOptionsWrapper: {
     flexGrow: 1,
     width: SEARCH_WIDTH,
