@@ -6,8 +6,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Grid from '@material-ui/core/Grid';
 import { Divider } from '@material-ui/core';
-import NoteOutlined from '@material-ui/icons/NoteOutlined';
-import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 import { GRAY3, GRAY4, PRIMARY } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
 import POST_TYPES from '../constants/post-types';
@@ -116,9 +114,9 @@ const PostTopbar = ({ showType, editable, type, onClickUpdate, onClickDelete }) 
       <>
         <div className={classes.postTopbar}>
           <div className={classes.postTypeContainer}>
-            { type === POST_TYPES.BUG_FIX.value ? <BugReportOutlined /> : <NoteOutlined /> }
+            { POST_TYPES.get(type).icon }
             <div className={classes.postTypeText}>
-              { type === POST_TYPES.BUG_FIX.value ? POST_TYPES.BUG_FIX.name : POST_TYPES.TIP.name }
+              { POST_TYPES.get(type).name }
             </div>
           </div>
           {
@@ -191,7 +189,7 @@ const Post = ({
         <div className={classes.container}>
           <OwnerTopbar owner={owner.username} />
           <div className={classes.description}>{content.description}</div>
-          {type === POST_TYPES.BUG_FIX.value ? (
+          {type === POST_TYPES.get('bugFix').value ? (
             <>
               <PostSection title="Error">
                 <div>{content.error}</div>

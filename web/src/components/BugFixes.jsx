@@ -25,12 +25,12 @@ const BugFixes = () => {
   }, []);
 
   return (
-    <ContentWrapper title="Bug Fixes">
+    <ContentWrapper title={POST_TYPES.get('bugFix').pluralName}>
       {Array.isArray(posts) && posts.length ? (
         posts.map((p) => (
           <Post
             key={p.id}
-            type={POST_TYPES.BUG_FIX.value}
+            type={POST_TYPES.get('bugFix').value}
             owner={p.owner}
             content={{
               links: p.links,

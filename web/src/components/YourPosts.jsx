@@ -45,7 +45,7 @@ const YourPosts = () => {
         const idx = posts.findIndex((p) => p.id === selectedPost.id);
         if (idx !== -1 && !isEqual(selectedPost, posts[idx])) {
           const changes = diff(posts[idx], selectedPost);
-          const route = selectedPost.type === POST_TYPES.BUG_FIX.value ? BE_ROUTES.BUG_FIXES : BE_ROUTES.TIPS;
+          const route = POST_TYPES.get(selectedPost.type).route;
 
           if (changes && !isObjectEmpty(changes)) {
             const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
@@ -84,7 +84,7 @@ const YourPosts = () => {
 
   const deletePost = () => {
     if (selectedPost && selectedPost.type && selectedPost.id) {
-      const route = selectedPost.type === POST_TYPES.TIP.value ? BE_ROUTES.TIPS : BE_ROUTES.BUG_FIXES;
+      const route = POST_TYPES.get(selectedPost.type).route;
       const idx = posts.findIndex((p) => p.id === selectedPost.id);
 
       if (idx !== -1) {

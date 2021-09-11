@@ -78,12 +78,12 @@ const SearchOptions = ({
             <MenuItem value="">
               <em>None</em>
             </MenuItem>
-            {Object.values(POST_TYPES).map((opt) => (
+            {Array.from(POST_TYPES).map(([, opt]) => (
               <MenuItem key={opt.value} value={opt.value}>{opt.name}</MenuItem>
             ))}
           </Select>
         </SearchOptionRow>
-        {options.postType !== POST_TYPES.TIP.value ? (
+        {options.postType !== POST_TYPES.get('tip').value ? (
           <>
             <SearchOptionRow label="Error">
               <TextField
