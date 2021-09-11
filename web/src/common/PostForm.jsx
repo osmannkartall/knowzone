@@ -3,7 +3,6 @@ import {
   Grid,
   TextField,
   makeStyles,
-  Box,
   IconButton,
   MenuItem,
   Button,
@@ -63,9 +62,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'flex-end',
     alignItems: 'center',
     color: WHITE,
-  },
-  topics: {
-    padding: theme.spacing(1),
   },
 }));
 
@@ -167,22 +163,18 @@ const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onC
                 />
               </Grid>
               <Grid item xs={12}>
-                <Box border={1} borderColor="grey.400" borderRadius={5} className={classes.topics}>
-                  <TagPicker
-                    tags={form.topics}
-                    setTags={(topics) => handleChangeForm('topics', topics)}
-                    required
-                  />
-                </Box>
+                <TagPicker
+                  tags={form.topics}
+                  setTags={(topics) => handleChangeForm('topics', topics)}
+                  required
+                />
               </Grid>
               <Grid item xs={12}>
-                <Box border={1} borderColor="grey.400" borderRadius={5} className={classes.topics}>
-                  <TagPicker
-                    tags={form.links}
-                    setTags={(links) => handleChangeForm('links', links)}
-                    placeholder="Enter links"
-                  />
-                </Box>
+                <TagPicker
+                  tags={form.links}
+                  setTags={(links) => handleChangeForm('links', links)}
+                  placeholder="Enter links"
+                />
               </Grid>
             </>
           </Grid>
