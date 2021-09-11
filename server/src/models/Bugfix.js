@@ -5,7 +5,7 @@ const { maxLengthMessage, transformToJSON } = require('../utils');
 const MAX_LEN_ERROR = 4000;
 const MAX_LEN_SOLUTION = 4000;
 
-const bugFixObject = {
+const bugfixObject = {
   ...basePostObject,
   ...{
     error: {
@@ -21,13 +21,13 @@ const bugFixObject = {
   },
 };
 
-const bugFixSchema = new Schema(
-  bugFixObject,
+const bugfixSchema = new Schema(
+  bugfixObject,
   { timestamps: true },
 );
 
-transformToJSON(bugFixSchema);
+transformToJSON(bugfixSchema);
 
-const BugFix = model('BugFix', bugFixSchema);
+const Bugfix = model('Bugfix', bugfixSchema);
 
-module.exports = BugFix;
+module.exports = Bugfix;

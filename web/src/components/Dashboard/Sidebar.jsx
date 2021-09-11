@@ -48,9 +48,9 @@ const drawerItemNames = [
     icon: POST_TYPES.get('tip').icon,
   },
   {
-    text: POST_TYPES.get('bugFix').pluralName,
-    route: POST_TYPES.get('bugFix').route,
-    icon: POST_TYPES.get('bugFix').icon,
+    text: POST_TYPES.get('bugfix').pluralName,
+    route: POST_TYPES.get('bugfix').route,
+    icon: POST_TYPES.get('bugfix').icon,
   },
 ];
 

@@ -3,11 +3,11 @@ import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 
 const POST_TYPES = new Map([
   [
-    'bugFix',
+    'bugfix',
     {
-      value: 'bugFix',
-      name: 'Bug Fix',
-      pluralName: 'Bug Fixes',
+      value: 'bugfix',
+      name: 'Bugfix',
+      pluralName: 'Bugfixes',
       icon: <BugReportOutlined />,
       route: 'bugfixes',
     },

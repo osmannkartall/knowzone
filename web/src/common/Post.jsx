@@ -189,7 +189,7 @@ const Post = ({
         <div className={classes.container}>
           <OwnerTopbar owner={owner.username} />
           <div className={classes.description}>{content.description}</div>
-          {type === POST_TYPES.get('bugFix').value ? (
+          {type === POST_TYPES.get('bugfix').value ? (
             <>
               <PostSection title="Error">
                 <div>{content.error}</div>

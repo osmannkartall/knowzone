@@ -13,7 +13,7 @@ export function preparePost(form) {
     owner: form.owner,
   };
 
-  if (form.type === POST_TYPES.get('bugFix').value) {
+  if (form.type === POST_TYPES.get('bugfix').value) {
     post.error = form.error;
     post.solution = form.solution;
   }

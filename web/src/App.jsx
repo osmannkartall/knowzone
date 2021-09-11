@@ -3,7 +3,7 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import Dashboard from './components/Dashboard/Dashboard';
 import Tips from './components/Tips';
-import BugFixes from './components/BugFixes';
+import Bugfixes from './components/Bugfixes';
 import YourPosts from './components/YourPosts';
 import SearchResults from './components/SearchResults';
 import NotFound from './components/NotFound';
@@ -59,7 +59,7 @@ const Wrapper = () => {
           <Redirect to={`/${FE_ROUTES.TIPS}`} />
         </Route>
         <Route path={`/${FE_ROUTES.BUG_FIXES}`}>
-          <Dashboard><BugFixes /></Dashboard>
+          <Dashboard><Bugfixes /></Dashboard>
         </Route>
         <Route path={`/${FE_ROUTES.TIPS}`}>
           <Dashboard><Tips /></Dashboard>

@@ -126,7 +126,7 @@ const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onC
                   onChange={(e) => handleChangeForm('description', e.target.value)}
                 />
               </Grid>
-              {form.type === POST_TYPES.get('bugFix').value ? (
+              {form.type === POST_TYPES.get('bugfix').value ? (
                 <Grid item xs={12}>
                   <TextField
                     name="error"
@@ -143,7 +143,7 @@ const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onC
                   />
                 </Grid>
               ) : null}
-              {form.type === POST_TYPES.get('bugFix').value ? (
+              {form.type === POST_TYPES.get('bugfix').value ? (
                 <Grid item xs={12}>
                   <TextField
                     name="solution"

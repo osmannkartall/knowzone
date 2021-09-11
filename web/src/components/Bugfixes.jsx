@@ -4,7 +4,7 @@ import { BE_ROUTES } from '../constants/routes';
 import POST_TYPES from '../constants/post-types';
 import ContentWrapper from '../common/ContentWrapper';
 
-const BugFixes = () => {
+const Bugfixes = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -25,12 +25,12 @@ const BugFixes = () => {
   }, []);
 
   return (
-    <ContentWrapper title={POST_TYPES.get('bugFix').pluralName}>
+    <ContentWrapper title={POST_TYPES.get('bugfix').pluralName}>
       {Array.isArray(posts) && posts.length ? (
         posts.map((p) => (
           <Post
             key={p.id}
-            type={POST_TYPES.get('bugFix').value}
+            type={POST_TYPES.get('bugfix').value}
             owner={p.owner}
             content={{
               links: p.links,
@@ -48,4 +48,4 @@ const BugFixes = () => {
   );
 };
 
-export default BugFixes;
+export default Bugfixes;
