@@ -37,7 +37,8 @@ const TagPicker = ({ tags, setTags, readOnly, placeholder, required, unique }) =
 
   const handleTagsOnChange = (newTags) => {
     if (unique) {
-      const invalid = (new Set(newTags)).size !== newTags.length;
+      const tagSet = new Set(newTags);
+      const invalid = tagSet.size !== newTags.length;
       if (!invalid) {
         setTags(newTags);
       }
@@ -48,13 +49,8 @@ const TagPicker = ({ tags, setTags, readOnly, placeholder, required, unique }) =
   };
 
   return (
-    <>
-      <Box
-        border={1}
-        borderRadius={5}
-        borderColor={unique && isInvalid ? ERROR_COLOR : TAG_BOX_COLOR}
-        className={classes.tagBox}
-      >
+    readOnly
+      ? (
         <ReactTagInput
           tags={tags}
           onChange={(newTags) => handleTagsOnChange(newTags)}
@@ -62,11 +58,28 @@ const TagPicker = ({ tags, setTags, readOnly, placeholder, required, unique }) =
           readOnly={readOnly}
           placeholder={placeholderText}
         />
-      </Box>
-      {unique && isInvalid
-        ? <p className={classes.errorText}>Tag list should contain unique items</p>
-        : null}
-    </>
+      )
+      : (
+        <>
+          <Box
+            border={1}
+            borderRadius={5}
+            borderColor={unique && isInvalid ? ERROR_COLOR : TAG_BOX_COLOR}
+            className={classes.tagBox}
+          >
+            <ReactTagInput
+              tags={tags}
+              onChange={(newTags) => handleTagsOnChange(newTags)}
+              removeOnBackspace
+              readOnly={readOnly}
+              placeholder={placeholderText}
+            />
+          </Box>
+          {unique && isInvalid
+            ? <p className={classes.errorText}>Tag list should contain unique items</p>
+            : null}
+        </>
+      )
   );
 };
 
