@@ -27,7 +27,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TagPicker = ({ tags, setTags, readOnly, placeholder, required, unique }) => {
+const TagPicker = ({
+  tags,
+  setTags,
+  readOnly,
+  placeholder,
+  required,
+  unique,
+  onUniqueError,
+}) => {
   const classes = useStyles();
   const [isInvalid, setIsInvalid] = useState(false);
 
@@ -45,6 +53,9 @@ const TagPicker = ({ tags, setTags, readOnly, placeholder, required, unique }) =
         setTags(newTags);
       }
       setIsInvalid(invalid);
+      if (typeof onUniqueError === 'function') {
+        onUniqueError(invalid);
+      }
     } else {
       setTags(newTags);
     }
@@ -87,7 +98,6 @@ const TagPicker = ({ tags, setTags, readOnly, placeholder, required, unique }) =
 
 TagPicker.defaultProps = {
   placeholder: 'Type a topic and press enter to add',
-  unique: true,
 };
 
 export default TagPicker;

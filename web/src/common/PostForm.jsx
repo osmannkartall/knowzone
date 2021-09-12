@@ -1,4 +1,4 @@
-import React from 'react';
+import { React, useState } from 'react';
 import {
   Grid,
   TextField,
@@ -67,6 +67,9 @@ const useStyles = makeStyles((theme) => ({
 
 const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onClickBtn }) => {
   const classes = useStyles();
+  const [topicsError, setTopicsError] = useState(false);
+
+  console.log(`Topics Error: ${topicsError}`);
 
   return (
     <div>
@@ -167,6 +170,8 @@ const FormContent = ({ title, btnTitle, handleClose, form, handleChangeForm, onC
                   tags={form.topics}
                   setTags={(topics) => handleChangeForm('topics', topics)}
                   required
+                  unique
+                  onUniqueError={(invalid) => setTopicsError(invalid)}
                 />
               </Grid>
               <Grid item xs={12}>
