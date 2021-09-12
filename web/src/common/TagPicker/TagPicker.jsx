@@ -33,11 +33,14 @@ const TagPicker = ({
   readOnly,
   placeholder,
   required,
+  border,
   unique,
   onUniqueError,
+  error,
+  helperText,
 }) => {
   const classes = useStyles();
-  const [isInvalid, setIsInvalid] = useState(false);
+  const [isValid, setIsValid] = useState(true);
 
   let placeholderText = placeholder;
   if (placeholderText && required) {
@@ -47,14 +50,14 @@ const TagPicker = ({
   const handleTagsOnChange = (newTags) => {
     if (unique) {
       const uniqArr = uniq(newTags);
-      const invalid = newTags.length !== uniqArr.length;
+      const valid = newTags.length === uniqArr.length;
 
-      if (!invalid || ((newTags.length - uniqArr.length) === 1 && !isInvalid)) {
+      if (valid || ((newTags.length - uniqArr.length) === 1 && isValid)) {
         setTags(newTags);
       }
-      setIsInvalid(invalid);
+      setIsValid(valid);
       if (typeof onUniqueError === 'function') {
-        onUniqueError(invalid);
+        onUniqueError(valid);
       }
     } else {
       setTags(newTags);
@@ -62,22 +65,13 @@ const TagPicker = ({
   };
 
   return (
-    readOnly
+    border
       ? (
-        <ReactTagInput
-          tags={tags}
-          onChange={(newTags) => handleTagsOnChange(newTags)}
-          removeOnBackspace
-          readOnly={readOnly}
-          placeholder={placeholderText}
-        />
-      )
-      : (
         <>
           <Box
             border={1}
             borderRadius={5}
-            borderColor={unique && isInvalid ? ERROR_COLOR : TAG_BOX_COLOR}
+            borderColor={error || (unique && !isValid) ? ERROR_COLOR : TAG_BOX_COLOR}
             className={classes.tagBox}
           >
             <ReactTagInput
@@ -88,10 +82,19 @@ const TagPicker = ({
               placeholder={placeholderText}
             />
           </Box>
-          {unique && isInvalid
-            ? <p className={classes.errorText}>Tag list should contain unique items</p>
+          {error || (unique && !isValid)
+            ? <p className={classes.errorText}>{error && (helperText.length > 0) ? helperText : 'Tag list should contain unique items.'}</p>
             : null}
         </>
+      )
+      : (
+        <ReactTagInput
+          tags={tags}
+          onChange={(newTags) => handleTagsOnChange(newTags)}
+          removeOnBackspace
+          readOnly={readOnly}
+          placeholder={placeholderText}
+        />
       )
   );
 };
