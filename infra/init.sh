@@ -25,6 +25,26 @@ then
     exit 1
 fi
 
+# Check if pre-requisites are on the path
+
+if ! [[ -x "$(command -v git)" ]]
+then
+    echo "'git' command could not be found. Is it on the path?"
+    exit 1
+fi
+
+if ! [[ -x "$(command -v docker)" ]]
+then
+    echo "'docker' command could not be found. Is it on the path?"
+    exit 1
+fi
+
+if ! [[ -x "$(command -v kubectl)" ]]
+then
+    echo "'kubectl' command could not be found. Is it on the path?"
+    exit 1
+fi
+
 generate-manifests() {
     log_green "Generating Kubernetes manifests from templates..."
     log_blue "Generated manifests will be under ${SCRIPT_DIR}/k8s-manifests/generated"

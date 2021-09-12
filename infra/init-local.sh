@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Environment variables required for setting up the local cluster.
+# Please do not modify below values.
+
 export REGISTRY_NAME="localhost:5000"
 export FRONTEND_LB_PREFIX="http://localhost:3000"
 export FRONTEND_URL="${FRONTEND_LB_PREFIX}"
@@ -18,6 +21,38 @@ log_blue() { printf "\x1B[94m>> %s\x1B[39m\n" "$1"; }
 if [[ "${#}" -gt 1 ]]
 then
     log_red "Invalid option. Type '`basename ${0}` help' for available commands."
+    exit 1
+fi
+
+# Check if pre-requisites are on the path
+
+if ! [[ -x "$(command -v git)" ]]
+then
+    echo "'git' command could not be found. Is it on the path?"
+    exit 1
+fi
+
+if ! [[ -x "$(command -v kind)" ]]
+then
+    echo "'kind' command could not be found. Is it on the path?"
+    exit 1
+fi
+
+if ! [[ -x "$(command -v docker)" ]]
+then
+    echo "'docker' command could not be found. Is it on the path?"
+    exit 1
+fi
+
+if ! [[ -x "$(command -v tilt)" ]]
+then
+    echo "'tilt' command could not be found. Is it on the path?"
+    exit 1
+fi
+
+if ! [[ -x "$(command -v kubectl)" ]]
+then
+    echo "'kubectl' command could not be found. Is it on the path?"
     exit 1
 fi
 
