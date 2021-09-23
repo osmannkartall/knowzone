@@ -43,21 +43,12 @@ const useStyles = makeStyles((theme) => ({
     width: 40,
     height: 40,
   },
-  appLogo: {
+  appLogoLink: {
+    height: 50,
     [theme.breakpoints.only('xs')]: {
+      overflow: 'hidden',
       marginRight: theme.spacing(3),
-    },
-  },
-  appLogoTitle: {
-    fontSize: 12,
-    fontFamily: 'Helvetica',
-    lineHeight: 1.2,
-    pointerEvents: 'none',
-    whiteSpace: 'normal',
-    wordWrap: 'normal',
-    display: 'inline-block',
-    [theme.breakpoints.down('xs')]: {
-      display: 'none',
+      marginLeft: theme.spacing(1),
     },
   },
 }));
@@ -100,9 +91,8 @@ const Topbar = ({ openSidebar }) => {
         >
           <MenuIcon />
         </IconButton>
-        <a href="http://localhost:3000" className={classes.appLogo}>
+        <a href="http://localhost:3000" className={classes.appLogoLink}>
           <AppLogo
-            titleClassName={classes.appLogoTitle}
             width="140"
             height="50"
           />
