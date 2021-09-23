@@ -1,34 +1,21 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { React, useState } from 'react';
+import { Grid } from '@material-ui/core';
 import Topbar from './Topbar';
 import Sidebar from './Sidebar';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
-  toolbar: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
-    padding: theme.spacing(0, 3),
-  },
-}));
+import Content from './Content';
 
 const Dashboard = ({ children }) => {
-  const classes = useStyles();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const openSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
-    <div className={classes.root}>
-      <Topbar />
-      <Sidebar />
-      <main className={classes.content}>
-        <div className={classes.toolbar} />
+    <Grid container>
+      <Topbar openSidebar={openSidebar} />
+      <Sidebar isSidebarOpen={isSidebarOpen} />
+      <Content isSidebarOpen={isSidebarOpen}>
         {children}
-      </main>
-    </div>
+      </Content>
+    </Grid>
   );
 };
 

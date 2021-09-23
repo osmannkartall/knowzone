@@ -1,107 +1,146 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import { makeStyles, IconButton, MenuItem, Menu } from '@material-ui/core';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import { GRAY1, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
+import MenuIcon from '@material-ui/icons/Menu';
 import SearchBar from '../SearchBar';
+import { GRAY1, GRAY3 } from '../../constants/colors';
 import { FE_ROUTES } from '../../constants/routes';
+import { sidebarWidth, topbarHeight } from '../../constants/styles';
+import AppLogo from '../../common/AppLogo';
 
 const useStyles = makeStyles((theme) => ({
-  title: {
-    display: 'none',
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
-    },
-    marginRight: theme.spacing(18),
-    color: PRIMARY,
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-    backgroundColor: WHITE,
+  topbar: {
+    display: 'flex',
+    flexDirection: 'row',
     color: GRAY1,
     borderBottom: `1px solid ${GRAY3}`,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    zIndex: 5,
+    position: 'sticky',
+    top: 0,
+    height: topbarHeight,
   },
-  accountBtn: {
+  accountButton: {
+    margin: theme.spacing(0, 2),
+  },
+  topbarLeftContainer: {
+    height: topbarHeight,
+    width: sidebarWidth,
     display: 'flex',
-    flexGrow: 1,
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    overflowX: 'hidden',
+    [theme.breakpoints.only('xs')]: {
+      justifyContent: 'space-between',
+    },
+  },
+  menuButton: {
+    margin: theme.spacing(0, 2),
+    width: 40,
+    height: 40,
+  },
+  appLogo: {
+    [theme.breakpoints.only('xs')]: {
+      marginRight: theme.spacing(3),
+    },
+  },
+  appLogoTitle: {
+    fontSize: 12,
+    fontFamily: 'Helvetica',
+    lineHeight: 1.2,
+    pointerEvents: 'none',
+    whiteSpace: 'normal',
+    wordWrap: 'normal',
+    display: 'inline-block',
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
   },
 }));
 
-const Topbar = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
+const Topbar = ({ openSidebar }) => {
+  const [anchorMenu, setAnchorMenu] = useState(null);
   const history = useHistory();
   const classes = useStyles();
+  const isMenuOpen = Boolean(anchorMenu);
 
-  const open = Boolean(anchorEl);
+  const toggleMenu = (event) => setAnchorMenu(event.currentTarget);
 
-  const handleMenu = (event) => setAnchorEl(event.currentTarget);
-
-  const handleClose = () => setAnchorEl(null);
+  const closeMenu = () => setAnchorMenu(null);
 
   const onClickYourPosts = () => {
-    handleClose();
+    closeMenu();
     history.push(FE_ROUTES.YOUR_POSTS);
   };
 
   const onClickAccount = () => {
-    handleClose();
+    closeMenu();
     console.log('account');
     // history.push('account');
   };
 
   const onClickLogout = () => {
-    handleClose();
+    closeMenu();
     console.log('logout');
     // history.push('/');
   };
 
   return (
-    <AppBar elevation={0} position="fixed" className={classes.appBar}>
-      <Toolbar>
-        <Typography className={classes.title} variant="h6">
-          Knowzone
-        </Typography>
-        <SearchBar />
-        <div className={classes.accountBtn}>
-          <IconButton
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleMenu}
-            color="inherit"
-          >
-            <AccountCircle />
-          </IconButton>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={open}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={onClickYourPosts}>Your Posts</MenuItem>
-            <MenuItem onClick={onClickAccount}>Account</MenuItem>
-            <MenuItem onClick={onClickLogout}>Logout</MenuItem>
-          </Menu>
-        </div>
-      </Toolbar>
-    </AppBar>
+    <div className={classes.topbar}>
+      <div className={classes.topbarLeftContainer}>
+        <IconButton
+          className={classes.menuButton}
+          color="inherit"
+          aria-label="menu"
+          onClick={openSidebar}
+        >
+          <MenuIcon />
+        </IconButton>
+        <a href="http://localhost:3000" className={classes.appLogo}>
+          <AppLogo
+            titleClassName={classes.appLogoTitle}
+            width="140"
+            height="50"
+          />
+        </a>
+      </div>
+      <SearchBar />
+      <div className={classes.accountButton}>
+        <IconButton
+          aria-label="account of current user"
+          aria-controls="menu-topbar"
+          aria-haspopup="true"
+          onClick={toggleMenu}
+          color="inherit"
+          style={{ width: 40, height: 40 }}
+        >
+          <AccountCircle />
+        </IconButton>
+        <Menu
+          id="menu-topbar"
+          anchorEl={anchorMenu}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          open={isMenuOpen}
+          onClose={closeMenu}
+        >
+          <MenuItem onClick={onClickYourPosts}>Your Posts</MenuItem>
+          <MenuItem onClick={onClickAccount}>Account</MenuItem>
+          <MenuItem onClick={onClickLogout}>Logout</MenuItem>
+        </Menu>
+      </div>
+    </div>
   );
 };
 

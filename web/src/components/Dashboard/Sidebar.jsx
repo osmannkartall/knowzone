@@ -1,47 +1,49 @@
-import React, { useState, useContext } from 'react';
+import { React, useState, useContext } from 'react';
+import {
+  makeStyles,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Button,
+} from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Button from '@material-ui/core/Button';
-import { GRAY3 } from '../../constants/colors';
-import PostForm from '../../common/PostForm';
+import { GRAY3, WHITE } from '../../constants/colors';
+import { sidebarWidth, topbarHeight } from '../../constants/styles';
 import POST_TYPES from '../../constants/post-types';
 import { preparePost } from '../../utils';
 import { AuthContext } from '../../contexts/AuthContext';
-
-const drawerWidth = 240;
+import PostForm from '../../common/PostForm';
 
 const useStyles = makeStyles((theme) => ({
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
+  sidebar: {
+    height: '100%',
+    width: '100%',
+    overflowY: 'auto',
+    overflowX: 'hidden',
   },
-  drawerPaper: {
-    width: drawerWidth,
-    borderRightColor: GRAY3,
-  },
-  drawerContainer: {
+  sidebarContainer: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
-    height: '100%',
+    position: 'fixed',
+    left: 0,
+    top: topbarHeight,
+    height: `calc(100% - ${topbarHeight}px)`,
+    width: sidebarWidth,
+    backgroundColor: WHITE,
+    borderRight: `1px solid ${GRAY3}`,
   },
-  drawerItemsContainer: {
-    overflow: 'auto',
-  },
-  // necessary for content to be below app bar
-  toolbar: theme.mixins.toolbar,
-  drawerBtn: {
-    margin: theme.spacing(4, 2),
+  createButton: {
+    margin: theme.spacing(3, 2),
     padding: theme.spacing(1, 0),
+  },
+  sidebarBottomContainer: {
+    display: 'flex',
+    justifyContent: 'center',
   },
 }));
 
-const drawerItemNames = [
+const sidebarItemsContent = [
   {
     text: POST_TYPES.get('tip').pluralName,
     route: POST_TYPES.get('tip').route,
@@ -54,16 +56,27 @@ const drawerItemNames = [
   },
 ];
 
-const DrawerItem = ({ text, route, icon }) => (
+const SidebarItem = ({ text, route, icon }) => (
   <ListItem button component={Link} key={text} to={route}>
     <ListItemIcon>{icon}</ListItemIcon>
     <ListItemText primary={text} />
   </ListItem>
 );
 
-const Sidebar = () => {
-  const classes = useStyles();
-  const [open, setOpen] = useState(false);
+const SidebarItemList = () => (
+  <List>
+    {sidebarItemsContent.map((content) => (
+      <SidebarItem
+        key={content.text}
+        text={content.text}
+        route={content.route}
+        icon={content.icon}
+      />
+    ))}
+  </List>
+);
+
+export default function Sidebar({ isSidebarOpen }) {
   const [user] = useContext(AuthContext);
   const emptyPost = {
     description: '',
@@ -76,12 +89,14 @@ const Sidebar = () => {
     type: POST_TYPES.get('tip').value,
   };
   const [newPost, setNewPost] = useState(emptyPost);
+  const [isPostFormOpen, setIsPostFormOpen] = useState(false);
+  const classes = useStyles();
 
   const handleChangeForm = (key, value) => {
     setNewPost((prevState) => ({ ...prevState, [key]: value }));
   };
 
-  const onClickCreate = () => setOpen(true);
+  const onClickCreate = () => setIsPostFormOpen(true);
 
   const addPost = () => {
     const { post, route } = preparePost(newPost);
@@ -109,7 +124,7 @@ const Sidebar = () => {
       .then(
         (result) => {
           console.log(result.message);
-          setOpen(false);
+          setIsPostFormOpen(false);
           setNewPost(emptyPost);
         },
         (error) => {
@@ -119,42 +134,36 @@ const Sidebar = () => {
   };
 
   return (
-    <Drawer
-      className={classes.drawer}
-      variant="permanent"
-      classes={{
-        paper: classes.drawerPaper,
-      }}
-      anchor="left"
+    <div
+      className={classes.sidebarContainer}
+      style={
+        isSidebarOpen
+          ? { display: 'flex' }
+          : { display: 'none' }
+      }
     >
-      <div className={classes.toolbar} />
-      <div className={classes.drawerContainer}>
-        <div className={classes.drawerItemsContainer}>
-          <List>
-            {drawerItemNames.map((item) => (
-              <DrawerItem key={item.text} text={item.text} route={item.route} icon={item.icon} />
-            ))}
-          </List>
-        </div>
+      <div className={classes.sidebar}>
+        <SidebarItemList />
+      </div>
+      <div className={classes.sidebarBottomContainer}>
         <Button
-          className={classes.drawerBtn}
+          className={classes.createButton}
           variant="contained"
           color="primary"
+          fullWidth
           onClick={onClickCreate}
         >
           Create
         </Button>
-        <PostForm
-          title="Create Post"
-          open={open}
-          setOpen={setOpen}
-          form={newPost}
-          handleChangeForm={handleChangeForm}
-          onClickBtn={addPost}
-        />
       </div>
-    </Drawer>
+      <PostForm
+        title="Create Post"
+        open={isPostFormOpen}
+        setOpen={setIsPostFormOpen}
+        form={newPost}
+        handleChangeForm={handleChangeForm}
+        onClickBtn={addPost}
+      />
+    </div>
   );
-};
-
-export default Sidebar;
+}
