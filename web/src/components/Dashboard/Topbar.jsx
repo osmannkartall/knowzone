@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     height: 50,
     [theme.breakpoints.only('xs')]: {
       overflow: 'hidden',
-      marginRight: theme.spacing(3),
+      marginRight: theme.spacing(2),
       marginLeft: theme.spacing(1),
     },
   },
