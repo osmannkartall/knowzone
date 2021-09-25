@@ -1,13 +1,21 @@
+import { makeStyles } from '@material-ui/core';
 import React from 'react';
-import { Grid } from '@material-ui/core';
 
-const ContentWrapper = ({ title, children }) => (
-  <div style={{ flexGrow: 1 }}>
-    <h2>{title}</h2>
-    <Grid container spacing={3}>
+const useStyles = makeStyles((theme) => ({
+  wrapper: {
+    padding: theme.spacing(0, 2),
+  },
+}));
+
+const ContentWrapper = ({ title, children }) => {
+  const classes = useStyles();
+
+  return (
+    <div className={classes.wrapper}>
+      <h2>{title}</h2>
       {children}
-    </Grid>
-  </div>
-);
+    </div>
+  );
+};
 
 export default ContentWrapper;

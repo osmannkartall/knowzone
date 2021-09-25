@@ -8,6 +8,7 @@ import POST_TYPES from '../constants/post-types';
 import { createFile, diff, isObjectEmpty, isEqual } from '../utils';
 import { BE_ROUTES } from '../constants/routes';
 import ContentWrapper from '../common/ContentWrapper';
+import { IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../constants/colors';
 
 const YourPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -191,7 +192,10 @@ const YourPosts = () => {
           <Button
             variant="contained"
             onClick={handleConfirm}
-            color={action === 'update' ? 'primary' : 'secondary'}
+            style={{
+              backgroundColor: action === 'update' ? PRIMARY : IRREVERSIBLE_ACTION,
+              color: WHITE,
+            }}
             autoFocus
           >
             {action}

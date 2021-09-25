@@ -1,63 +1,63 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Popover, IconButton, makeStyles } from '@material-ui/core';
+import { IconButton, makeStyles, Grid } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import TuneIcon from '@material-ui/icons/Tune';
 import { toast } from 'react-toastify';
 import SearchOptions from './SearchOptions';
-import { GRAY1, GRAY2, GRAY3, PRIMARY } from '../constants/colors';
+import { GRAY2, GRAY3, PRIMARY } from '../constants/colors';
 import { FE_ROUTES } from '../constants/routes';
-
-const SEARCH_WIDTH = 700;
+import { searchBarHeight } from '../constants/styles';
 
 const useStyles = makeStyles((theme) => ({
-  searchWrapper: {
+  searchBarWrapper: {
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: SEARCH_WIDTH,
-    padding: theme.spacing(0.4),
+    width: '100%',
+    zIndex: 3,
+    height: searchBarHeight,
     border: `1px solid ${GRAY3}`,
     borderRadius: 6,
+    position: 'relative',
   },
-  searchInput: {
-    flexGrow: 1,
-    color: GRAY1,
-    border: 0,
-    '&:focus': {
-      outline: 'none',
-    },
-    '&::placeholder': {
-      color: '#c1c1c1',
-    },
-    marginLeft: 5,
-    padding: theme.spacing(0, 1),
-    fontSize: 18,
+  searchBar: {
+    display: 'flex',
+    flex: 1,
   },
-  icon: {
-    margin: theme.spacing(0, 0.5),
-  },
-  searchIcon: {
-    pointerEvents: 'none',
+  searchIconWrapper: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    padding: theme.spacing(0, 1),
     color: GRAY2,
   },
-  searchOptionsWrapper: {
+  searchIcon: {
+    width: 20,
+    height: 20,
+    lineHeight: 20,
+  },
+  searchInputWrapper: {
+    display: 'flex',
+    flex: 1,
+    flexWrap: 'wrap',
+  },
+  searchInput: {
+    display: 'flex',
     flexGrow: 1,
-    width: SEARCH_WIDTH,
-    padding: theme.spacing(0.4),
+    flexShrink: 1,
+    flexBasis: '100%',
+    outline: 'none',
+    wordWrap: 'break-word',
+    border: 'none',
+    fontSize: 16,
+  },
+  optionsIconButtonWrapper: {
+    display: 'flex',
+    flexBasis: 'auto',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
   },
 }));
 
-const SearchBar = ({ options }) => {
-  const [anchorElSearch, setAnchorElSearch] = useState(null);
-  const searchRef = useRef(null);
-  const classes = useStyles();
-  const openSearch = Boolean(anchorElSearch);
-  const history = useHistory();
-  const location = useLocation();
+const SearchBar = () => {
   const emptySearchOptions = {
     searchText: '',
     postType: '',
@@ -72,10 +72,14 @@ const SearchBar = ({ options }) => {
     modifiedEndDate: null,
   };
   const [searchOptions, setSearchOptions] = useState(emptySearchOptions);
+  const [isSearchOptionsMenuOpen, setIsSearchOptionsMenuOpen] = useState(false);
+  const classes = useStyles();
+  const history = useHistory();
+  const location = useLocation();
 
-  const handleMenuSearch = () => setAnchorElSearch(searchRef.current);
+  const toggleSearchOptionsMenu = () => setIsSearchOptionsMenuOpen(!isSearchOptionsMenuOpen);
 
-  const handleCloseSearch = () => setAnchorElSearch(null);
+  const hideSearchOptionsMenu = () => setIsSearchOptionsMenuOpen(false);
 
   const handleDateChange = (prop) => (date) => setSearchOptions({ ...searchOptions, [prop]: date });
 
@@ -123,7 +127,7 @@ const SearchBar = ({ options }) => {
       }
     });
 
-    handleCloseSearch();
+    hideSearchOptionsMenu();
     const data = JSON.parse(JSON.stringify(tempSearchOptions));
     history.push(FE_ROUTES.SEARCH_RESULTS, data);
   };
@@ -144,8 +148,6 @@ const SearchBar = ({ options }) => {
     }
   };
 
-  const id = openSearch ? 'menu-search' : undefined;
-
   useEffect(() => {
     let mounted = true;
 
@@ -162,62 +164,47 @@ const SearchBar = ({ options }) => {
   }, [location.pathname, location.state]);
 
   return (
-    <div ref={searchRef} className={classes.searchWrapper}>
-      <div className={`${classes.searchIcon} ${classes.icon}`}>
-        <SearchIcon />
-      </div>
-      <input
-        className={classes.searchInput}
-        value={searchOptions.searchText}
-        onKeyPress={handleOnPressEnter}
-        placeholder="Search..."
-        onChange={handleOptionChange('searchText')}
-      />
-      {options && (
-        <>
-          <IconButton
-            aria-label="search options"
-            aria-controls="menu-search"
-            aria-haspopup="true"
-            onClick={handleMenuSearch}
-            style={{ width: 40, height: 40, color: PRIMARY }}
-            className={classes.icon}
-          >
-            <TuneIcon />
-          </IconButton>
-          <Popover
-            id={id}
-            open={openSearch}
-            anchorEl={anchorElSearch}
-            onClose={handleCloseSearch}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'center',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'center',
-            }}
-          >
-            <div className={classes.searchOptionsWrapper}>
-              <SearchOptions
-                options={searchOptions}
-                setTopics={(topics) => setSearchOptions({ ...searchOptions, topics })}
-                handleOptionChange={handleOptionChange}
-                handleDateChange={handleDateChange}
-                handleSearchOnClick={handleSearchOnClick}
-                handleResetOnClick={handleResetOnClick}
-              />
-            </div>
-          </Popover>
-        </>
-      )}
-    </div>
+    <>
+      <Grid item xs={12} sm={7} md={7} lg={7} className={classes.searchBarWrapper}>
+        <div className={classes.searchBar}>
+          <div className={classes.searchIconWrapper}>
+            <SearchIcon className={classes.searchIcon} />
+          </div>
+          <div className={classes.searchInputWrapper}>
+            <input
+              className={classes.searchInput}
+              type="text"
+              placeholder="Search"
+              value={searchOptions.searchText}
+              onKeyPress={handleOnPressEnter}
+              onChange={handleOptionChange('searchText')}
+            />
+          </div>
+          <div className={classes.optionsIconButtonWrapper}>
+            <IconButton
+              aria-label="search options"
+              aria-controls="menu-search"
+              aria-haspopup="true"
+              style={{ width: 35, height: 35, color: PRIMARY }}
+              onClick={toggleSearchOptionsMenu}
+            >
+              <TuneIcon />
+            </IconButton>
+          </div>
+        </div>
+        {isSearchOptionsMenuOpen && (
+          <SearchOptions
+            options={searchOptions}
+            setTopics={(topics) => setSearchOptions({ ...searchOptions, topics })}
+            handleOptionChange={handleOptionChange}
+            handleDateChange={handleDateChange}
+            handleSearchOnClick={handleSearchOnClick}
+            handleResetOnClick={handleResetOnClick}
+          />
+        )}
+      </Grid>
+    </>
   );
-};
-
-SearchBar.defaultProps = {
-  options: true,
 };
 
 export default SearchBar;
