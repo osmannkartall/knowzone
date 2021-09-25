@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Environment variables required for setting up the local cluster.
+# Please do not modify below values.
+
 export REGISTRY_NAME="localhost:5000"
 export FRONTEND_LB_PREFIX="http://localhost:3000"
 export FRONTEND_URL="${FRONTEND_LB_PREFIX}"
@@ -20,6 +23,17 @@ then
     log_red "Invalid option. Type '`basename ${0}` help' for available commands."
     exit 1
 fi
+
+# Check if pre-requisites are on the path
+declare -a PREREQUISITES=("git" "kind" "docker" "tilt" "kubectl")
+for i in "${PREREQUISITES[@]}"
+do
+    if ! [[ -x "$(command -v ${i})" ]]
+    then
+        echo "Error: ${i} command could not be found. Is it on the path?"
+        exit 1
+    fi
+done
 
 interactive() {
     create-cluster

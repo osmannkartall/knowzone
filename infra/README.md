@@ -1,9 +1,9 @@
-# Setting up the environment  
+# Running on Azure Kubernetes Service Cluster  
 
-## Table of contents
+## Table of Contents
 
-- [Setting up the environment](#setting-up-the-environment)
-  - [Table of contents](#table-of-contents)
+- [Running on Azure Kubernetes Service Cluster](#running-on-azure-kubernetes-service-cluster)
+  - [Table of Contents](#table-of-contents)
   - [Pre-requisites](#pre-requisites)
   - [Creating an Azure Container Registry](#creating-an-azure-container-registry)
     - [Testing Azure Container Registry](#testing-azure-container-registry)
@@ -16,7 +16,7 @@
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)  
 - [Docker](https://docs.docker.com/engine/install/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)  
-
+- [git](https://git-scm.com/downloads)  
 
 ## Creating an Azure Container Registry  
 
