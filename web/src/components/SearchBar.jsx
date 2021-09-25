@@ -152,7 +152,7 @@ const SearchBar = () => {
     let mounted = true;
 
     if (mounted) {
-      if (location.pathname !== '/search-results' && checkAllSearchOptions()) {
+      if (location.pathname !== `/${FE_ROUTES.SEARCH_RESULTS}` && checkAllSearchOptions()) {
         handleResetOnClick();
       } else if (location.state !== undefined) {
         setSearchOptions({ ...emptySearchOptions, ...location.state });
