@@ -1,28 +1,16 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, IconButton, Menu, MenuItem, Divider } from '@material-ui/core';
 import MoreHoriz from '@material-ui/icons/MoreHoriz';
-import IconButton from '@material-ui/core/IconButton';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import Grid from '@material-ui/core/Grid';
-import { Divider } from '@material-ui/core';
-import NoteOutlined from '@material-ui/icons/NoteOutlined';
-import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 import { GRAY3, GRAY4, PRIMARY } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
 import POST_TYPES from '../constants/post-types';
 import { convertDate, bufferToBase64 } from '../utils';
 
 const useStyles = makeStyles((theme) => ({
-  gridContainer: {
+  container: {
     border: `1px solid ${GRAY3}`,
     borderRadius: 4,
-  },
-  container: {
-    padding: theme.spacing(2),
-  },
-  tagContainer: {
-    padding: theme.spacing(1),
+    marginBottom: theme.spacing(2),
   },
   postTopbar: {
     display: 'flex',
@@ -31,27 +19,49 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(2),
     alignItems: 'center',
   },
-  postSectionContent: {
-    backgroundColor: GRAY4,
-    overflowY: 'auto',
-    height: 'auto',
-    maxHeight: '200px',
-    padding: theme.spacing(2),
-    borderRadius: 4,
+  postTypeContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    color: PRIMARY,
   },
-  owner: {
+  postTypeText: {
+    fontWeight: 'bold',
+    marginLeft: theme.spacing(1),
+  },
+  actionButton: {
+    color: PRIMARY,
+  },
+  ownerTopbar: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing(2),
+    alignItems: 'center',
+  },
+  ownerTitle: {
     fontSize: 16,
     alignSelf: 'center',
     fontWeight: '600',
   },
+  postBodyContainer: {
+    padding: theme.spacing(2),
+  },
   description: {
-    marginRight: theme.spacing(7),
+    overflow: 'auto',
   },
-  link: {
-    marginTop: theme.spacing(1),
+  imageContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: theme.spacing(2),
+    overflow: 'auto',
+    maxWidth: 1000,
+    [theme.breakpoints.down('sm')]: {
+      display: 'block',
+    },
   },
-  actionBtn: {
-    color: PRIMARY,
+  links: {
+    margin: 0,
   },
   timeInfo: {
     marginTop: theme.spacing(2),
@@ -64,40 +74,38 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(0, 2),
       fontSize: 10,
     },
+    [theme.breakpoints.only('xs')]: {
+      justifyContent: 'center',
+    },
   },
-  imgContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginTop: theme.spacing(2),
+  link: {
+    marginTop: theme.spacing(1),
+  },
+  postBodySectionContent: {
+    backgroundColor: GRAY4,
+    borderRadius: 4,
+    height: 'auto',
+    maxHeight: 200,
     overflow: 'auto',
-    maxWidth: 1000,
+    padding: theme.spacing(2),
   },
-  postTypeContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    color: PRIMARY,
-  },
-  postTypeText: {
-    fontWeight: 'bold',
-    marginLeft: theme.spacing(1),
-  },
-  ownerTopbar: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing(2),
-    alignItems: 'center',
+  tagContainer: {
+    padding: theme.spacing(2),
+    [theme.breakpoints.down('sm')]: {
+      overflowX: 'auto',
+    },
   },
 }));
 
-const PostSection = ({ title, children }) => {
+const PostBodySection = ({ title, children }) => {
   const classes = useStyles();
 
   return (
     <>
       <h3>{title}</h3>
-      <div className={classes.postSectionContent}>{children}</div>
+      <div className={classes.postBodySectionContent}>
+        {children}
+      </div>
     </>
   );
 };
@@ -116,9 +124,9 @@ const PostTopbar = ({ showType, editable, type, onClickUpdate, onClickDelete }) 
       <>
         <div className={classes.postTopbar}>
           <div className={classes.postTypeContainer}>
-            { type === POST_TYPES.BUG_FIX.value ? <BugReportOutlined /> : <NoteOutlined /> }
+            { POST_TYPES.get(type).icon }
             <div className={classes.postTypeText}>
-              { type === POST_TYPES.BUG_FIX.value ? POST_TYPES.BUG_FIX.name : POST_TYPES.TIP.name }
+              { POST_TYPES.get(type).name }
             </div>
           </div>
           {
@@ -129,7 +137,7 @@ const PostTopbar = ({ showType, editable, type, onClickUpdate, onClickDelete }) 
                   aria-controls="post-menu"
                   aria-haspopup="true"
                   onClick={handleMenu}
-                  className={classes.actionBtn}
+                  className={classes.actionButton}
                   style={{ width: 30, height: 30 }}
                 >
                   <MoreHoriz />
@@ -159,7 +167,7 @@ const OwnerTopbar = ({ owner }) => {
 
   return (
     <div className={classes.ownerTopbar}>
-      <div className={classes.owner}>{owner}</div>
+      <div className={classes.ownerTitle}>{owner}</div>
     </div>
   );
 };
@@ -179,65 +187,63 @@ const Post = ({
   const insertDateInfo = `Created ${convertDate(content.insertDate)}`;
 
   return (
-    <Grid item xs={8}>
-      <div className={classes.gridContainer}>
-        <PostTopbar
-          showType={showType}
-          editable={editable}
-          type={type}
-          onClickUpdate={onClickUpdate}
-          onClickDelete={onClickDelete}
-        />
-        <div className={classes.container}>
-          <OwnerTopbar owner={owner.username} />
-          <div className={classes.description}>{content.description}</div>
-          {type === POST_TYPES.BUG_FIX.value ? (
-            <>
-              <PostSection title="Error">
-                <div>{content.error}</div>
-              </PostSection>
-              <PostSection title="Solution">
-                <div>{content.solution}</div>
-              </PostSection>
-            </>
-          ) : null}
-          {Array.isArray(content.images) && content.images.length ? (
-            <div className={classes.imgContainer}>
-              {
-                content.images.map((i) => (
-                  <img
-                    key={i._id}
-                    src={`data:${i.mime};base64,${bufferToBase64(i.content)}`}
-                    width="300"
-                    height="200"
-                    alt={i.name ? i.name : 'image'}
-                    style={{ borderRadius: 4, overflow: 'auto', marginRight: 10 }}
-                  />
-                ))
-              }
-            </div>
-          ) : null}
-          {Array.isArray(content.links) && content.links.length ? (
-            <PostSection title="Link">
-              <ul>
-                {content.links.map((link) => (
-                  <li key={link} className={classes.link}><a href={link}>{link}</a></li>
-                ))}
-              </ul>
-            </PostSection>
-          ) : null}
-          <div className={classes.timeInfo}>
-            {content.lastModifiedDate && <div>{lastModifiedDateInfo}</div>}
-            <div>●</div>
-            <div>{insertDateInfo}</div>
+    <div className={classes.container}>
+      <PostTopbar
+        showType={showType}
+        editable={editable}
+        type={type}
+        onClickUpdate={onClickUpdate}
+        onClickDelete={onClickDelete}
+      />
+      <div className={classes.postBodyContainer}>
+        <OwnerTopbar owner={owner.username} />
+        <div className={classes.description}>{content.description}</div>
+        {type === POST_TYPES.get('bugfix').value ? (
+          <>
+            <PostBodySection title="Error">
+              <div>{content.error}</div>
+            </PostBodySection>
+            <PostBodySection title="Solution">
+              <div>{content.solution}</div>
+            </PostBodySection>
+          </>
+        ) : null}
+        {Array.isArray(content.images) && content.images.length ? (
+          <div className={classes.imageContainer}>
+            {
+              content.images.map((i) => (
+                <img
+                  key={i._id}
+                  src={`data:${i.mime};base64,${bufferToBase64(i.content)}`}
+                  width="300"
+                  height="200"
+                  alt={i.name ? i.name : 'image'}
+                  style={{ borderRadius: 4, overflow: 'auto', marginRight: 10 }}
+                />
+              ))
+            }
           </div>
-        </div>
-        <Divider />
-        <div className={classes.tagContainer}>
-          <TagPicker tags={content.topics} readOnly />
+        ) : null}
+        {Array.isArray(content.links) && content.links.length ? (
+          <PostBodySection title="Link">
+            <ul className={classes.links}>
+              {content.links.map((link) => (
+                <li key={link} className={classes.link}><a href={link}>{link}</a></li>
+              ))}
+            </ul>
+          </PostBodySection>
+        ) : null}
+        <div className={classes.timeInfo}>
+          {content.lastModifiedDate && <div>{lastModifiedDateInfo}</div>}
+          <div>|</div>
+          <div>{insertDateInfo}</div>
         </div>
       </div>
-    </Grid>
+      <Divider />
+      <div className={classes.tagContainer}>
+        <TagPicker tags={content.topics} readOnly />
+      </div>
+    </div>
   );
 };
 

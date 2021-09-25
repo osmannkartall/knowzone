@@ -4,7 +4,7 @@ const cors = require('cors');
 const config = require('./config');
 const tipController = require('./controllers/TipController');
 const helloController = require('./controllers/HelloController');
-const bugFixController = require('./controllers/BugFixController');
+const bugfixController = require('./controllers/BugfixController');
 const searchController = require('./controllers/SearchController');
 const authController = require('./controllers/AuthController');
 
@@ -27,7 +27,7 @@ function addControllers(app) {
   // Add route names for repositories in plural form.
   app.use(`${config.api.prefix}/hello`, helloController);
   app.use(`${config.api.prefix}/tips`, tipController);
-  app.use(`${config.api.prefix}/bugfixes`, bugFixController);
+  app.use(`${config.api.prefix}/bugfixes`, bugfixController);
   app.use(`${config.api.prefix}/search`, searchController);
   app.use(`${config.api.prefix}/`, authController);
 }

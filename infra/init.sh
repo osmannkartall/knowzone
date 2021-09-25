@@ -25,6 +25,17 @@ then
     exit 1
 fi
 
+# Check if pre-requisites are on the path
+declare -a PREREQUISITES=("git" "docker" "kubectl")
+for i in "${PREREQUISITES[@]}"
+do
+    if ! [[ -x "$(command -v ${i})" ]]
+    then
+        echo "Error: ${i} command could not be found. Is it on the path?"
+        exit 1
+    fi
+done
+
 generate-manifests() {
     log_green "Generating Kubernetes manifests from templates..."
     log_blue "Generated manifests will be under ${SCRIPT_DIR}/k8s-manifests/generated"

@@ -1,58 +1,85 @@
 import { React } from 'react';
-import { makeStyles } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
+import {
+  makeStyles,
+  Grid,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+  Button,
+  Divider,
+} from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
-import Typography from '@material-ui/core/Typography';
-
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 import TagPicker from '../common/TagPicker/TagPicker';
 import POST_TYPES from '../constants/post-types';
-
-const MAX_HEIGHT = 498;
+import { searchBarHeight } from '../constants/styles';
+import { WHITE } from '../constants/colors';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    position: 'absolute',
+    top: searchBarHeight,
+    left: 0,
+    maxHeight: `calc(80vh - ${theme.spacing(4)}px)`,
+    minHeight: 100,
+    backgroundColor: WHITE,
+    boxShadow: ' 0px 8px 10px 2px rgb(101 119 134 / 20%)',
   },
-  top: {
-    maxHeight: MAX_HEIGHT,
+  topContainer: {
     overflowY: 'auto',
-    overflowX: 'hidden',
   },
-  searchButtons: {
+  searchOptionRow: {
+    marginBottom: theme.spacing(5),
+    padding: theme.spacing(2),
+    paddingBottom: 0,
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+    },
+  },
+  searchOptionTitle: {
+    marginBottom: theme.spacing(1),
+  },
+  bottomButtons: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    margin: theme.spacing(0, 2),
+    margin: theme.spacing(2),
+  },
+  datePickerOuterContainer: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+    },
+  },
+  datePickerInnerContainer: {
+    marginRight: theme.spacing(3),
+    [theme.breakpoints.down('sm')]: {
+      marginRight: 0,
+    },
   },
 }));
 
-const CONTAINER_SPACING = 4;
+const SearchOptionRow = ({ label, children }) => {
+  const classes = useStyles();
 
-const CONTAINER_STYLE = {
-  marginTop: 0,
-  marginBottom: 10,
-  paddingRight: 20,
-  paddingLeft: 20,
+  return (
+    <Grid container className={classes.searchOptionRow}>
+      <Grid item xs={12} sm={12} md={3} lg={3} className={classes.searchOptionTitle}>
+        <Typography variant="subtitle2" color="textSecondary">
+          {label}
+        </Typography>
+      </Grid>
+      <Grid item xs={12} sm={12} md={9} lg={9}>
+        {children}
+      </Grid>
+    </Grid>
+  );
 };
-
-const SearchOptionRow = ({ label, children }) => (
-  <Grid container spacing={CONTAINER_SPACING} alignItems="center" style={CONTAINER_STYLE}>
-    <Grid item xs={3}>
-      <Typography variant="subtitle2" color="textSecondary">
-        {label}
-      </Typography>
-    </Grid>
-    <Grid item xs={9}>
-      {children}
-    </Grid>
-  </Grid>
-);
 
 const SearchOptions = ({
   options,
@@ -65,11 +92,10 @@ const SearchOptions = ({
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
-      <div className={classes.top}>
+    <div className={classes.container}>
+      <div className={classes.topContainer}>
         <SearchOptionRow label="Post Type">
           <Select
-            id="search-option-post-type-select"
             name="postType"
             value={options.postType}
             onChange={handleOptionChange('postType')}
@@ -78,12 +104,12 @@ const SearchOptions = ({
             <MenuItem value="">
               <em>None</em>
             </MenuItem>
-            {Object.values(POST_TYPES).map((opt) => (
+            {Array.from(POST_TYPES).map(([, opt]) => (
               <MenuItem key={opt.value} value={opt.value}>{opt.name}</MenuItem>
             ))}
           </Select>
         </SearchOptionRow>
-        {options.postType !== POST_TYPES.TIP.value ? (
+        {options.postType !== POST_TYPES.get('tip').value ? (
           <>
             <SearchOptionRow label="Error">
               <TextField
@@ -135,8 +161,8 @@ const SearchOptions = ({
           />
         </SearchOptionRow>
         <SearchOptionRow label="Date Created">
-          <Grid container spacing={CONTAINER_SPACING} justifyContent="space-between">
-            <Grid item xs>
+          <div className={classes.datePickerOuterContainer}>
+            <div className={classes.datePickerInnerContainer}>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                   disableToolbar
@@ -147,7 +173,7 @@ const SearchOptions = ({
                   format="dd/MM/yyyy"
                   margin="normal"
                   value={options.createdStartDate}
-                  placeholder="Enter Date"
+                  placeholder="Enter Start Date"
                   onChange={handleDateChange('createdStartDate')}
                   maxDate={options.createdEndDate}
                   KeyboardButtonProps={{
@@ -155,8 +181,8 @@ const SearchOptions = ({
                   }}
                 />
               </MuiPickersUtilsProvider>
-            </Grid>
-            <Grid item xs>
+            </div>
+            <div>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                   disableToolbar
@@ -167,7 +193,7 @@ const SearchOptions = ({
                   format="dd/MM/yyyy"
                   margin="normal"
                   value={options.createdEndDate}
-                  placeholder="Enter Date"
+                  placeholder="Enter End Date"
                   onChange={handleDateChange('createdEndDate')}
                   minDate={options.createdStartDate}
                   maxDate={Date.now()}
@@ -176,12 +202,12 @@ const SearchOptions = ({
                   }}
                 />
               </MuiPickersUtilsProvider>
-            </Grid>
-          </Grid>
+            </div>
+          </div>
         </SearchOptionRow>
         <SearchOptionRow label="Date Modified">
-          <Grid container spacing={CONTAINER_SPACING} justifyContent="space-between">
-            <Grid item xs>
+          <div className={classes.datePickerOuterContainer}>
+            <div className={classes.datePickerInnerContainer}>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                   disableToolbar
@@ -192,7 +218,7 @@ const SearchOptions = ({
                   format="dd/MM/yyyy"
                   margin="normal"
                   value={options.modifiedStartDate}
-                  placeholder="Enter Date"
+                  placeholder="Enter Start Date"
                   onChange={handleDateChange('modifiedStartDate')}
                   minDate={options.createdStartDate}
                   maxDate={options.modifiedEndDate}
@@ -201,8 +227,8 @@ const SearchOptions = ({
                   }}
                 />
               </MuiPickersUtilsProvider>
-            </Grid>
-            <Grid item xs>
+            </div>
+            <div>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                   disableToolbar
@@ -213,7 +239,7 @@ const SearchOptions = ({
                   format="dd/MM/yyyy"
                   margin="normal"
                   value={options.modifiedEndDate}
-                  placeholder="Enter Date"
+                  placeholder="Enter End Date"
                   onChange={handleDateChange('modifiedEndDate')}
                   minDate={options.modifiedStartDate}
                   maxDate={Date.now()}
@@ -222,35 +248,31 @@ const SearchOptions = ({
                   }}
                 />
               </MuiPickersUtilsProvider>
-            </Grid>
-          </Grid>
+            </div>
+          </div>
         </SearchOptionRow>
       </div>
-      <Grid item xs={12}>
-        <Divider />
-      </Grid>
-      <Grid container spacing={CONTAINER_SPACING} style={CONTAINER_STYLE}>
-        <Grid item xs={12} className={classes.searchButtons}>
-          <Button
-            id="search-option-reset-button"
-            name="reset"
-            className={classes.resetButton}
-            onClick={handleResetOnClick}
-          >
-            Reset
-          </Button>
-          <Button
-            id="search-option-search-button"
-            name="search"
-            variant="contained"
-            color="primary"
-            className={classes.searchButton}
-            onClick={handleSearchOnClick}
-          >
-            Search
-          </Button>
-        </Grid>
-      </Grid>
+      <Divider />
+      <div className={classes.bottomButtons}>
+        <Button
+          id="search-option-reset-button"
+          name="reset"
+          className={classes.resetButton}
+          onClick={handleResetOnClick}
+        >
+          Reset
+        </Button>
+        <Button
+          id="search-option-search-button"
+          name="search"
+          variant="contained"
+          color="primary"
+          className={classes.searchButton}
+          onClick={handleSearchOnClick}
+        >
+          Search
+        </Button>
+      </div>
     </div>
   );
 };

@@ -2,10 +2,9 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable import/prefer-default-export */
 import POST_TYPES from './constants/post-types';
-import { BE_ROUTES } from './constants/routes';
 
 export function preparePost(form) {
-  let route;
+  const route = POST_TYPES.get(form.type).route;
   const post = {
     description: form.description,
     images: form.images,
@@ -14,12 +13,9 @@ export function preparePost(form) {
     owner: form.owner,
   };
 
-  if (form.type === POST_TYPES.BUG_FIX.value) {
+  if (form.type === POST_TYPES.get('bugfix').value) {
     post.error = form.error;
     post.solution = form.solution;
-    route = BE_ROUTES.BUG_FIXES;
-  } else if (form.type === POST_TYPES.TIP.value) {
-    route = BE_ROUTES.TIPS;
   }
 
   return { post, route };

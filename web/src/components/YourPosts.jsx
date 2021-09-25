@@ -8,6 +8,7 @@ import POST_TYPES from '../constants/post-types';
 import { createFile, diff, isObjectEmpty, isEqual } from '../utils';
 import { BE_ROUTES } from '../constants/routes';
 import ContentWrapper from '../common/ContentWrapper';
+import { IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../constants/colors';
 
 const YourPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -45,7 +46,7 @@ const YourPosts = () => {
         const idx = posts.findIndex((p) => p.id === selectedPost.id);
         if (idx !== -1 && !isEqual(selectedPost, posts[idx])) {
           const changes = diff(posts[idx], selectedPost);
-          const route = selectedPost.type === POST_TYPES.BUG_FIX.value ? BE_ROUTES.BUG_FIXES : BE_ROUTES.TIPS;
+          const route = POST_TYPES.get(selectedPost.type).route;
 
           if (changes && !isObjectEmpty(changes)) {
             const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
@@ -84,7 +85,7 @@ const YourPosts = () => {
 
   const deletePost = () => {
     if (selectedPost && selectedPost.type && selectedPost.id) {
-      const route = selectedPost.type === POST_TYPES.TIP.value ? BE_ROUTES.TIPS : BE_ROUTES.BUG_FIXES;
+      const route = POST_TYPES.get(selectedPost.type).route;
       const idx = posts.findIndex((p) => p.id === selectedPost.id);
 
       if (idx !== -1) {
@@ -191,7 +192,10 @@ const YourPosts = () => {
           <Button
             variant="contained"
             onClick={handleConfirm}
-            color={action === 'update' ? 'primary' : 'secondary'}
+            style={{
+              backgroundColor: action === 'update' ? PRIMARY : IRREVERSIBLE_ACTION,
+              color: WHITE,
+            }}
             autoFocus
           >
             {action}

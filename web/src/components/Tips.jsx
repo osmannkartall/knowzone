@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Post from '../common/Post';
 import { BE_ROUTES } from '../constants/routes';
+import POST_TYPES from '../constants/post-types';
 import ContentWrapper from '../common/ContentWrapper';
 
 const Tips = () => {
@@ -24,7 +25,7 @@ const Tips = () => {
   }, []);
 
   return (
-    <ContentWrapper title="Tips">
+    <ContentWrapper title={POST_TYPES.get('tip').pluralName}>
       {Array.isArray(posts) && posts.length ? (
         posts.map((p) => (
           <Post

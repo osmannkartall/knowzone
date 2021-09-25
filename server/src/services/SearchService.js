@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
 const TipModel = require('../models/Tip');
-const BugFixModel = require('../models/BugFix');
+const BugfixModel = require('../models/Bugfix');
 
 class SearchService {
   // eslint-disable-next-line class-methods-use-this
@@ -13,7 +13,7 @@ class SearchService {
           coll: 'bugfixes',
           pipeline: [
             { $match: { 'owner.id': ObjectId(ownerId) } },
-            { $addFields: { type: 'bugFix', id: '$_id' } },
+            { $addFields: { type: 'bugfix', id: '$_id' } },
           ],
         },
       },
@@ -96,15 +96,15 @@ class SearchService {
     }
 
     console.log(query);
-    if (postType === 'bugFix') {
-      return BugFixModel.find(query).sort({ createdAt: -1 });
+    if (postType === 'bugfix') {
+      return BugfixModel.find(query).sort({ createdAt: -1 });
       // eslint-disable-next-line no-else-return
     } else if (postType === 'tip') {
       return TipModel.find(query).sort({ createdAt: -1 });
     }
-    const bugFixPosts = await BugFixModel.find(query);
+    const bugfixPosts = await BugfixModel.find(query);
     const tipPosts = await TipModel.find(query);
-    const posts = Array.from(new Set(bugFixPosts.concat(tipPosts)));
+    const posts = Array.from(new Set(bugfixPosts.concat(tipPosts)));
     posts.sort((a, b) => (new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1));
     return posts;
   }
