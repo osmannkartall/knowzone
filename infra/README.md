@@ -115,7 +115,7 @@ Change the **export** lines within `init.sh`. Descriptions are given below:
 - FRONTEND_LB_PREFIX: Prefix to generate the load balancer domain for frontend, e.g. myfrontend (full domain will be myfrontend.REGION.cloudapp.azure.com - REGION is your AKS location, e.g. westeurope)  
 - FRONTEND_URL: Full name of frontend URL, e.g. "http://${FRONTEND_LB_PREFIX}.westeurope.cloudapp.azure.com"
 - BACKEND_LB_PREFIX: Similar to FRONTEND_LB_PREFIX, for backend
-- BACKEND_URL: Full name of backend URL, e.g. "http://${BACKEND_LB_PREFIX}.westeurope.cloudapp.azure.com/api"
+- BACKEND_URL: Full name of backend URL, e.g. "http://${BACKEND_LB_PREFIX}.westeurope.cloudapp.azure.com"
 - MONGO_PASSWORD: This will be put in Kubernetes secret, required for MongoDB creation and connection strings.
 - VERSION: Version tag for Docker images
 

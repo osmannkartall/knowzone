@@ -17,8 +17,4 @@ module.exports = {
   },
 
   databaseURL: process.env.MONGODB_URI,
-
-  api: {
-    prefix: '/api',
-  },
 };

@@ -160,6 +160,6 @@ function addControllers(app) {
   // ...
 
   // Append routes exposed by HelloController to the root path with a sub-prefix. E.g; /hello
-  app.use(`${config.api.prefix}/hello`, helloController);
+  app.use('/hello', helloController);
 }
 ```
