@@ -4,6 +4,7 @@ import { useDropzone } from 'react-dropzone';
 import CloseIcon from '@material-ui/icons/Close';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { toast } from 'react-toastify';
+import uniqueId from 'lodash/uniqueId';
 import { GRAY2, GRAY3, GRAY4, IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../constants/colors';
 import { bufferToBase64 } from '../utils';
 
@@ -204,7 +205,7 @@ const FileUploader = ({ files, setFiles }) => {
       ) : null}
       <aside className={classes.thumbnailsContainer}>
         {files.map((file) => (
-          <div className={classes.thumbnails} key={file.name}>
+          <div className={classes.thumbnails} key={uniqueId(file.name)}>
             <div className={classes.thumbnail}>
               <div className={classes.imageContainer}>
                 <img src={getImageSource(file)} className={classes.image} alt={file.name} />
