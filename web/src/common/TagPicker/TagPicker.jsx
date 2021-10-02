@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import ReactTagInput from '@pathofdev/react-tag-input';
 import '@pathofdev/react-tag-input/build/index.css';
 import './TagPicker.css';
@@ -35,7 +35,7 @@ const TagPicker = ({
   required,
   border,
   unique,
-  onUniqueError,
+  onNotUniqueError,
   error,
   helperText,
 }) => {
@@ -47,20 +47,40 @@ const TagPicker = ({
     placeholderText += ' *';
   }
 
-  const handleTagsOnChange = (newTags) => {
-    if (unique) {
-      const uniqueTags = uniq(newTags);
-      const isNewTagsArrayUnique = newTags.length === uniqueTags.length;
-      const isDiffenceOne = (newTags.length - uniqueTags.length) === 1;
+  const checkErrors = (newTags = undefined) => {
+    let isError = true;
+    let currentTags = tags;
 
-      if (isNewTagsArrayUnique || (isDiffenceOne && isValid)) {
-        setTags(newTags);
-      }
+    if (newTags !== undefined) {
+      currentTags = newTags;
+    }
+    if (unique) {
+      const uniqueTags = uniq(currentTags);
+      const isNewTagsArrayUnique = currentTags.length === uniqueTags.length;
+      const isDiffenceOne = (currentTags.length - uniqueTags.length) === 1;
+      isError = !(isNewTagsArrayUnique || (isDiffenceOne && isValid));
+
       setIsValid(isNewTagsArrayUnique);
-      if (typeof onUniqueError === 'function') {
-        onUniqueError(isNewTagsArrayUnique);
+      if (typeof onNotUniqueError === 'function') {
+        onNotUniqueError(isNewTagsArrayUnique);
       }
-    } else {
+    }
+    return isError;
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    if (mounted) {
+      checkErrors();
+    }
+    return function cleanup() {
+      mounted = false;
+    };
+  }, []);
+
+  const handleTagsOnChange = (newTags) => {
+    const isError = checkErrors(newTags);
+    if (!isError) {
       setTags(newTags);
     }
   };

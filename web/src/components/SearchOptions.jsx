@@ -88,6 +88,7 @@ const SearchOptions = ({
   handleDateChange,
   handleResetOnClick,
   handleSearchOnClick,
+  handleTopicsNotUniqueError,
 }) => {
   const classes = useStyles();
 
@@ -148,6 +149,7 @@ const SearchOptions = ({
             name="topics"
             tags={options.topics}
             setTags={setTopics}
+            onNotUniqueError={handleTopicsNotUniqueError}
             fullWidth
             unique
           />
