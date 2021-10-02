@@ -25,11 +25,11 @@ async function startDB() {
 
 function addControllers(app) {
   // Add route names for repositories in plural form.
-  app.use(`${config.api.prefix}/hello`, helloController);
-  app.use(`${config.api.prefix}/tips`, tipController);
-  app.use(`${config.api.prefix}/bugfixes`, bugfixController);
-  app.use(`${config.api.prefix}/search`, searchController);
-  app.use(`${config.api.prefix}/`, authController);
+  app.use('/hello', helloController);
+  app.use('/tips', tipController);
+  app.use('/bugfixes', bugfixController);
+  app.use('/search', searchController);
+  app.use('/', authController);
 }
 
 async function startExpress() {
