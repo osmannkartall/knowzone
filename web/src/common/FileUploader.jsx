@@ -4,6 +4,7 @@ import { useDropzone } from 'react-dropzone';
 import CloseIcon from '@material-ui/icons/Close';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { toast } from 'react-toastify';
+import uniqueId from 'lodash/uniqueId';
 import { GRAY2, GRAY3, GRAY4, IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../constants/colors';
 import { bufferToBase64 } from '../utils';
 
@@ -126,6 +127,24 @@ const baseStyle = {
   transition: 'border .24s ease-in-out',
 };
 
+const getImageSource = (file) => {
+  if (file.preview) {
+    return file.preview;
+  }
+  return `data:${file.mime};base64,${bufferToBase64(file.content)}`;
+};
+
+const Image = ({ file }) => {
+  const classes = useStyles();
+  const imageSource = getImageSource(file);
+
+  return (
+    <div className={classes.imageContainer}>
+      <img src={imageSource} className={classes.image} alt={file.name} />
+    </div>
+  );
+};
+
 const FileUploader = ({ files, setFiles }) => {
   const classes = useStyles();
   const infoTitle = 'Drag n drop some images here, or click to select';
@@ -185,13 +204,6 @@ const FileUploader = ({ files, setFiles }) => {
     }
   };
 
-  const getImageSource = (file) => {
-    if (file.preview) {
-      return file.preview;
-    }
-    return `data:${file.mime};base64,${bufferToBase64(file.content)}`;
-  };
-
   return (
     <section className={classes.container}>
       {Array.isArray(files) && files.length < NUM_MAX_FILES ? (
@@ -204,11 +216,9 @@ const FileUploader = ({ files, setFiles }) => {
       ) : null}
       <aside className={classes.thumbnailsContainer}>
         {files.map((file) => (
-          <div className={classes.thumbnails} key={file.name}>
+          <div className={classes.thumbnails} key={uniqueId(file.name)}>
             <div className={classes.thumbnail}>
-              <div className={classes.imageContainer}>
-                <img src={getImageSource(file)} className={classes.image} alt={file.name} />
-              </div>
+              <Image file={file} />
               <IconButton
                 className={classes.thumbnailDeleteButton}
                 onClick={() => onClickDelete(file)}
