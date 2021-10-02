@@ -149,6 +149,7 @@ const SearchOptions = ({
             tags={options.topics}
             setTags={setTopics}
             fullWidth
+            unique
           />
         </SearchOptionRow>
         <SearchOptionRow label="Author">

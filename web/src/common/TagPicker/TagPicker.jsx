@@ -49,15 +49,16 @@ const TagPicker = ({
 
   const handleTagsOnChange = (newTags) => {
     if (unique) {
-      const uniqArr = uniq(newTags);
-      const valid = newTags.length === uniqArr.length;
+      const uniqueTags = uniq(newTags);
+      const isNewTagsArrayUnique = newTags.length === uniqueTags.length;
+      const isDiffenceOne = (newTags.length - uniqueTags.length) === 1;
 
-      if (valid || ((newTags.length - uniqArr.length) === 1 && isValid)) {
+      if (isNewTagsArrayUnique || (isDiffenceOne && isValid)) {
         setTags(newTags);
       }
-      setIsValid(valid);
+      setIsValid(isNewTagsArrayUnique);
       if (typeof onUniqueError === 'function') {
-        onUniqueError(valid);
+        onUniqueError(isNewTagsArrayUnique);
       }
     } else {
       setTags(newTags);
@@ -65,9 +66,9 @@ const TagPicker = ({
   };
 
   return (
-    border
-      ? (
-        <>
+    <>
+      {border
+        ? (
           <Box
             border={1}
             borderRadius={5}
@@ -82,20 +83,24 @@ const TagPicker = ({
               placeholder={placeholderText}
             />
           </Box>
-          {error || (unique && !isValid)
-            ? <p className={classes.errorText}>{error && (helperText.length > 0) ? helperText : 'Tag list should contain unique items.'}</p>
-            : null}
-        </>
-      )
-      : (
-        <ReactTagInput
-          tags={tags}
-          onChange={(newTags) => handleTagsOnChange(newTags)}
-          removeOnBackspace
-          readOnly={readOnly}
-          placeholder={placeholderText}
-        />
-      )
+        )
+        : (
+          <ReactTagInput
+            tags={tags}
+            onChange={(newTags) => handleTagsOnChange(newTags)}
+            removeOnBackspace
+            readOnly={readOnly}
+            placeholder={placeholderText}
+          />
+        )}
+      {(error || (unique && !isValid)) && (
+        <p className={classes.errorText}>
+          {error && (helperText.length > 0) && isValid
+            ? helperText
+            : 'Tag list should contain unique items.'}
+        </p>
+      )}
+    </>
   );
 };
 

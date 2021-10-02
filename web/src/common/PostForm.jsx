@@ -145,6 +145,7 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
       setTopicsCheck({ text: `Number of topics cannot exceed ${TOPIC_CONSTRAINTS.max}.`, isInvalid: true });
     } else if (form.topics.length > 0) {
       const matchedTopics = form.topics.map((tag) => tag.match(TOPIC_CONSTRAINTS.pattern));
+      console.log(matchedTopics);
       if (matchedTopics.includes(null)) {
         setTopicsCheck({ text: 'Invalid topics.', isInvalid: true });
       } else {
@@ -170,13 +171,6 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
       isValid = isValid && isValidError && isValidSolution;
     }
 
-    console.log(`isValidDescription: ${isValidDescription}`);
-    console.log(`isValidLinks: ${isValidLinks}`);
-    console.log(`isValidTopics: ${isValidTopics}`);
-    console.log(`topicsCheck.isInvalid: ${topicsCheck.isInvalid}`);
-    console.log(`topicsCheck.isUnique: ${topicsCheck.isUnique}`);
-    console.log('----------------------------------------------------\n');
-
     if (isValid) {
       onClickBtn();
     }
@@ -200,7 +194,6 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             id="outlined-select-post-type"
             select
             label="Post Type"
-            required
             value={form.type}
             onChange={(e) => handleChangeForm('type', e.target.value)}
             variant="outlined"
@@ -224,6 +217,8 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             id="description"
             label="Description"
             value={form.description}
+            error={descriptionCheck.isInvalid}
+            helperText={descriptionCheck.text}
             onChange={(e) => handleChangeForm('description', e.target.value)}
           />
         </FormDataRow>
@@ -240,6 +235,8 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
               id="error"
               label="Error"
               value={form.error}
+              error={errorCheck.isInvalid}
+              helperText={errorCheck.text}
               onChange={(e) => handleChangeForm('error', e.target.value)}
             />
           ) : null}
@@ -257,6 +254,8 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
               id="solution"
               label="Solution"
               value={form.solution}
+              error={solutionCheck.isInvalid}
+              helperText={solutionCheck.text}
               onChange={(e) => handleChangeForm('solution', e.target.value)}
             />
           ) : null}
@@ -273,8 +272,12 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             setTags={(topics) => handleChangeForm('topics', topics)}
             required
             unique
-            onUniqueError={(invalid) => setErrorCheck(invalid)}
             border
+            onUniqueError={(unique) => setTopicsCheck(
+              { ...topicsCheck, isUnique: unique },
+            )}
+            error={topicsCheck.isInvalid}
+            helperText={topicsCheck.text}
           />
         </FormDataRow>
         <FormDataRow>
@@ -283,11 +286,13 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             setTags={(links) => handleChangeForm('links', links)}
             placeholder="Enter links"
             border
+            error={linkCheck.isInvalid}
+            helperText={linkCheck.text}
           />
         </FormDataRow>
       </div>
       <div className={classes.bottomContainer}>
-        <Button variant="contained" color="primary" onClick={onClickBtn}>
+        <Button variant="contained" color="primary" onClick={validateForm}>
           {btnTitle}
         </Button>
       </div>
