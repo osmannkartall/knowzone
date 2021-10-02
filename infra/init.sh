@@ -6,7 +6,7 @@ export REGISTRY_NAME="FULL-AZURE-REGISTRY-NAME"
 export FRONTEND_LB_PREFIX="FRONTEND-PREFIX-URL"
 export FRONTEND_URL="http://${FRONTEND_LB_PREFIX}.<LOCATION>.cloudapp.azure.com"
 export BACKEND_LB_PREFIX="YOUR-BACKEND-PREFIX-URL"
-export BACKEND_URL="http://${BACKEND_LB_PREFIX}.<LOCATION>.cloudapp.azure.com/api"
+export BACKEND_URL="http://${BACKEND_LB_PREFIX}.<LOCATION>.cloudapp.azure.com"
 export MONGO_PASSWORD="MONGO-PASSWORD"
 export VERSION="IMAGE-VERSION"
 
@@ -24,6 +24,17 @@ then
     log_red "Invalid option. Type '`basename ${0}` help' for available commands."
     exit 1
 fi
+
+# Check if pre-requisites are on the path
+declare -a PREREQUISITES=("git" "docker" "kubectl")
+for i in "${PREREQUISITES[@]}"
+do
+    if ! [[ -x "$(command -v ${i})" ]]
+    then
+        echo "Error: ${i} command could not be found. Is it on the path?"
+        exit 1
+    fi
+done
 
 generate-manifests() {
     log_green "Generating Kubernetes manifests from templates..."

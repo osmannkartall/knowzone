@@ -1,6 +1,8 @@
 import React, { useEffect, useContext } from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Dashboard from './components/Dashboard/Dashboard';
 import Tips from './components/Tips';
 import Bugfixes from './components/Bugfixes';
@@ -53,28 +55,36 @@ const Wrapper = () => {
   }, []);
 
   return (
-    <BrowserRouter>
-      <Switch>
-        <Route exact path="/">
-          <Redirect to={`/${FE_ROUTES.TIPS}`} />
-        </Route>
-        <Route path={`/${FE_ROUTES.BUG_FIXES}`}>
-          <Dashboard><Bugfixes /></Dashboard>
-        </Route>
-        <Route path={`/${FE_ROUTES.TIPS}`}>
-          <Dashboard><Tips /></Dashboard>
-        </Route>
-        <Route path={`/${FE_ROUTES.YOUR_POSTS}`}>
-          <Dashboard><YourPosts /></Dashboard>
-        </Route>
-        <Route path={`/${FE_ROUTES.SEARCH_RESULTS}`}>
-          <Dashboard><SearchResults /></Dashboard>
-        </Route>
-        {/* <Dashboard /> */}
-        <Route exact path={`/${FE_ROUTES.NOT_FOUND}`} component={NotFound} />
-        <Redirect to={`/${FE_ROUTES.NOT_FOUND}`} />
-      </Switch>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/">
+            <Redirect to={`/${FE_ROUTES.TIPS}`} />
+          </Route>
+          <Route path={`/${FE_ROUTES.BUG_FIXES}`}>
+            <Dashboard><Bugfixes /></Dashboard>
+          </Route>
+          <Route path={`/${FE_ROUTES.TIPS}`}>
+            <Dashboard><Tips /></Dashboard>
+          </Route>
+          <Route path={`/${FE_ROUTES.YOUR_POSTS}`}>
+            <Dashboard><YourPosts /></Dashboard>
+          </Route>
+          <Route path={`/${FE_ROUTES.SEARCH_RESULTS}`}>
+            <Dashboard><SearchResults /></Dashboard>
+          </Route>
+          {/* <Dashboard /> */}
+          <Route exact path={`/${FE_ROUTES.NOT_FOUND}`} component={NotFound} />
+          <Redirect to={`/${FE_ROUTES.NOT_FOUND}`} />
+        </Switch>
+      </BrowserRouter>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={4000}
+        draggable={false}
+        progressStyle={undefined}
+      />
+    </>
   );
 };
 

@@ -1,9 +1,9 @@
-# Setting up the environment  
+# Running on Azure Kubernetes Service Cluster  
 
-## Table of contents
+## Table of Contents
 
-- [Setting up the environment](#setting-up-the-environment)
-  - [Table of contents](#table-of-contents)
+- [Running on Azure Kubernetes Service Cluster](#running-on-azure-kubernetes-service-cluster)
+  - [Table of Contents](#table-of-contents)
   - [Pre-requisites](#pre-requisites)
   - [Creating an Azure Container Registry](#creating-an-azure-container-registry)
     - [Testing Azure Container Registry](#testing-azure-container-registry)
@@ -16,7 +16,7 @@
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)  
 - [Docker](https://docs.docker.com/engine/install/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)  
-
+- [git](https://git-scm.com/downloads)  
 
 ## Creating an Azure Container Registry  
 
@@ -113,14 +113,18 @@ Change the **export** lines within `init.sh`. Descriptions are given below:
 
 - REGISTRY_NAME: Full name for your registered ACR, e.g. myacr.azurecr.io  
 - FRONTEND_LB_PREFIX: Prefix to generate the load balancer domain for frontend, e.g. myfrontend (full domain will be myfrontend.REGION.cloudapp.azure.com - REGION is your AKS location, e.g. westeurope)  
+- FRONTEND_URL: Full name of frontend URL, e.g. "http://${FRONTEND_LB_PREFIX}.westeurope.cloudapp.azure.com"
 - BACKEND_LB_PREFIX: Similar to FRONTEND_LB_PREFIX, for backend
+- BACKEND_URL: Full name of backend URL, e.g. "http://${BACKEND_LB_PREFIX}.westeurope.cloudapp.azure.com"
 - MONGO_PASSWORD: This will be put in Kubernetes secret, required for MongoDB creation and connection strings.
 - VERSION: Version tag for Docker images
 
 ```bash
 export REGISTRY_NAME="YOUR-FULL-AZURE-REGISTRY-NAME"
 export FRONTEND_LB_PREFIX="YOUR-FRONTEND-PREFIX-URL"
+export FRONTEND_URL="YOUR-FRONTEND-URL"
 export BACKEND_LB_PREFIX="YOUR-BACKEND-PREFIX-URL"
+export BACKEND_URL="YOUR-BACKEND-URL"
 export MONGO_PASSWORD="YOUR-MONGO-PASSWORD"
 export VERSION="YOUR-VERSION"
 ```
