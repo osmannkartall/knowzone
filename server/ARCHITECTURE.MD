@@ -23,7 +23,7 @@ This project currently has two different flows:
 
 ### **Config**
 
-`dotenv` package reads the values of environment variables in .env file and binds them to the global proces.env object. Then, these values are exported from `server/config/index.js` file. Finally, these values are used in different modules by importing `server/config/index.js`
+`dotenv` package reads the values of environment variables in .env file and binds them to the global process.env object. Then, these values are exported from `server/config/index.js` file. Finally, these values are used in different modules by importing `server/config/index.js`
 
 ### **Model**
 
@@ -102,7 +102,7 @@ const HelloModel = require('../models/Hello');
 // Import HelloRepository class.
 const HelloRepository = require('../repositories/HelloRepository');
 
-// Instanstiate a HelloRepository instance to supply CRUD methods on Hello model. 
+// Instantiate a HelloRepository instance to supply CRUD methods on Hello model. 
 const helloRepository = new HelloRepository(HelloModel);
 
 // Define controller functions.
@@ -115,13 +115,13 @@ const create = (req, res) => {
   res.send(result);
 };
 
-// Create controller function that calls HelloRepository method to retrive all Hello records.
+// Create controller function that calls HelloRepository method to retrieve all Hello records.
 const findAll = async (_, res) => {
   const result = await helloRepository.findAll();
   res.send(result);
 };
 
-// Create controller function that calls HelloRepository method to retrive a Hello record by id.
+// Create controller function that calls HelloRepository method to retrieve a Hello record by id.
 const findById = async (req, res) => {
   const { id } = req.params;
   const result = await helloRepository.findById(id);
