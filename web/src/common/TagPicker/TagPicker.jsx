@@ -36,11 +36,11 @@ const TagPicker = ({
   border,
   unique,
   onNotUniqueError,
-  error,
+  showError,
   helperText,
 }) => {
   const classes = useStyles();
-  const [isValid, setIsValid] = useState(true);
+  const [areCurrentTagsUnique, setAreCurrentTagsUnique] = useState(true);
 
   let placeholderText = placeholder;
   if (placeholderText && required) {
@@ -48,7 +48,7 @@ const TagPicker = ({
   }
 
   const checkErrors = (newTags = undefined) => {
-    let isError = true;
+    let isError = false;
     let currentTags = tags;
 
     if (newTags !== undefined) {
@@ -57,10 +57,10 @@ const TagPicker = ({
     if (unique) {
       const uniqueTags = uniq(currentTags);
       const isNewTagsArrayUnique = currentTags.length === uniqueTags.length;
-      const isDiffenceOne = (currentTags.length - uniqueTags.length) === 1;
-      isError = !(isNewTagsArrayUnique || (isDiffenceOne && isValid));
+      const isNewDuplicatedTagAdded = (currentTags.length - uniqueTags.length) === 1;
+      isError = !(isNewTagsArrayUnique || (isNewDuplicatedTagAdded && areCurrentTagsUnique));
 
-      setIsValid(isNewTagsArrayUnique);
+      setAreCurrentTagsUnique(isNewTagsArrayUnique);
       if (typeof onNotUniqueError === 'function') {
         onNotUniqueError(isNewTagsArrayUnique);
       }
@@ -80,6 +80,7 @@ const TagPicker = ({
 
   const handleTagsOnChange = (newTags) => {
     const isError = checkErrors(newTags);
+
     if (!isError) {
       setTags(newTags);
     }
@@ -92,7 +93,8 @@ const TagPicker = ({
           <Box
             border={1}
             borderRadius={5}
-            borderColor={error || (unique && !isValid) ? ERROR_COLOR : TAG_BOX_COLOR}
+            borderColor={showError || (unique && !areCurrentTagsUnique)
+              ? ERROR_COLOR : TAG_BOX_COLOR}
             className={classes.tagBox}
           >
             <ReactTagInput
@@ -113,9 +115,9 @@ const TagPicker = ({
             placeholder={placeholderText}
           />
         )}
-      {(error || (unique && !isValid)) && (
+      {(showError || (unique && !areCurrentTagsUnique)) && (
         <p className={classes.errorText}>
-          {error && (helperText.length > 0) && isValid
+          {showError && (helperText.length > 0) && areCurrentTagsUnique
             ? helperText
             : 'Tag list should contain unique items.'}
         </p>

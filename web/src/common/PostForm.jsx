@@ -13,18 +13,12 @@ import TagPicker from './TagPicker/TagPicker';
 import FileUploader from './FileUploader';
 import POST_TYPES from '../constants/post-types';
 import {
-  MAX_LEN_DESCRIPTION,
-  MAX_LEN_ERROR,
-  MAX_LEN_SOLUTION,
-  MAX_NUM_LINKS,
-  TOPIC_CONSTRAINTS,
-} from '../constants/validation';
-import {
-  validateDescription,
-  validateError,
-  validateSolution,
-  validateLinks,
-  validateTopics,
+  DESCRIPTION_CONSTRAINTS,
+  ERROR_CONSTRAINTS,
+  SOLUTION_CONSTRAINTS,
+  LINKS_CONSTRAINTS,
+  TOPICS_CONSTRAINTS,
+  validate,
 } from '../clientSideValidation';
 
 const useStyles = makeStyles((theme) => ({
@@ -89,23 +83,19 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
   const [linksCheck, setLinksCheck] = useState({ text: '', isInvalid: false });
 
   const validateForm = () => {
-    const isValidDescription = validateDescription(
-      form.description, setDescriptionCheck, MAX_LEN_DESCRIPTION, 1,
-    );
-    const isValidLinks = validateLinks(form.links, setLinksCheck, MAX_NUM_LINKS);
-    const isValidTopics = validateTopics(
-      form.topics, setTopicsCheck, TOPIC_CONSTRAINTS.max,
-      TOPIC_CONSTRAINTS.min, TOPIC_CONSTRAINTS.pattern,
-    );
+    const isValidDescription = validate(
+      form.description, descriptionCheck, setDescriptionCheck, DESCRIPTION_CONSTRAINTS);
+    const isValidLinks = validate(form.links, linksCheck, setLinksCheck, LINKS_CONSTRAINTS);
+    const isValidTopics = validate(form.topics, topicsCheck, setTopicsCheck, TOPICS_CONSTRAINTS);
     let isValid = isValidDescription && isValidLinks && isValidTopics && topicsCheck.isUnique;
 
     if (form.type === POST_TYPES.get('bugfix').value) {
-      const isValidError = validateError(form.error, setErrorCheck, MAX_LEN_ERROR, 1);
-      const isValidSolution = validateSolution(
-        form.solution, setSolutionCheck, MAX_LEN_SOLUTION, 1,
-      );
+      const isValidError = validate(form.error, errorCheck, setErrorCheck, ERROR_CONSTRAINTS);
+      const isValidSolution = validate(
+        form.solution, solutionCheck, setSolutionCheck, SOLUTION_CONSTRAINTS);
       isValid = isValid && isValidError && isValidSolution;
     }
+
     if (isValid) {
       onClickBtn();
     }
@@ -211,7 +201,7 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             onNotUniqueError={(unique) => setTopicsCheck(
               { ...topicsCheck, isUnique: unique },
             )}
-            error={topicsCheck.isInvalid}
+            showError={topicsCheck.isInvalid}
             helperText={topicsCheck.text}
           />
         </FormDataRow>
@@ -221,7 +211,7 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             setTags={(links) => handleChangeForm('links', links)}
             placeholder="Enter links"
             border
-            error={linksCheck.isInvalid}
+            showError={linksCheck.isInvalid}
             helperText={linksCheck.text}
           />
         </FormDataRow>
