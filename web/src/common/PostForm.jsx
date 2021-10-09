@@ -12,6 +12,14 @@ import { WHITE, GRAY3, PRIMARY } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
 import FileUploader from './FileUploader';
 import POST_TYPES from '../constants/post-types';
+import {
+  DESCRIPTION_CONSTRAINTS,
+  ERROR_CONSTRAINTS,
+  SOLUTION_CONSTRAINTS,
+  LINKS_CONSTRAINTS,
+  TOPICS_CONSTRAINTS,
+  validate,
+} from '../clientSideValidation';
 
 const useStyles = makeStyles((theme) => ({
   modalData: {
@@ -68,9 +76,30 @@ const FormDataRow = ({ children }) => (
 
 const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClickBtn }) => {
   const classes = useStyles();
-  const [topicsError, setTopicsError] = useState(false);
+  const [topicsCheck, setTopicsCheck] = useState({ text: '', isInvalid: false, isUnique: true });
+  const [descriptionCheck, setDescriptionCheck] = useState({ text: '', isInvalid: false });
+  const [errorCheck, setErrorCheck] = useState({ text: '', isInvalid: false });
+  const [solutionCheck, setSolutionCheck] = useState({ text: '', isInvalid: false });
+  const [linksCheck, setLinksCheck] = useState({ text: '', isInvalid: false });
 
-  console.log(`Topics Error: ${topicsError}`);
+  const validateForm = () => {
+    const isValidDescription = validate(
+      form.description, descriptionCheck, setDescriptionCheck, DESCRIPTION_CONSTRAINTS);
+    const isValidLinks = validate(form.links, linksCheck, setLinksCheck, LINKS_CONSTRAINTS);
+    const isValidTopics = validate(form.topics, topicsCheck, setTopicsCheck, TOPICS_CONSTRAINTS);
+    let isValid = isValidDescription && isValidLinks && isValidTopics && topicsCheck.isUnique;
+
+    if (form.type === POST_TYPES.get('bugfix').value) {
+      const isValidError = validate(form.error, errorCheck, setErrorCheck, ERROR_CONSTRAINTS);
+      const isValidSolution = validate(
+        form.solution, solutionCheck, setSolutionCheck, SOLUTION_CONSTRAINTS);
+      isValid = isValid && isValidError && isValidSolution;
+    }
+
+    if (isValid) {
+      onClickBtn();
+    }
+  };
 
   return (
     <>
@@ -90,7 +119,6 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             id="outlined-select-post-type"
             select
             label="Post Type"
-            required
             value={form.type}
             onChange={(e) => handleChangeForm('type', e.target.value)}
             variant="outlined"
@@ -114,6 +142,8 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             id="description"
             label="Description"
             value={form.description}
+            error={descriptionCheck.isInvalid}
+            helperText={descriptionCheck.text}
             onChange={(e) => handleChangeForm('description', e.target.value)}
           />
         </FormDataRow>
@@ -130,6 +160,8 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
               id="error"
               label="Error"
               value={form.error}
+              error={errorCheck.isInvalid}
+              helperText={errorCheck.text}
               onChange={(e) => handleChangeForm('error', e.target.value)}
             />
           ) : null}
@@ -147,6 +179,8 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
               id="solution"
               label="Solution"
               value={form.solution}
+              error={solutionCheck.isInvalid}
+              helperText={solutionCheck.text}
               onChange={(e) => handleChangeForm('solution', e.target.value)}
             />
           ) : null}
@@ -163,7 +197,12 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             setTags={(topics) => handleChangeForm('topics', topics)}
             required
             unique
-            onUniqueError={(invalid) => setTopicsError(invalid)}
+            border
+            onNotUniqueError={(unique) => setTopicsCheck(
+              { ...topicsCheck, isUnique: unique },
+            )}
+            showError={topicsCheck.isInvalid}
+            helperText={topicsCheck.text}
           />
         </FormDataRow>
         <FormDataRow>
@@ -171,11 +210,14 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             tags={form.links}
             setTags={(links) => handleChangeForm('links', links)}
             placeholder="Enter links"
+            border
+            showError={linksCheck.isInvalid}
+            helperText={linksCheck.text}
           />
         </FormDataRow>
       </div>
       <div className={classes.bottomContainer}>
-        <Button variant="contained" color="primary" onClick={onClickBtn}>
+        <Button variant="contained" color="primary" onClick={validateForm}>
           {btnTitle}
         </Button>
       </div>

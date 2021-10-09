@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import ReactTagInput from '@pathofdev/react-tag-input';
 import '@pathofdev/react-tag-input/build/index.css';
 import './TagPicker.css';
@@ -33,51 +33,68 @@ const TagPicker = ({
   readOnly,
   placeholder,
   required,
+  border,
   unique,
-  onUniqueError,
+  onNotUniqueError,
+  showError,
+  helperText,
 }) => {
   const classes = useStyles();
-  const [isInvalid, setIsInvalid] = useState(false);
+  const [areCurrentTagsUnique, setAreCurrentTagsUnique] = useState(true);
 
   let placeholderText = placeholder;
   if (placeholderText && required) {
     placeholderText += ' *';
   }
 
-  const handleTagsOnChange = (newTags) => {
-    if (unique) {
-      const uniqArr = uniq(newTags);
-      const invalid = newTags.length !== uniqArr.length;
+  const checkErrors = (newTags = undefined) => {
+    let isError = false;
+    let currentTags = tags;
 
-      if (!invalid || ((newTags.length - uniqArr.length) === 1 && !isInvalid)) {
-        setTags(newTags);
+    if (newTags !== undefined) {
+      currentTags = newTags;
+    }
+    if (unique) {
+      const uniqueTags = uniq(currentTags);
+      const isNewTagsArrayUnique = currentTags.length === uniqueTags.length;
+      const isNewDuplicatedTagAdded = (currentTags.length - uniqueTags.length) === 1;
+      isError = !(isNewTagsArrayUnique || (isNewDuplicatedTagAdded && areCurrentTagsUnique));
+
+      setAreCurrentTagsUnique(isNewTagsArrayUnique);
+      if (typeof onNotUniqueError === 'function') {
+        onNotUniqueError(isNewTagsArrayUnique);
       }
-      setIsInvalid(invalid);
-      if (typeof onUniqueError === 'function') {
-        onUniqueError(invalid);
-      }
-    } else {
+    }
+    return isError;
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    if (mounted) {
+      checkErrors();
+    }
+    return function cleanup() {
+      mounted = false;
+    };
+  }, []);
+
+  const handleTagsOnChange = (newTags) => {
+    const isError = checkErrors(newTags);
+
+    if (!isError) {
       setTags(newTags);
     }
   };
 
   return (
-    readOnly
-      ? (
-        <ReactTagInput
-          tags={tags}
-          onChange={(newTags) => handleTagsOnChange(newTags)}
-          removeOnBackspace
-          readOnly={readOnly}
-          placeholder={placeholderText}
-        />
-      )
-      : (
-        <>
+    <>
+      {border
+        ? (
           <Box
             border={1}
             borderRadius={5}
-            borderColor={unique && isInvalid ? ERROR_COLOR : TAG_BOX_COLOR}
+            borderColor={showError || (unique && !areCurrentTagsUnique)
+              ? ERROR_COLOR : TAG_BOX_COLOR}
             className={classes.tagBox}
           >
             <ReactTagInput
@@ -88,11 +105,24 @@ const TagPicker = ({
               placeholder={placeholderText}
             />
           </Box>
-          {unique && isInvalid
-            ? <p className={classes.errorText}>Tag list should contain unique items</p>
-            : null}
-        </>
-      )
+        )
+        : (
+          <ReactTagInput
+            tags={tags}
+            onChange={(newTags) => handleTagsOnChange(newTags)}
+            removeOnBackspace
+            readOnly={readOnly}
+            placeholder={placeholderText}
+          />
+        )}
+      {(showError || (unique && !areCurrentTagsUnique)) && (
+        <p className={classes.errorText}>
+          {showError && (helperText.length > 0) && areCurrentTagsUnique
+            ? helperText
+            : 'Tag list should contain unique items.'}
+        </p>
+      )}
+    </>
   );
 };
 
