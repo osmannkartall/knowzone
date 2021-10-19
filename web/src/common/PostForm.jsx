@@ -84,7 +84,8 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
 
   const validateForm = () => {
     const isValidDescription = validate(
-      form.description, descriptionCheck, setDescriptionCheck, DESCRIPTION_CONSTRAINTS);
+      form.description, descriptionCheck, setDescriptionCheck, DESCRIPTION_CONSTRAINTS,
+    );
     const isValidLinks = validate(form.links, linksCheck, setLinksCheck, LINKS_CONSTRAINTS);
     const isValidTopics = validate(form.topics, topicsCheck, setTopicsCheck, TOPICS_CONSTRAINTS);
     let isValid = isValidDescription && isValidLinks && isValidTopics && topicsCheck.isUnique;
@@ -92,7 +93,8 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
     if (form.type === POST_TYPES.get('bugfix').value) {
       const isValidError = validate(form.error, errorCheck, setErrorCheck, ERROR_CONSTRAINTS);
       const isValidSolution = validate(
-        form.solution, solutionCheck, setSolutionCheck, SOLUTION_CONSTRAINTS);
+        form.solution, solutionCheck, setSolutionCheck, SOLUTION_CONSTRAINTS,
+      );
       isValid = isValid && isValidError && isValidSolution;
     }
 

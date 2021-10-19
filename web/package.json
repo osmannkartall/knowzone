@@ -37,7 +37,9 @@
     "rules": {
       "no-console": "off",
       "react/prop-types": "off",
-      "object-curly-newline": "off"
+      "object-curly-newline": "off",
+      "no-underscore-dangle": ["error", { "allow": ["_id"] }],
+      "no-plusplus": "off"
     }
   },
   "browserslist": {

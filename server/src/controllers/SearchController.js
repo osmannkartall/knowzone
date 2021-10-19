@@ -1,12 +1,10 @@
 const router = require('express').Router();
 const SearchService = require('../services/SearchService');
 
-const searchService = new SearchService();
-
 const getPostsByOwner = async (req, res) => {
   const { owner } = req.query;
   if (owner) {
-    const result = await searchService.getPostsByOwner(owner);
+    const result = await SearchService.getPostsByOwner(owner);
     res.json(result);
   } else {
     res.status(500).send({
@@ -18,7 +16,7 @@ const getPostsByOwner = async (req, res) => {
 const filter = async (req, res) => {
   const info = req.body;
   if (info) {
-    const result = await searchService.filter(info);
+    const result = await SearchService.filter(info);
     res.json(result);
   } else {
     res.status(500).send({

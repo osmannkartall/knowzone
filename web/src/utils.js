@@ -1,10 +1,7 @@
-/* eslint-disable guard-for-in */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable import/prefer-default-export */
 import POST_TYPES from './constants/post-types';
 
 export function preparePost(form) {
-  const route = POST_TYPES.get(form.type).route;
+  const { route } = POST_TYPES.get(form.type);
   const post = {
     description: form.description,
     images: form.images,
@@ -54,54 +51,55 @@ export function createFile(item) {
   return new File([ia], item.name, { type: item.mime });
 }
 
-/**
- * Finds the changed values in the old object.
- * @param {(Object)} oldObj - Object
- * @param {(Object)} newObj - Object with same fields as oldObj
- * @returns Returns the diff object containing only the fields with the new values or
- * returns empty object if there is no difference or
- * returns undefined if one of the objects has different field than other or at least
- * one of the parameters is not Object.
- */
-export function diff(oldObj, newObj) {
-  if (oldObj.constructor !== Object || newObj.constructor !== Object) {
-    return undefined;
-  }
+function isValidObject(object) {
+  return object && object.constructor === Object;
+}
 
-  let diffObj = {};
+function areJSONValuesDifferent(oldValue, newValue) {
+  return JSON.stringify(oldValue) !== JSON.stringify(newValue);
+}
 
-  if (oldObj && newObj) {
-    for (const prop in oldObj) {
-      if (Object.prototype.hasOwnProperty.call(oldObj, prop)
-          && Object.prototype.hasOwnProperty.call(newObj, prop)) {
-        if (JSON.stringify(oldObj[prop]) !== JSON.stringify(newObj[prop])) {
-          diffObj[prop] = newObj[prop];
-        }
-      } else {
-        diffObj = undefined;
-        break;
+function createDiffObject(oldObject, newObject) {
+  let diffObject = {};
+  const fields = Object.keys(oldObject);
+
+  for (let i = 0; i < fields.length; i++) {
+    const field = fields[i];
+
+    if (field in newObject) {
+      if (areJSONValuesDifferent(oldObject[field], newObject[field])) {
+        diffObject[field] = newObject[field];
       }
+    } else {
+      diffObject = {};
+      break;
     }
   }
 
-  return diffObj;
+  return diffObject;
 }
 
-export function isObjectEmpty(obj) {
-  if (obj.constructor !== Object) {
-    return undefined;
+export function getChangesInObject(oldObject, newObject) {
+  let diffObject;
+
+  if (isValidObject(oldObject) && isValidObject(newObject)) {
+    diffObject = createDiffObject(oldObject, newObject);
+  } else {
+    diffObject = {};
   }
 
-  for (const _ in obj) {
-    return false;
-  }
-
-  return true;
+  return diffObject;
 }
 
-export function isEqual(obj1, obj2) {
-  if (obj1.constructor !== Object || obj2.constructor !== Object) {
-    return undefined;
-  }
-  return JSON.stringify(obj1) === JSON.stringify(obj2);
+export function isObjectEmptyOrNotValid(object) {
+  const isValid = isValidObject(object);
+  const isEmpty = isValid && Object.keys(object).length < 1;
+
+  return isEmpty || !isValid;
+}
+
+export function areObjectsEqual(object1, object2) {
+  return isValidObject(object1)
+    && isValidObject(object2)
+    && !areJSONValuesDifferent(object1, object2);
 }

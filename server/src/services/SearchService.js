@@ -3,8 +3,7 @@ const TipModel = require('../models/Tip');
 const BugfixModel = require('../models/Bugfix');
 
 class SearchService {
-  // eslint-disable-next-line class-methods-use-this
-  async getPostsByOwner(ownerId) {
+  static async getPostsByOwner(ownerId) {
     const posts = await TipModel.aggregate([
       { $match: { 'owner.id': ObjectId(ownerId) } },
       { $addFields: { type: 'tip', id: '$_id' } },
@@ -24,43 +23,42 @@ class SearchService {
     return posts;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  async filter(info) {
+  static async filter(info) {
+    const filterInfo = info;
+
     let searchQuery = null;
-    if ('searchText' in info) {
-      searchQuery = { $regex: `\\b${info.searchText.trim()}\\b`, $options: 'i' };
-      // eslint-disable-next-line no-param-reassign
-      delete info.searchText;
+    if ('searchText' in filterInfo) {
+      searchQuery = { $regex: `\\b${filterInfo.searchText.trim()}\\b`, $options: 'i' };
+      delete filterInfo.searchText;
     }
 
     let postType = null;
-    if ('postType' in info) {
-      postType = info.postType;
-      // eslint-disable-next-line no-param-reassign
-      delete info.postType;
+    if ('postType' in filterInfo) {
+      postType = filterInfo.postType;
+      delete filterInfo.postType;
     }
 
     let query = {};
     const filterQuery = { createdAt: {}, updatedAt: {} };
-    Object.entries(info).forEach(([k, v]) => {
+    Object.entries(filterInfo).forEach(([k, v]) => {
       if (k === 'author') {
         filterQuery['owner.username'] = { $regex: `\\b${v.trim()}\\b`, $options: 'i' };
       } else if (k === 'topics') {
         filterQuery[k] = { $in: v.map((topic) => new RegExp(`\\b${topic.trim()}\\b`, 'i')) };
       } else if (k === 'createdStartDate') {
-        const date = new Date(info.createdStartDate);
+        const date = new Date(filterInfo.createdStartDate);
         date.setUTCHours(0, 0, 0, 0);
         filterQuery.createdAt.$gte = date;
       } else if (k === 'createdEndDate') {
-        const date = new Date(info.createdEndDate);
+        const date = new Date(filterInfo.createdEndDate);
         date.setUTCHours(23, 59, 59, 999);
         filterQuery.createdAt.$lte = date;
       } else if (k === 'modifiedStartDate') {
-        const date = new Date(info.modifiedStartDate);
+        const date = new Date(filterInfo.modifiedStartDate);
         date.setUTCHours(0, 0, 0, 0);
         filterQuery.updatedAt.$gte = date;
       } else if (k === 'modifiedEndDate') {
-        const date = new Date(info.modifiedEndDate);
+        const date = new Date(filterInfo.modifiedEndDate);
         date.setUTCHours(23, 59, 59, 999);
         filterQuery.updatedAt.$lte = date;
       } else {
@@ -98,8 +96,8 @@ class SearchService {
     console.log(query);
     if (postType === 'bugfix') {
       return BugfixModel.find(query).sort({ createdAt: -1 });
-      // eslint-disable-next-line no-else-return
-    } else if (postType === 'tip') {
+    }
+    if (postType === 'tip') {
       return TipModel.find(query).sort({ createdAt: -1 });
     }
     const bugfixPosts = await BugfixModel.find(query);
