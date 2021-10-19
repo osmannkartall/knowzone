@@ -128,23 +128,27 @@ const YourPosts = () => {
   useEffect(() => {
     let mounted = true;
 
-    fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}?owner=${user.id}`)
-      .then((res) => res.json())
-      .then(
-        (data) => {
-          if (mounted) {
-            setPosts(data);
-          }
-        },
-        (error) => {
-          console.log(error.message);
-        },
-      );
+    function getPosts() {
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}?owner=${user.id}`)
+        .then((res) => res.json())
+        .then(
+          (data) => {
+            if (mounted) {
+              setPosts(data);
+            }
+          },
+          (error) => {
+            console.log(error.message);
+          },
+        );
+    }
+
+    getPosts();
 
     return function cleanup() {
       mounted = false;
     };
-  }, []);
+  }, [user.id]);
 
   return (
     <>
