@@ -25,7 +25,7 @@ const YourPosts = () => {
 
   const handleClose = () => setOpenDialog(false);
 
-  const handleChangeForm = (key, value) => {
+  const changeSelectedPostField = (key, value) => {
     setSelectedPost((prevState) => ({ ...prevState, [key]: value }));
   };
 
@@ -182,7 +182,7 @@ const YourPosts = () => {
         open={openForm}
         setOpen={setOpenForm}
         form={selectedPost}
-        handleChangeForm={handleChangeForm}
+        changeHandler={changeSelectedPostField}
         onClickBtn={() => setOpenDialog(true)}
       />
       <Dialog

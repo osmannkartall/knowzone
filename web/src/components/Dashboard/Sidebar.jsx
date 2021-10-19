@@ -92,7 +92,7 @@ export default function Sidebar({ isSidebarOpen }) {
   const [isPostFormOpen, setIsPostFormOpen] = useState(false);
   const classes = useStyles();
 
-  const handleChangeForm = (key, value) => {
+  const changeNewPostField = (key, value) => {
     setNewPost((prevState) => ({ ...prevState, [key]: value }));
   };
 
@@ -161,7 +161,7 @@ export default function Sidebar({ isSidebarOpen }) {
         open={isPostFormOpen}
         setOpen={setIsPostFormOpen}
         form={newPost}
-        handleChangeForm={handleChangeForm}
+        changeHandler={changeNewPostField}
         onClickBtn={addPost}
       />
     </div>

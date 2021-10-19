@@ -20,6 +20,7 @@ import {
   TOPICS_CONSTRAINTS,
   validate,
 } from '../clientSideValidation';
+import { useMemoAndDebounce } from '../utils';
 
 const useStyles = makeStyles((theme) => ({
   modalData: {
@@ -74,13 +75,14 @@ const FormDataRow = ({ children }) => (
   </div>
 );
 
-const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClickBtn }) => {
+const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBtn }) => {
   const classes = useStyles();
   const [topicsCheck, setTopicsCheck] = useState({ text: '', isInvalid: false, isUnique: true });
   const [descriptionCheck, setDescriptionCheck] = useState({ text: '', isInvalid: false });
   const [errorCheck, setErrorCheck] = useState({ text: '', isInvalid: false });
   const [solutionCheck, setSolutionCheck] = useState({ text: '', isInvalid: false });
   const [linksCheck, setLinksCheck] = useState({ text: '', isInvalid: false });
+  const memoizedAndDebouncedChangeHandler = useMemoAndDebounce(changeHandler);
 
   const validateForm = () => {
     const isValidDescription = validate(
@@ -122,7 +124,7 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             select
             label="Post Type"
             value={form.type}
-            onChange={(e) => handleChangeForm('type', e.target.value)}
+            onChange={(e) => changeHandler('type', e.target.value)}
             variant="outlined"
             fullWidth
             disabled={form.id !== null && form.id !== undefined}
@@ -143,10 +145,10 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             maxRows={4}
             id="description"
             label="Description"
-            value={form.description}
             error={descriptionCheck.isInvalid}
             helperText={descriptionCheck.text}
-            onChange={(e) => handleChangeForm('description', e.target.value)}
+            defaultValue={form.description}
+            onChange={(e) => memoizedAndDebouncedChangeHandler('description', e.target.value)}
           />
         </FormDataRow>
         <FormDataRow>
@@ -161,10 +163,10 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
               maxRows={10}
               id="error"
               label="Error"
-              value={form.error}
               error={errorCheck.isInvalid}
               helperText={errorCheck.text}
-              onChange={(e) => handleChangeForm('error', e.target.value)}
+              defaultValue={form.error}
+              onChange={(e) => memoizedAndDebouncedChangeHandler('error', e.target.value)}
             />
           ) : null}
         </FormDataRow>
@@ -180,23 +182,23 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
               maxRows={10}
               id="solution"
               label="Solution"
-              value={form.solution}
               error={solutionCheck.isInvalid}
               helperText={solutionCheck.text}
-              onChange={(e) => handleChangeForm('solution', e.target.value)}
+              defaultValue={form.solution}
+              onChange={(e) => memoizedAndDebouncedChangeHandler('solution', e.target.value)}
             />
           ) : null}
         </FormDataRow>
         <div className={classes.fileUploaderContainer}>
           <FileUploader
             files={form.images}
-            setFiles={(images) => handleChangeForm('images', images)}
+            setFiles={(images) => changeHandler('images', images)}
           />
         </div>
         <FormDataRow>
           <TagPicker
             tags={form.topics}
-            setTags={(topics) => handleChangeForm('topics', topics)}
+            setTags={(topics) => changeHandler('topics', topics)}
             required
             unique
             border
@@ -210,7 +212,7 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
         <FormDataRow>
           <TagPicker
             tags={form.links}
-            setTags={(links) => handleChangeForm('links', links)}
+            setTags={(links) => changeHandler('links', links)}
             placeholder="Enter links"
             border
             showError={linksCheck.isInvalid}
@@ -227,7 +229,7 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
   );
 };
 
-const PostForm = ({ title, btnTitle, open, setOpen, form, handleChangeForm, onClickBtn }) => {
+const PostForm = ({ title, btnTitle, open, setOpen, form, changeHandler, onClickBtn }) => {
   const classes = useStyles();
 
   const handleClose = () => setOpen(false);
@@ -239,7 +241,7 @@ const PostForm = ({ title, btnTitle, open, setOpen, form, handleChangeForm, onCl
         btnTitle={btnTitle}
         handleClose={handleClose}
         form={form}
-        handleChangeForm={handleChangeForm}
+        changeHandler={changeHandler}
         onClickBtn={onClickBtn}
       />
     </div>
