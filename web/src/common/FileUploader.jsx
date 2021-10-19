@@ -11,7 +11,7 @@ import { bufferToBase64 } from '../utils';
 
 const NUM_MAX_FILES = 2;
 const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
-const ACCEPTED_TYPES = 'image/jpeg, image/png, image/gif'; // 'image/*' to allow all image sub types
+const ACCEPTED_TYPES = 'image/*';
 
 const THUMBNAIL_WIDTH = 300;
 const THUMBNAIL_HEIGHT = 300;
