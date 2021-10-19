@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Dialog, DialogActions, DialogTitle, Button } from '@material-ui/core';
 import { toast } from 'react-toastify';
 import Post from '../common/Post';

@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Post from '../common/Post';
 import ContentWrapper from '../common/ContentWrapper';

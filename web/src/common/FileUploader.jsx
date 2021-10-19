@@ -1,5 +1,5 @@
 import { makeStyles, IconButton } from '@material-ui/core';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import CloseIcon from '@material-ui/icons/Close';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
