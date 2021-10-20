@@ -127,7 +127,7 @@ const TagPicker = ({
 };
 
 TagPicker.defaultProps = {
-  placeholder: 'Type a topic and press enter to add',
+  placeholder: 'Type a tag and press enter to add',
 };
 
 export default TagPicker;

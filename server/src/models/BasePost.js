@@ -35,7 +35,10 @@ const basePostObject = {
     },
   },
   links: {
-    type: [String],
+    type: [{
+      type: String,
+      unique: true,
+    }],
     validate: validateArrayLength('links', MAX_NUM_LINKS),
   },
   topics: {
@@ -44,6 +47,7 @@ const basePostObject = {
         type: String,
         match: /^@?([a-z0-9-]){1,30}$/,
         lowercase: true,
+        unique: true,
       },
     ],
     required: true,

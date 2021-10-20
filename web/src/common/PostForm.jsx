@@ -81,7 +81,7 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
   const [descriptionCheck, setDescriptionCheck] = useState({ text: '', isInvalid: false });
   const [errorCheck, setErrorCheck] = useState({ text: '', isInvalid: false });
   const [solutionCheck, setSolutionCheck] = useState({ text: '', isInvalid: false });
-  const [linksCheck, setLinksCheck] = useState({ text: '', isInvalid: false });
+  const [linksCheck, setLinksCheck] = useState({ text: '', isInvalid: false, isUnique: true });
   const memoizedAndDebouncedChangeHandler = useMemoAndDebounce(changeHandler);
 
   const validateForm = () => {
@@ -199,6 +199,7 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
           <TagPicker
             tags={form.topics}
             setTags={(topics) => changeHandler('topics', topics)}
+            placeholder="Type a topic and press enter to add"
             required
             unique
             border
@@ -213,8 +214,12 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
           <TagPicker
             tags={form.links}
             setTags={(links) => changeHandler('links', links)}
-            placeholder="Enter links"
+            placeholder="Type a link and press enter to add"
+            unique
             border
+            onNotUniqueError={(unique) => setLinksCheck(
+              { ...linksCheck, isUnique: unique },
+            )}
             showError={linksCheck.isInvalid}
             helperText={linksCheck.text}
           />

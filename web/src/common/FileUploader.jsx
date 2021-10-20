@@ -171,6 +171,7 @@ const FileUploader = ({ files, setFiles }) => {
       if (checkAvailableSpace(acceptedFiles)) {
         const newFiles = acceptedFiles.map((file) => Object.assign(file, {
           preview: URL.createObjectURL(file),
+          _id: uniqueId(),
         }));
         setFiles([...files, ...newFiles]);
       } else {
@@ -217,7 +218,7 @@ const FileUploader = ({ files, setFiles }) => {
       ) : null}
       <aside className={classes.thumbnailsContainer}>
         {files.map((file) => (
-          <div className={classes.thumbnails} key={uniqueId(file.name)}>
+          <div className={classes.thumbnails} key={file._id}>
             <div className={classes.thumbnail}>
               <Image file={file} />
               <IconButton
