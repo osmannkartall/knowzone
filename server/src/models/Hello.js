@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { transformToJSON } = require('../utils');
 
 const helloSchema = new mongoose.Schema(
   {
@@ -7,10 +8,7 @@ const helloSchema = new mongoose.Schema(
   },
 );
 
-helloSchema.set('toJSON', {
-  virtuals: true,
-  transform(_, ret) { delete ret._id; },
-});
+transformToJSON(helloSchema);
 
 const Hello = mongoose.model('Hello', helloSchema);
 

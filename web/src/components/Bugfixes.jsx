@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Post from '../common/Post';
 import { BE_ROUTES } from '../constants/routes';
 import POST_TYPES from '../constants/post-types';

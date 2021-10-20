@@ -1,5 +1,6 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { makeStyles, IconButton } from '@material-ui/core';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import CloseIcon from '@material-ui/icons/Close';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
@@ -10,7 +11,7 @@ import { bufferToBase64 } from '../utils';
 
 const NUM_MAX_FILES = 2;
 const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
-const ACCEPTED_TYPES = 'image/jpeg, image/png, image/gif'; // 'image/*' to allow all image sub types
+const ACCEPTED_TYPES = 'image/*';
 
 const THUMBNAIL_WIDTH = 300;
 const THUMBNAIL_HEIGHT = 300;
@@ -170,6 +171,7 @@ const FileUploader = ({ files, setFiles }) => {
       if (checkAvailableSpace(acceptedFiles)) {
         const newFiles = acceptedFiles.map((file) => Object.assign(file, {
           preview: URL.createObjectURL(file),
+          _id: uniqueId(),
         }));
         setFiles([...files, ...newFiles]);
       } else {
@@ -216,7 +218,7 @@ const FileUploader = ({ files, setFiles }) => {
       ) : null}
       <aside className={classes.thumbnailsContainer}>
         {files.map((file) => (
-          <div className={classes.thumbnails} key={uniqueId(file.name)}>
+          <div className={classes.thumbnails} key={file._id}>
             <div className={classes.thumbnail}>
               <Image file={file} />
               <IconButton

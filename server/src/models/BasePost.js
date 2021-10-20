@@ -1,15 +1,14 @@
 const { Schema } = require('mongoose');
-const { isMimeValid, isLengthBetween, maxLengthMessage } = require('../utils');
+const { isLengthBetween, maxLengthMessage } = require('../utils');
 
 const MAX_NUM_TOPICS = 5;
 const MIN_NUM_TOPICS = 1;
 const MAX_NUM_IMAGES = 2;
 const MAX_NUM_LINKS = 5;
 const MAX_LEN_DESCRIPTION = 1000;
-const ACCEPTED_MIMES = ['image/png', 'image/jpeg', 'image/gif'];
 
-const validateMime = () => [
-  (mime) => isMimeValid(ACCEPTED_MIMES, mime),
+const validateMimeType = () => [
+  (mime) => mime.split('/')[0] === 'image',
   (props) => `Unsupported mime-type, RECEIVED: ${props.value}`,
 ];
 
@@ -36,7 +35,10 @@ const basePostObject = {
     },
   },
   links: {
-    type: [String],
+    type: [{
+      type: String,
+      unique: true,
+    }],
     validate: validateArrayLength('links', MAX_NUM_LINKS),
   },
   topics: {
@@ -45,6 +47,7 @@ const basePostObject = {
         type: String,
         match: /^@?([a-z0-9-]){1,30}$/,
         lowercase: true,
+        unique: true,
       },
     ],
     required: true,
@@ -67,7 +70,7 @@ const basePostObject = {
         mime: {
           type: String,
           required: true,
-          validate: validateMime(),
+          validate: validateMimeType(),
         },
       },
     ],

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { IconButton, makeStyles, Grid } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import TuneIcon from '@material-ui/icons/Tune';
 import { toast } from 'react-toastify';
+import { isEmpty } from 'lodash';
 import SearchOptions from './SearchOptions';
 import { GRAY2, GRAY3, PRIMARY } from '../constants/colors';
 import { FE_ROUTES } from '../constants/routes';
@@ -73,9 +74,13 @@ const SearchBar = () => {
   };
   const [searchOptions, setSearchOptions] = useState(emptySearchOptions);
   const [isSearchOptionsMenuOpen, setIsSearchOptionsMenuOpen] = useState(false);
+  const [isTopicsUnique, setIsTopicsUnique] = useState(true);
+
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
+
+  const handleTopicsNotUniqueError = (unique) => setIsTopicsUnique(unique);
 
   const toggleSearchOptionsMenu = () => setIsSearchOptionsMenuOpen(!isSearchOptionsMenuOpen);
 
@@ -87,23 +92,12 @@ const SearchBar = () => {
     setSearchOptions({ ...searchOptions, [prop]: event.target.value })
   );
 
-  const handleResetOnClick = () => {
-    setSearchOptions(emptySearchOptions);
-  };
+  const handleResetOnClick = () => setSearchOptions(emptySearchOptions);
 
-  const checkAllSearchOptions = () => (
-    searchOptions.searchText
-    || searchOptions.postType
-    || searchOptions.error
-    || searchOptions.solution
-    || searchOptions.description
-    || searchOptions.topics.length
-    || searchOptions.author
-    || searchOptions.createdStartDate
-    || searchOptions.createdEndDate
-    || searchOptions.modifiedStartDate
-    || searchOptions.modifiedEndDate
-  );
+  const checkAllSearchOptions = () => {
+    const isAllSearchOptionsEmpty = Object.values(searchOptions).every((value) => isEmpty(value));
+    return !isAllSearchOptionsEmpty && isTopicsUnique;
+  };
 
   const checkDates = () => {
     if ((searchOptions.createdStartDate && searchOptions.createdEndDate)
@@ -118,23 +112,25 @@ const SearchBar = () => {
   };
 
   const search = () => {
-    // Copy state object with spread operator to not mutate itself.
-    const tempSearchOptions = { ...searchOptions };
+    if (searchOptions.searchText.trim()) {
+      // Copy state object with spread operator to not mutate itself.
+      const tempSearchOptions = { ...searchOptions };
 
-    Object.entries(searchOptions).forEach(([key, value]) => {
-      if (!value || (Array.isArray(value) && !value.length)) {
-        delete tempSearchOptions[key];
-      }
-    });
+      Object.entries(searchOptions).forEach(([key, value]) => {
+        if (!value || (Array.isArray(value) && !value.length)) {
+          delete tempSearchOptions[key];
+        }
+      });
 
-    hideSearchOptionsMenu();
-    const data = JSON.parse(JSON.stringify(tempSearchOptions));
-    history.push(FE_ROUTES.SEARCH_RESULTS, data);
+      hideSearchOptionsMenu();
+      const data = JSON.parse(JSON.stringify(tempSearchOptions));
+      history.push(FE_ROUTES.SEARCH_RESULTS, data);
+    }
   };
 
   const handleSearchOnClick = () => {
     if (!checkAllSearchOptions()) {
-      toast.error('Could not search! Type what to search or specify search options.');
+      toast.error('Could not search! Type what to search or specify search options correctly.');
     } else if (!checkDates()) {
       toast.error('Invalid dates!');
     } else {
@@ -143,7 +139,7 @@ const SearchBar = () => {
   };
 
   const handleOnPressEnter = (event) => {
-    if (event.key === 'Enter' && searchOptions.searchText) {
+    if (event.key === 'Enter') {
       search();
     }
   };
@@ -200,6 +196,7 @@ const SearchBar = () => {
             handleDateChange={handleDateChange}
             handleSearchOnClick={handleSearchOnClick}
             handleResetOnClick={handleResetOnClick}
+            handleTopicsNotUniqueError={handleTopicsNotUniqueError}
           />
         )}
       </Grid>

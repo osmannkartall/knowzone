@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import { ToastContainer } from 'react-toastify';
@@ -25,34 +25,42 @@ const theme = createTheme({
 });
 
 const Wrapper = () => {
-  const [user, setUser] = useContext(AuthContext);
+  const [, setUser] = useContext(AuthContext);
 
   // Simulates a log in operation with the credentials stored in user context variable.
   useEffect(() => {
     let mounted = true;
 
-    fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.LOGIN}`, { method: 'POST' })
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          if (mounted) {
-            console.log(result.message);
-            const newUser = { ...user };
-            newUser.isLoggedIn = true;
-            // get user id from db later.
-            // newUser.id = result.id;
-            setUser(newUser);
-          }
-        },
-        (error) => {
-          console.log(error.message);
-        },
-      );
+    function login() {
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.LOGIN}`, { method: 'POST' })
+        .then((res) => res.json())
+        .then(
+          (result) => {
+            if (mounted) {
+              console.log(result.message);
+              const newUser = {
+                username: 'osmannkartall',
+                email: 'mail@mail.mail',
+                name: 'Osman Kartal',
+                bio: 'this is my bio',
+                id: '6123673a32e9c02678d5e5c1',
+                isLoggedIn: true,
+              };
+              setUser(newUser);
+            }
+          },
+          (error) => {
+            console.log(error.message);
+          },
+        );
+    }
+
+    login();
 
     return function cleanup() {
       mounted = false;
     };
-  }, []);
+  }, [setUser]);
 
   return (
     <>

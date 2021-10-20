@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles, IconButton, MenuItem, Menu } from '@material-ui/core';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -91,7 +91,7 @@ const Topbar = ({ openSidebar }) => {
         >
           <MenuIcon />
         </IconButton>
-        <a href="http://localhost:3000" className={classes.appLogoLink}>
+        <a href={process.env.REACT_APP_KNOWZONE_FE_URI} className={classes.appLogoLink}>
           <AppLogo
             width="140"
             height="50"

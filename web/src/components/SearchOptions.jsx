@@ -1,4 +1,3 @@
-import { React } from 'react';
 import {
   makeStyles,
   Grid,
@@ -88,6 +87,7 @@ const SearchOptions = ({
   handleDateChange,
   handleResetOnClick,
   handleSearchOnClick,
+  handleTopicsNotUniqueError,
 }) => {
   const classes = useStyles();
 
@@ -148,7 +148,9 @@ const SearchOptions = ({
             name="topics"
             tags={options.topics}
             setTags={setTopics}
+            onNotUniqueError={handleTopicsNotUniqueError}
             fullWidth
+            unique
           />
         </SearchOptionRow>
         <SearchOptionRow label="Author">

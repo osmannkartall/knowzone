@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { makeStyles, IconButton, Menu, MenuItem, Divider } from '@material-ui/core';
 import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import { GRAY3, GRAY4, PRIMARY } from '../constants/colors';
