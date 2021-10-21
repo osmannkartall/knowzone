@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: `calc(90% - ${theme.spacing(20)}px)`,
+    width: `calc(100% - ${theme.spacing(10)}px)`,
     display: 'flex',
     flexDirection: 'column',
     maxHeight: '90vh',
