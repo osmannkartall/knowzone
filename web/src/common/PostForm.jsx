@@ -23,7 +23,7 @@ import {
   validate,
 } from '../clientSideValidation';
 import { useMemoAndDebounce } from '../utils';
-import MarkdownEditor from '../components/MarkdownEditor';
+import MarkdownEditor from './MarkdownEditor';
 
 const useStyles = makeStyles((theme) => ({
   modalData: {
