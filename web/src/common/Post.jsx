@@ -5,6 +5,7 @@ import { GRAY3, GRAY4, PRIMARY } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
 import POST_TYPES from '../constants/post-types';
 import { convertDate, bufferToBase64 } from '../utils';
+import MarkdownPreview from './MarkdownPreview';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -85,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: GRAY4,
     borderRadius: 4,
     height: 'auto',
-    maxHeight: 200,
+    maxHeight: 500,
     overflow: 'auto',
     padding: theme.spacing(2),
   },
@@ -201,10 +202,10 @@ const Post = ({
         {type === POST_TYPES.get('bugfix').value ? (
           <>
             <PostBodySection title="Error">
-              <div>{content.error}</div>
+              <MarkdownPreview text={content.error} />
             </PostBodySection>
             <PostBodySection title="Solution">
-              <div>{content.solution}</div>
+              <MarkdownPreview text={content.solution} />
             </PostBodySection>
           </>
         ) : null}

@@ -1,10 +1,7 @@
 import { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { a11yDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { makeStyles, Button } from '@material-ui/core';
 import { GRAY3, GRAY4 } from '../constants/colors';
+import MarkdownPreview from './MarkdownPreview';
 
 const TITLE_HEIGHT = 30;
 const OPTION_BUTTON_HEIGHT = 20;
@@ -59,17 +56,6 @@ const useStyles = makeStyles((theme) => ({
     overflowY: 'auto',
     overflowWrap: 'break-word',
     height: (props) => `calc(${props.containerMaxHeight} - ${TITLE_HEIGHT}px)`,
-  },
-  previewContainer: {
-    display: 'flex',
-    width: '100%',
-    overflowY: 'auto',
-    overflowWrap: 'break-word',
-    height: (props) => `calc(${props.containerMaxHeight} - ${TITLE_HEIGHT}px)`,
-  },
-  preview: {
-    width: '100%',
-    padding: theme.spacing(0, 1),
   },
   title: {
     fontSize: 17,
@@ -138,33 +124,7 @@ const MarkdownEditor = ({ text, onChangeText, containerMaxHeight }) => {
               <div className={classes.title}>
                 Preview
               </div>
-              <div className={classes.previewContainer}>
-                <ReactMarkdown
-                  className={classes.preview}
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    code({ inline, className, children }) {
-                      const match = /language-(\w+)/.exec(className || '');
-                      return !inline && match ? (
-                        <SyntaxHighlighter
-                          style={a11yDark}
-                          language={match[1]}
-                          PreTag="div"
-                          showLineNumbers
-                        >
-                          {String(children).replace(/\n$/, '')}
-                        </SyntaxHighlighter>
-                      ) : (
-                        <code className={className}>
-                          {children}
-                        </code>
-                      );
-                    },
-                  }}
-                >
-                  {text}
-                </ReactMarkdown>
-              </div>
+              <MarkdownPreview text={text} />
             </div>
           )
         }
