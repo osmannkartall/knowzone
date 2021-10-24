@@ -146,13 +146,11 @@ const FileUploader = ({ files, setFiles }) => {
   const infoTitle = 'Drag n drop some images here, or click to select';
   const infoSubtitle = `(You can select ${NUM_MAX_FILES} files and the maximum size of a single file is 1 MB)`;
 
-  const checkAvailableSpace = (acceptedFiles) => {
-    if (Array.isArray(acceptedFiles) && Array.isArray(files)
-      && acceptedFiles.length + files.length <= NUM_MAX_FILES) {
-      return true;
-    }
-    return false;
-  };
+  const hasAvailableSpace = (acceptedFiles) => (
+    Array.isArray(acceptedFiles)
+    && Array.isArray(files)
+    && acceptedFiles.length + files.length <= NUM_MAX_FILES
+  );
 
   const {
     getRootProps,
@@ -163,7 +161,7 @@ const FileUploader = ({ files, setFiles }) => {
   } = useDropzone({
     accept: ACCEPTED_TYPES,
     onDrop: (acceptedFiles) => {
-      if (checkAvailableSpace(acceptedFiles)) {
+      if (hasAvailableSpace(acceptedFiles)) {
         const newFiles = acceptedFiles.map((file) => Object.assign(file, {
           preview: URL.createObjectURL(file),
           _id: uniqueId(),
