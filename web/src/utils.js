@@ -106,9 +106,8 @@ export function areObjectsEqual(object1, object2) {
     && !areJSONValuesDifferent(object1, object2);
 }
 
-export function useMemoAndDebounce(handler) {
-  const waitMilliseconds = 100;
+export function useMemoAndDebounce(handler, waitMilliseconds = 100) {
   const debouncedHandler = () => debounce(handler, waitMilliseconds);
 
-  return useMemo(debouncedHandler, [handler]);
+  return useMemo(debouncedHandler, [handler, waitMilliseconds]);
 }
