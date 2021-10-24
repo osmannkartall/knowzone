@@ -169,12 +169,10 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
               <InputLabel
                 required
                 className={classes.label}
-                htmlFor="error"
               >
                 Error
               </InputLabel>
               <MarkdownEditor
-                id="error"
                 text={form.error}
                 onChangeText={markdownTextChangeError}
                 containerMaxHeight="50vh"
@@ -189,7 +187,6 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
               <InputLabel
                 required
                 className={classes.label}
-                htmlFor="solution"
               >
                 Solution
               </InputLabel>
