@@ -10,6 +10,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     overflowY: 'auto',
     overflowWrap: 'break-word',
+    height: '100%',
   },
   preview: {
     width: '100%',
