@@ -8,7 +8,6 @@ import { GRAY3, GRAY4 } from '../constants/colors';
 
 const TITLE_HEIGHT = 30;
 const OPTION_BUTTON_HEIGHT = 20;
-const CONTAINER_MAX_HEIGHT = '90vh';
 
 const useStyles = makeStyles((theme) => ({
   optionContainer: {
@@ -29,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     display: 'flex',
-    maxHeight: `calc(${CONTAINER_MAX_HEIGHT} - ${TITLE_HEIGHT}px)`,
+    maxHeight: (props) => `calc(${props.containerMaxHeight} - ${TITLE_HEIGHT}px)`,
     border: `1px solid ${GRAY3}`,
   },
   editorOuterContainer: {
@@ -40,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   editorContainer: {
     display: 'flex',
     overflowWrap: 'break-word',
-    height: `calc(${CONTAINER_MAX_HEIGHT} - ${TITLE_HEIGHT}px)`,
+    height: (props) => `calc(${props.containerMaxHeight} - ${TITLE_HEIGHT}px)`,
   },
   editor: {
     display: 'flex',
@@ -59,14 +58,14 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     overflowY: 'auto',
     overflowWrap: 'break-word',
-    height: `calc(${CONTAINER_MAX_HEIGHT} - ${TITLE_HEIGHT}px)`,
+    height: (props) => `calc(${props.containerMaxHeight} - ${TITLE_HEIGHT}px)`,
   },
   previewContainer: {
     display: 'flex',
     width: '100%',
     overflowY: 'auto',
     overflowWrap: 'break-word',
-    height: `calc(${CONTAINER_MAX_HEIGHT} - ${TITLE_HEIGHT}px)`,
+    height: (props) => `calc(${props.containerMaxHeight} - ${TITLE_HEIGHT}px)`,
   },
   preview: {
     width: '100%',
@@ -82,9 +81,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MarkdownEditor = ({ text, onChangeText }) => {
+const MarkdownEditor = ({ text, onChangeText, containerMaxHeight }) => {
   const [options, setOptions] = useState({ showEditor: true, showPreview: true });
-  const classes = useStyles();
+  const classes = useStyles({ containerMaxHeight });
 
   const changeOptionValue = (key, value) => {
     setOptions((prevState) => ({ ...prevState, [key]: value }));
@@ -172,6 +171,10 @@ const MarkdownEditor = ({ text, onChangeText }) => {
       </div>
     </>
   );
+};
+
+MarkdownEditor.defaultProps = {
+  containerMaxHeight: '90vh',
 };
 
 export default MarkdownEditor;
