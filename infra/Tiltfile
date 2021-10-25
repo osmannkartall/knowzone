@@ -1,7 +1,7 @@
 ### Backend
 
 docker_build(
-  'localhost:5000/knowzone-backend',
+  '127.0.0.1:5000/knowzone-backend',
   '..', # build context,
   dockerfile='local/Dockerfile.server.local',
   live_update=[
@@ -15,7 +15,7 @@ k8s_resource('backend', port_forwards=8000)
 ### Frontend
 
 docker_build(
-  'localhost:5000/knowzone-frontend',
+  '127.0.0.1:5000/knowzone-frontend',
   '..', # build context,
   dockerfile='local/Dockerfile.web.local',
   build_args={'KNOWZONE_BE_URI':'http://localhost:8000'},

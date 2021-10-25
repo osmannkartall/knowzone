@@ -3,7 +3,7 @@
 # Environment variables required for setting up the local cluster.
 # Please do not modify below values.
 
-export REGISTRY_NAME="localhost:5000"
+export REGISTRY_NAME="127.0.0.1:5000"
 export FRONTEND_LB_PREFIX="http://localhost:3000"
 export FRONTEND_URL="${FRONTEND_LB_PREFIX}"
 export BACKEND_LB_PREFIX="http://localhost:8000"
