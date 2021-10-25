@@ -12,6 +12,8 @@ import NotFound from './components/NotFound';
 import { PRIMARY, WHITE } from './constants/colors';
 import { AuthContext, AuthProvider } from './contexts/AuthContext';
 import { FE_ROUTES, BE_ROUTES } from './constants/routes';
+import Login from './components/Login';
+import Register from './components/Register';
 
 const theme = createTheme({
   palette: {
@@ -67,7 +69,13 @@ const Wrapper = () => {
       <BrowserRouter>
         <Switch>
           <Route exact path="/">
-            <Redirect to={`/${FE_ROUTES.TIPS}`} />
+            <Redirect to={`/${FE_ROUTES.LOGIN}`} />
+          </Route>
+          <Route path={`/${FE_ROUTES.LOGIN}`}>
+            <Login />
+          </Route>
+          <Route path={`/${FE_ROUTES.REGISTER}`}>
+            <Register />
           </Route>
           <Route path={`/${FE_ROUTES.BUG_FIXES}`}>
             <Dashboard><Bugfixes /></Dashboard>
@@ -81,7 +89,6 @@ const Wrapper = () => {
           <Route path={`/${FE_ROUTES.SEARCH_RESULTS}`}>
             <Dashboard><SearchResults /></Dashboard>
           </Route>
-          {/* <Dashboard /> */}
           <Route exact path={`/${FE_ROUTES.NOT_FOUND}`} component={NotFound} />
           <Redirect to={`/${FE_ROUTES.NOT_FOUND}`} />
         </Switch>
