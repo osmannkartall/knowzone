@@ -163,9 +163,9 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
             onChange={(e) => memoizedAndDebouncedChangeHandler('description', e.target.value)}
           />
         </FormDataRow>
-        <FormDataRow>
-          {form.type === POST_TYPES.get('bugfix').value ? (
-            <>
+        {form.type === POST_TYPES.get('bugfix').value ? (
+          <>
+            <FormDataRow>
               <InputLabel
                 required
                 className={classes.label}
@@ -178,12 +178,8 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
                 containerMaxHeight="50vh"
               />
               <FormHelperText error={errorCheck.isInvalid}>{errorCheck.text}</FormHelperText>
-            </>
-          ) : null}
-        </FormDataRow>
-        <FormDataRow>
-          {form.type === POST_TYPES.get('bugfix').value ? (
-            <>
+            </FormDataRow>
+            <FormDataRow>
               <InputLabel
                 required
                 className={classes.label}
@@ -196,9 +192,9 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
                 containerMaxHeight="50vh"
               />
               <FormHelperText error={solutionCheck.isInvalid}>{solutionCheck.text}</FormHelperText>
-            </>
-          ) : null}
-        </FormDataRow>
+            </FormDataRow>
+          </>
+        ) : null}
         <div className={classes.fileUploaderContainer}>
           <FileUploader
             files={form.images}

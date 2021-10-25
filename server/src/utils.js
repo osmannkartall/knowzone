@@ -16,8 +16,13 @@ function transformToJSON(schema) {
   });
 }
 
+function isArrayUnique(arr) {
+  return arr.every((a, i) => arr.indexOf(a) === i);
+}
+
 module.exports = {
   isLengthBetween,
   maxLengthMessage,
   transformToJSON,
+  isArrayUnique,
 };
