@@ -17,9 +17,12 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-dropzone": "^11.3.4",
+    "react-markdown": "^7.1.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-syntax-highlighter": "^15.4.4",
     "react-toastify": "^8.0.1",
+    "remark-gfm": "^3.0.0",
     "web-vitals": "^1.1.2"
   },
   "scripts": {
@@ -32,12 +35,31 @@
     "extends": [
       "react-app",
       "react-app/jest",
-      "airbnb"
+      "airbnb",
+      "plugin:react/jsx-runtime"
     ],
     "rules": {
       "no-console": "off",
       "react/prop-types": "off",
-      "object-curly-newline": "off"
+      "object-curly-newline": "off",
+      "no-underscore-dangle": [
+        "error",
+        {
+          "allow": [
+            "_id"
+          ]
+        }
+      ],
+      "no-plusplus": "off",
+      "react/jsx-filename-extension": [
+        1,
+        {
+          "extensions": [
+            ".js",
+            ".jsx"
+          ]
+        }
+      ]
     }
   },
   "browserslist": {

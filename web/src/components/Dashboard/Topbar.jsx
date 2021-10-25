@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles, IconButton, MenuItem, Menu } from '@material-ui/core';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchBar from '../SearchBar';
-import { GRAY1, GRAY3 } from '../../constants/colors';
+import { GRAY1, GRAY3, PRIMARY } from '../../constants/colors';
 import { FE_ROUTES } from '../../constants/routes';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
 import AppLogo from '../../common/AppLogo';
@@ -33,9 +33,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    overflowX: 'hidden',
-    [theme.breakpoints.only('xs')]: {
-      justifyContent: 'space-between',
+    [theme.breakpoints.down('sm')]: {
+      width: 'auto',
     },
   },
   menuButton: {
@@ -44,14 +43,36 @@ const useStyles = makeStyles((theme) => ({
     height: 40,
   },
   appLogoLink: {
-    height: 50,
-    [theme.breakpoints.only('xs')]: {
-      overflow: 'hidden',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textDecoration: 'none',
+    [theme.breakpoints.down('sm')]: {
       marginRight: theme.spacing(2),
-      marginLeft: theme.spacing(1),
+    },
+  },
+  appLogoTitle: {
+    display: 'inlineBlock',
+    color: PRIMARY,
+    marginLeft: theme.spacing(0.5),
+    lineHeight: '30px',
+    fontSize: 25,
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
     },
   },
 }));
+
+const AppLogoWithTitle = () => {
+  const classes = useStyles();
+
+  return (
+    <a href={process.env.REACT_APP_KNOWZONE_FE_URI} className={classes.appLogoLink}>
+      <AppLogo width="30" height="30" />
+      <span className={classes.appLogoTitle}>Knowzone</span>
+    </a>
+  );
+};
 
 const Topbar = ({ openSidebar }) => {
   const [anchorMenu, setAnchorMenu] = useState(null);
@@ -91,12 +112,7 @@ const Topbar = ({ openSidebar }) => {
         >
           <MenuIcon />
         </IconButton>
-        <a href="http://localhost:3000" className={classes.appLogoLink}>
-          <AppLogo
-            width="140"
-            height="50"
-          />
-        </a>
+        <AppLogoWithTitle />
       </div>
       <SearchBar />
       <div className={classes.accountButton}>

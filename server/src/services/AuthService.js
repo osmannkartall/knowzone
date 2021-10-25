@@ -6,8 +6,9 @@ class AuthService {
   async login(user) {
     try {
       const result = await this.userModel.findOne(user).exec();
-      if (!result)
-        return 'Error on log in for this user'
+      if (!result) {
+        return 'Error on log in for this user';
+      }
       const res = {
         id: result._id,
         username: result.username,

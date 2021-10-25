@@ -1,11 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Dialog, DialogActions, DialogTitle, Button } from '@material-ui/core';
 import { toast } from 'react-toastify';
 import Post from '../common/Post';
 import { AuthContext } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
 import POST_TYPES from '../constants/post-types';
-import { createFile, diff, isObjectEmpty, isEqual } from '../utils';
+import {
+  createFile,
+  getChangesInObject,
+  isObjectEmptyOrNotValid,
+  areObjectsEqual,
+} from '../utils';
 import { BE_ROUTES } from '../constants/routes';
 import ContentWrapper from '../common/ContentWrapper';
 import { IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../constants/colors';
@@ -20,7 +25,7 @@ const YourPosts = () => {
 
   const handleClose = () => setOpenDialog(false);
 
-  const handleChangeForm = (key, value) => {
+  const changeSelectedPostField = (key, value) => {
     setSelectedPost((prevState) => ({ ...prevState, [key]: value }));
   };
 
@@ -44,11 +49,11 @@ const YourPosts = () => {
     try {
       if (selectedPost && selectedPost.id) {
         const idx = posts.findIndex((p) => p.id === selectedPost.id);
-        if (idx !== -1 && !isEqual(selectedPost, posts[idx])) {
-          const changes = diff(posts[idx], selectedPost);
-          const route = POST_TYPES.get(selectedPost.type).route;
+        if (idx !== -1 && !areObjectsEqual(selectedPost, posts[idx])) {
+          const changes = getChangesInObject(posts[idx], selectedPost);
+          const { route } = POST_TYPES.get(selectedPost.type);
 
-          if (changes && !isObjectEmpty(changes)) {
+          if (!isObjectEmptyOrNotValid(changes)) {
             const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
             const fd = new FormData();
             changes.saveImage = changes.images !== undefined;
@@ -85,7 +90,7 @@ const YourPosts = () => {
 
   const deletePost = () => {
     if (selectedPost && selectedPost.type && selectedPost.id) {
-      const route = POST_TYPES.get(selectedPost.type).route;
+      const { route } = POST_TYPES.get(selectedPost.type);
       const idx = posts.findIndex((p) => p.id === selectedPost.id);
 
       if (idx !== -1) {
@@ -123,23 +128,27 @@ const YourPosts = () => {
   useEffect(() => {
     let mounted = true;
 
-    fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}?owner=${user.id}`)
-      .then((res) => res.json())
-      .then(
-        (data) => {
-          if (mounted) {
-            setPosts(data);
-          }
-        },
-        (error) => {
-          console.log(error.message);
-        },
-      );
+    function getPosts() {
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}?owner=${user.id}`)
+        .then((res) => res.json())
+        .then(
+          (data) => {
+            if (mounted) {
+              setPosts(data);
+            }
+          },
+          (error) => {
+            console.log(error.message);
+          },
+        );
+    }
+
+    getPosts();
 
     return function cleanup() {
       mounted = false;
     };
-  }, []);
+  }, [user.id]);
 
   return (
     <>
@@ -173,7 +182,7 @@ const YourPosts = () => {
         open={openForm}
         setOpen={setOpenForm}
         form={selectedPost}
-        handleChangeForm={handleChangeForm}
+        changeHandler={changeSelectedPostField}
         onClickBtn={() => setOpenDialog(true)}
       />
       <Dialog

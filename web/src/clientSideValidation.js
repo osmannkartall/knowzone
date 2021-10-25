@@ -50,7 +50,11 @@ export function validate(formField, formFieldErrorCheck, setFormFieldErrorCheck,
   let text = '';
 
   if (maxLen !== undefined && formField.length > maxLen) {
-    text = `${makeInitalUpper(name)} cannot exceed ${maxLen} characters.`;
+    if (typeof formField === 'string') {
+      text = `${makeInitalUpper(name)} cannot exceed ${maxLen} characters.`;
+    } else if (Array.isArray(formField)) {
+      text = `The maximum number of ${name} allowed is ${maxLen}.`;
+    }
   } else if (minLen !== undefined && formField.length < minLen) {
     text = `Please fill in the ${name} section.`;
   } else if (isPatternInvalid(pattern?.value, formField)) {

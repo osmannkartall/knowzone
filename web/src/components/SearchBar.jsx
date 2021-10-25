@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { IconButton, makeStyles, Grid } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
@@ -112,18 +112,20 @@ const SearchBar = () => {
   };
 
   const search = () => {
-    // Copy state object with spread operator to not mutate itself.
-    const tempSearchOptions = { ...searchOptions };
+    if (searchOptions.searchText.trim()) {
+      // Copy state object with spread operator to not mutate itself.
+      const tempSearchOptions = { ...searchOptions };
 
-    Object.entries(searchOptions).forEach(([key, value]) => {
-      if (!value || (Array.isArray(value) && !value.length)) {
-        delete tempSearchOptions[key];
-      }
-    });
+      Object.entries(searchOptions).forEach(([key, value]) => {
+        if (!value || (Array.isArray(value) && !value.length)) {
+          delete tempSearchOptions[key];
+        }
+      });
 
-    hideSearchOptionsMenu();
-    const data = JSON.parse(JSON.stringify(tempSearchOptions));
-    history.push(FE_ROUTES.SEARCH_RESULTS, data);
+      hideSearchOptionsMenu();
+      const data = JSON.parse(JSON.stringify(tempSearchOptions));
+      history.push(FE_ROUTES.SEARCH_RESULTS, data);
+    }
   };
 
   const handleSearchOnClick = () => {
@@ -137,7 +139,7 @@ const SearchBar = () => {
   };
 
   const handleOnPressEnter = (event) => {
-    if (event.key === 'Enter' && searchOptions.searchText) {
+    if (event.key === 'Enter') {
       search();
     }
   };

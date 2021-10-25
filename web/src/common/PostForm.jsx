@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { useState } from 'react';
 import {
   TextField,
   makeStyles,
@@ -6,9 +6,11 @@ import {
   MenuItem,
   Button,
   Modal,
+  InputLabel,
+  FormHelperText,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
-import { WHITE, GRAY3, PRIMARY } from '../constants/colors';
+import { WHITE, GRAY3, PRIMARY, GRAY1 } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
 import FileUploader from './FileUploader';
 import POST_TYPES from '../constants/post-types';
@@ -20,6 +22,8 @@ import {
   TOPICS_CONSTRAINTS,
   validate,
 } from '../clientSideValidation';
+import { useMemoAndDebounce } from '../utils';
+import MarkdownEditor from './MarkdownEditor';
 
 const useStyles = makeStyles((theme) => ({
   modalData: {
@@ -27,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: `calc(90% - ${theme.spacing(20)}px)`,
+    width: `calc(100% - ${theme.spacing(10)}px)`,
     display: 'flex',
     flexDirection: 'column',
     maxHeight: '90vh',
@@ -66,6 +70,10 @@ const useStyles = makeStyles((theme) => ({
     borderTop: 0,
     backgroundColor: WHITE,
   },
+  label: {
+    margin: theme.spacing(1, 0),
+    color: GRAY1,
+  },
 }));
 
 const FormDataRow = ({ children }) => (
@@ -74,17 +82,24 @@ const FormDataRow = ({ children }) => (
   </div>
 );
 
-const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClickBtn }) => {
+const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBtn }) => {
   const classes = useStyles();
   const [topicsCheck, setTopicsCheck] = useState({ text: '', isInvalid: false, isUnique: true });
   const [descriptionCheck, setDescriptionCheck] = useState({ text: '', isInvalid: false });
   const [errorCheck, setErrorCheck] = useState({ text: '', isInvalid: false });
   const [solutionCheck, setSolutionCheck] = useState({ text: '', isInvalid: false });
-  const [linksCheck, setLinksCheck] = useState({ text: '', isInvalid: false });
+  const [linksCheck, setLinksCheck] = useState({ text: '', isInvalid: false, isUnique: true });
+
+  const memoizedAndDebouncedChangeHandler = useMemoAndDebounce(changeHandler);
+
+  const markdownTextChangeError = (value) => memoizedAndDebouncedChangeHandler('error', value);
+
+  const markdownTextChangeSolution = (value) => memoizedAndDebouncedChangeHandler('solution', value);
 
   const validateForm = () => {
     const isValidDescription = validate(
-      form.description, descriptionCheck, setDescriptionCheck, DESCRIPTION_CONSTRAINTS);
+      form.description, descriptionCheck, setDescriptionCheck, DESCRIPTION_CONSTRAINTS,
+    );
     const isValidLinks = validate(form.links, linksCheck, setLinksCheck, LINKS_CONSTRAINTS);
     const isValidTopics = validate(form.topics, topicsCheck, setTopicsCheck, TOPICS_CONSTRAINTS);
     let isValid = isValidDescription && isValidLinks && isValidTopics && topicsCheck.isUnique;
@@ -92,7 +107,8 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
     if (form.type === POST_TYPES.get('bugfix').value) {
       const isValidError = validate(form.error, errorCheck, setErrorCheck, ERROR_CONSTRAINTS);
       const isValidSolution = validate(
-        form.solution, solutionCheck, setSolutionCheck, SOLUTION_CONSTRAINTS);
+        form.solution, solutionCheck, setSolutionCheck, SOLUTION_CONSTRAINTS,
+      );
       isValid = isValid && isValidError && isValidSolution;
     }
 
@@ -120,7 +136,7 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             select
             label="Post Type"
             value={form.type}
-            onChange={(e) => handleChangeForm('type', e.target.value)}
+            onChange={(e) => changeHandler('type', e.target.value)}
             variant="outlined"
             fullWidth
             disabled={form.id !== null && form.id !== undefined}
@@ -141,60 +157,55 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
             maxRows={4}
             id="description"
             label="Description"
-            value={form.description}
             error={descriptionCheck.isInvalid}
             helperText={descriptionCheck.text}
-            onChange={(e) => handleChangeForm('description', e.target.value)}
+            defaultValue={form.description}
+            onChange={(e) => memoizedAndDebouncedChangeHandler('description', e.target.value)}
           />
         </FormDataRow>
-        <FormDataRow>
-          {form.type === POST_TYPES.get('bugfix').value ? (
-            <TextField
-              name="error"
-              variant="outlined"
-              required
-              fullWidth
-              multiline
-              minRows={4}
-              maxRows={10}
-              id="error"
-              label="Error"
-              value={form.error}
-              error={errorCheck.isInvalid}
-              helperText={errorCheck.text}
-              onChange={(e) => handleChangeForm('error', e.target.value)}
-            />
-          ) : null}
-        </FormDataRow>
-        <FormDataRow>
-          {form.type === POST_TYPES.get('bugfix').value ? (
-            <TextField
-              name="solution"
-              variant="outlined"
-              required
-              fullWidth
-              multiline
-              minRows={4}
-              maxRows={10}
-              id="solution"
-              label="Solution"
-              value={form.solution}
-              error={solutionCheck.isInvalid}
-              helperText={solutionCheck.text}
-              onChange={(e) => handleChangeForm('solution', e.target.value)}
-            />
-          ) : null}
-        </FormDataRow>
+        {form.type === POST_TYPES.get('bugfix').value ? (
+          <>
+            <FormDataRow>
+              <InputLabel
+                required
+                className={classes.label}
+              >
+                Error
+              </InputLabel>
+              <MarkdownEditor
+                text={form.error}
+                onChangeText={markdownTextChangeError}
+                containerMaxHeight="50vh"
+              />
+              <FormHelperText error={errorCheck.isInvalid}>{errorCheck.text}</FormHelperText>
+            </FormDataRow>
+            <FormDataRow>
+              <InputLabel
+                required
+                className={classes.label}
+              >
+                Solution
+              </InputLabel>
+              <MarkdownEditor
+                text={form.solution}
+                onChangeText={markdownTextChangeSolution}
+                containerMaxHeight="50vh"
+              />
+              <FormHelperText error={solutionCheck.isInvalid}>{solutionCheck.text}</FormHelperText>
+            </FormDataRow>
+          </>
+        ) : null}
         <div className={classes.fileUploaderContainer}>
           <FileUploader
             files={form.images}
-            setFiles={(images) => handleChangeForm('images', images)}
+            setFiles={(images) => changeHandler('images', images)}
           />
         </div>
         <FormDataRow>
           <TagPicker
             tags={form.topics}
-            setTags={(topics) => handleChangeForm('topics', topics)}
+            setTags={(topics) => changeHandler('topics', topics)}
+            placeholder="Type a topic and press enter to add"
             required
             unique
             border
@@ -208,9 +219,13 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
         <FormDataRow>
           <TagPicker
             tags={form.links}
-            setTags={(links) => handleChangeForm('links', links)}
-            placeholder="Enter links"
+            setTags={(links) => changeHandler('links', links)}
+            placeholder="Type a link and press enter to add"
+            unique
             border
+            onNotUniqueError={(unique) => setLinksCheck(
+              { ...linksCheck, isUnique: unique },
+            )}
             showError={linksCheck.isInvalid}
             helperText={linksCheck.text}
           />
@@ -225,7 +240,7 @@ const FormData = ({ title, btnTitle, handleClose, form, handleChangeForm, onClic
   );
 };
 
-const PostForm = ({ title, btnTitle, open, setOpen, form, handleChangeForm, onClickBtn }) => {
+const PostForm = ({ title, btnTitle, open, setOpen, form, changeHandler, onClickBtn }) => {
   const classes = useStyles();
 
   const handleClose = () => setOpen(false);
@@ -237,7 +252,7 @@ const PostForm = ({ title, btnTitle, open, setOpen, form, handleChangeForm, onCl
         btnTitle={btnTitle}
         handleClose={handleClose}
         form={form}
-        handleChangeForm={handleChangeForm}
+        changeHandler={changeHandler}
         onClickBtn={onClickBtn}
       />
     </div>

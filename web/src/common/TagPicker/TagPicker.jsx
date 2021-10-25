@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ReactTagInput from '@pathofdev/react-tag-input';
 import '@pathofdev/react-tag-input/build/index.css';
 import './TagPicker.css';
@@ -127,7 +127,7 @@ const TagPicker = ({
 };
 
 TagPicker.defaultProps = {
-  placeholder: 'Type a topic and press enter to add',
+  placeholder: 'Type a tag and press enter to add',
 };
 
 export default TagPicker;

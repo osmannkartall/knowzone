@@ -1,9 +1,6 @@
-import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
-import ErrorRoundedIcon from '@material-ui/icons/ErrorRounded';
 import { Link } from 'react-router-dom';
-import { PRIMARY } from '../constants/colors';
 
 const useStyles = makeStyles(() => ({
   notFound: {
@@ -16,10 +13,7 @@ const useStyles = makeStyles(() => ({
     top: '50%',
     transform: 'translate(-50%, -50%)',
   },
-  icon: {
-    color: PRIMARY,
-    fontSize: '185px',
-    margin: 0,
+  logo: {
     position: 'fixed',
     left: '10%',
     top: '50%',
@@ -63,7 +57,7 @@ const NotFound = () => {
 
   return (
     <div className={classes.notFound}>
-      <ErrorRoundedIcon className={classes.icon} />
+      <img src="/knowzone-logo192.png" alt="knowzone-logo" className={classes.logo} />
       <h1 className={classes.title}>
         404 - Page not found
       </h1>

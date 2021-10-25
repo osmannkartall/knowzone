@@ -1,4 +1,3 @@
-import React from 'react';
 import { makeStyles, Grid } from '@material-ui/core';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
 

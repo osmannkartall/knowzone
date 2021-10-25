@@ -1,16 +1,17 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { makeStyles, IconButton } from '@material-ui/core';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import CloseIcon from '@material-ui/icons/Close';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { toast } from 'react-toastify';
 import uniqueId from 'lodash/uniqueId';
 import { GRAY2, GRAY3, GRAY4, IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../constants/colors';
-import { bufferToBase64 } from '../utils';
+import { byteArrayToBase64 } from '../utils';
 
 const NUM_MAX_FILES = 2;
 const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
-const ACCEPTED_TYPES = 'image/jpeg, image/png, image/gif'; // 'image/*' to allow all image sub types
+const ACCEPTED_TYPES = 'image/*';
 
 const THUMBNAIL_WIDTH = 300;
 const THUMBNAIL_HEIGHT = 300;
@@ -74,22 +75,17 @@ const useStyles = makeStyles((theme) => ({
     width: 'auto',
     height: '100%',
     cursor: 'pointer',
-    opacity: 1,
-    '&:hover': {
-      opacity: 0.4,
-      transition: 'opacity .2s ease-in-out',
-    },
+    opacity: 0.6,
   },
   thumbnailDeleteButton: {
     position: 'absolute',
     top: 10,
     right: 10,
-    display: 'none',
     color: WHITE,
     width: THUMBNAIL_BUTTON_SIZE,
     height: THUMBNAIL_BUTTON_SIZE,
     backgroundColor: IRREVERSIBLE_ACTION,
-    opacity: 0.8,
+    opacity: 1,
     '&:hover': {
       backgroundColor: IRREVERSIBLE_ACTION,
       opacity: 1,
@@ -131,7 +127,7 @@ const getImageSource = (file) => {
   if (file.preview) {
     return file.preview;
   }
-  return `data:${file.mime};base64,${bufferToBase64(file.content)}`;
+  return `data:${file.mime};base64,${byteArrayToBase64(file.content)}`;
 };
 
 const Image = ({ file }) => {
@@ -150,13 +146,11 @@ const FileUploader = ({ files, setFiles }) => {
   const infoTitle = 'Drag n drop some images here, or click to select';
   const infoSubtitle = `(You can select ${NUM_MAX_FILES} files and the maximum size of a single file is 1 MB)`;
 
-  const checkAvailableSpace = (acceptedFiles) => {
-    if (Array.isArray(acceptedFiles) && Array.isArray(files)
-      && acceptedFiles.length + files.length <= NUM_MAX_FILES) {
-      return true;
-    }
-    return false;
-  };
+  const hasAvailableSpace = (acceptedFiles) => (
+    Array.isArray(acceptedFiles)
+    && Array.isArray(files)
+    && acceptedFiles.length + files.length <= NUM_MAX_FILES
+  );
 
   const {
     getRootProps,
@@ -167,9 +161,10 @@ const FileUploader = ({ files, setFiles }) => {
   } = useDropzone({
     accept: ACCEPTED_TYPES,
     onDrop: (acceptedFiles) => {
-      if (checkAvailableSpace(acceptedFiles)) {
+      if (hasAvailableSpace(acceptedFiles)) {
         const newFiles = acceptedFiles.map((file) => Object.assign(file, {
           preview: URL.createObjectURL(file),
+          _id: uniqueId(),
         }));
         setFiles([...files, ...newFiles]);
       } else {
@@ -216,7 +211,7 @@ const FileUploader = ({ files, setFiles }) => {
       ) : null}
       <aside className={classes.thumbnailsContainer}>
         {files.map((file) => (
-          <div className={classes.thumbnails} key={uniqueId(file.name)}>
+          <div className={classes.thumbnails} key={file._id}>
             <div className={classes.thumbnail}>
               <Image file={file} />
               <IconButton
