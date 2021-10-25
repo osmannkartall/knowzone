@@ -22,6 +22,9 @@ spec:
           limits:
             memory: "768Mi"
             cpu: "800m"
+        env:
+        - name: REACT_APP_KNOWZONE_FE_URI
+          value: ${FRONTEND_URL}
         ports:
         - containerPort: 80
         imagePullPolicy: Always
