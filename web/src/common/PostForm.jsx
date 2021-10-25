@@ -6,9 +6,11 @@ import {
   MenuItem,
   Button,
   Modal,
+  InputLabel,
+  FormHelperText,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
-import { WHITE, GRAY3, PRIMARY } from '../constants/colors';
+import { WHITE, GRAY3, PRIMARY, GRAY1 } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
 import FileUploader from './FileUploader';
 import POST_TYPES from '../constants/post-types';
@@ -21,6 +23,7 @@ import {
   validate,
 } from '../clientSideValidation';
 import { useMemoAndDebounce } from '../utils';
+import MarkdownEditor from './MarkdownEditor';
 
 const useStyles = makeStyles((theme) => ({
   modalData: {
@@ -67,6 +70,10 @@ const useStyles = makeStyles((theme) => ({
     borderTop: 0,
     backgroundColor: WHITE,
   },
+  label: {
+    margin: theme.spacing(1, 0),
+    color: GRAY1,
+  },
 }));
 
 const FormDataRow = ({ children }) => (
@@ -82,7 +89,12 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
   const [errorCheck, setErrorCheck] = useState({ text: '', isInvalid: false });
   const [solutionCheck, setSolutionCheck] = useState({ text: '', isInvalid: false });
   const [linksCheck, setLinksCheck] = useState({ text: '', isInvalid: false, isUnique: true });
+
   const memoizedAndDebouncedChangeHandler = useMemoAndDebounce(changeHandler);
+
+  const markdownTextChangeError = (value) => memoizedAndDebouncedChangeHandler('error', value);
+
+  const markdownTextChangeSolution = (value) => memoizedAndDebouncedChangeHandler('solution', value);
 
   const validateForm = () => {
     const isValidDescription = validate(
@@ -153,40 +165,38 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
         </FormDataRow>
         <FormDataRow>
           {form.type === POST_TYPES.get('bugfix').value ? (
-            <TextField
-              name="error"
-              variant="outlined"
-              required
-              fullWidth
-              multiline
-              minRows={4}
-              maxRows={10}
-              id="error"
-              label="Error"
-              error={errorCheck.isInvalid}
-              helperText={errorCheck.text}
-              defaultValue={form.error}
-              onChange={(e) => memoizedAndDebouncedChangeHandler('error', e.target.value)}
-            />
+            <>
+              <InputLabel
+                required
+                className={classes.label}
+              >
+                Error
+              </InputLabel>
+              <MarkdownEditor
+                text={form.error}
+                onChangeText={markdownTextChangeError}
+                containerMaxHeight="50vh"
+              />
+              <FormHelperText error={errorCheck.isInvalid}>{errorCheck.text}</FormHelperText>
+            </>
           ) : null}
         </FormDataRow>
         <FormDataRow>
           {form.type === POST_TYPES.get('bugfix').value ? (
-            <TextField
-              name="solution"
-              variant="outlined"
-              required
-              fullWidth
-              multiline
-              minRows={4}
-              maxRows={10}
-              id="solution"
-              label="Solution"
-              error={solutionCheck.isInvalid}
-              helperText={solutionCheck.text}
-              defaultValue={form.solution}
-              onChange={(e) => memoizedAndDebouncedChangeHandler('solution', e.target.value)}
-            />
+            <>
+              <InputLabel
+                required
+                className={classes.label}
+              >
+                Solution
+              </InputLabel>
+              <MarkdownEditor
+                text={form.solution}
+                onChangeText={markdownTextChangeSolution}
+                containerMaxHeight="50vh"
+              />
+              <FormHelperText error={solutionCheck.isInvalid}>{solutionCheck.text}</FormHelperText>
+            </>
           ) : null}
         </FormDataRow>
         <div className={classes.fileUploaderContainer}>
