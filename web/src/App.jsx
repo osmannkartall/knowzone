@@ -1,4 +1,4 @@
-import { useEffect, useContext } from 'react';
+import { useEffect, useCallback } from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import { ToastContainer } from 'react-toastify';
@@ -10,10 +10,12 @@ import YourPosts from './components/YourPosts';
 import SearchResults from './components/SearchResults';
 import NotFound from './components/NotFound';
 import { PRIMARY, WHITE } from './constants/colors';
-import { AuthContext, AuthProvider } from './contexts/AuthContext';
-import { FE_ROUTES, BE_ROUTES } from './constants/routes';
+import { AuthProvider, useAuthDispatch, useAuthState } from './contexts/AuthContext';
+import { FE_ROUTES } from './constants/routes';
 import Login from './components/Login';
 import Register from './components/Register';
+import { login } from './contexts/AuthActions';
+import RouteWrapper from './components/RouteWrapper';
 
 const theme = createTheme({
   palette: {
@@ -27,69 +29,94 @@ const theme = createTheme({
 });
 
 const Wrapper = () => {
-  const [, setUser] = useContext(AuthContext);
+  const authDispatch = useAuthDispatch();
+  const { isLoggedIn } = useAuthState();
+
+  const loginFunc = useCallback(async () => login(authDispatch), [authDispatch]);
 
   // Simulates a log in operation with the credentials stored in user context variable.
   useEffect(() => {
     let mounted = true;
-
-    function login() {
-      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.LOGIN}`, { method: 'POST' })
-        .then((res) => res.json())
-        .then(
-          (result) => {
-            if (mounted) {
-              console.log(result.message);
-              const newUser = {
-                username: 'osmannkartall',
-                email: 'mail@mail.mail',
-                name: 'Osman Kartal',
-                bio: 'this is my bio',
-                id: '6123673a32e9c02678d5e5c1',
-                isLoggedIn: true,
-              };
-              setUser(newUser);
-            }
-          },
-          (error) => {
-            console.log(error.message);
-          },
-        );
+    if (mounted) {
+      loginFunc();
     }
-
-    login();
-
     return function cleanup() {
       mounted = false;
     };
-  }, [setUser]);
+  }, [loginFunc]);
 
   return (
     <>
       <BrowserRouter>
         <Switch>
-          <Route exact path="/">
-            <Redirect to={`/${FE_ROUTES.LOGIN}`} />
-          </Route>
-          <Route path={`/${FE_ROUTES.LOGIN}`}>
+          <RouteWrapper
+            path={`/${FE_ROUTES.LOGIN}`}
+            isLoggedIn={!isLoggedIn}
+            redirectPath={`/${FE_ROUTES.TIPS}`}
+          >
             <Login />
-          </Route>
-          <Route path={`/${FE_ROUTES.REGISTER}`}>
+          </RouteWrapper>
+
+          <RouteWrapper
+            path={`/${FE_ROUTES.REGISTER}`}
+            isLoggedIn={!isLoggedIn}
+            redirectPath={`/${FE_ROUTES.TIPS}`}
+          >
             <Register />
+          </RouteWrapper>
+
+          <RouteWrapper
+            path={`/${FE_ROUTES.TIPS}`}
+            isLoggedIn={isLoggedIn}
+            redirectPath={`/${FE_ROUTES.LOGIN}`}
+          >
+            <Dashboard>
+              <Tips />
+            </Dashboard>
+          </RouteWrapper>
+
+          <RouteWrapper
+            path={`/${FE_ROUTES.BUG_FIXES}`}
+            isLoggedIn={isLoggedIn}
+            redirectPath={`/${FE_ROUTES.LOGIN}`}
+          >
+            <Dashboard>
+              <Bugfixes />
+            </Dashboard>
+          </RouteWrapper>
+
+          <RouteWrapper
+            path={`/${FE_ROUTES.YOUR_POSTS}`}
+            isLoggedIn={isLoggedIn}
+            redirectPath={`/${FE_ROUTES.LOGIN}`}
+          >
+            <Dashboard>
+              <YourPosts />
+            </Dashboard>
+          </RouteWrapper>
+
+          <RouteWrapper
+            path={`/${FE_ROUTES.SEARCH_RESULTS}`}
+            isLoggedIn={isLoggedIn}
+            redirectPath={`/${FE_ROUTES.LOGIN}`}
+          >
+            <Dashboard>
+              <SearchResults />
+            </Dashboard>
+          </RouteWrapper>
+
+          <RouteWrapper
+            exact
+            path="/"
+            isLoggedIn={!isLoggedIn}
+            redirectPath={`/${FE_ROUTES.TIPS}`}
+          >
+            <Login />
+          </RouteWrapper>
+
+          <Route exact path={`/${FE_ROUTES.NOT_FOUND}`}>
+            <NotFound />
           </Route>
-          <Route path={`/${FE_ROUTES.BUG_FIXES}`}>
-            <Dashboard><Bugfixes /></Dashboard>
-          </Route>
-          <Route path={`/${FE_ROUTES.TIPS}`}>
-            <Dashboard><Tips /></Dashboard>
-          </Route>
-          <Route path={`/${FE_ROUTES.YOUR_POSTS}`}>
-            <Dashboard><YourPosts /></Dashboard>
-          </Route>
-          <Route path={`/${FE_ROUTES.SEARCH_RESULTS}`}>
-            <Dashboard><SearchResults /></Dashboard>
-          </Route>
-          <Route exact path={`/${FE_ROUTES.NOT_FOUND}`} component={NotFound} />
           <Redirect to={`/${FE_ROUTES.NOT_FOUND}`} />
         </Switch>
       </BrowserRouter>
