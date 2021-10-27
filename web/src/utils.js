@@ -25,13 +25,9 @@ export function convertDate(dateStr) {
 }
 
 /**
- * Converts buffer to Base64 string or returns itself if it is Base64 string already.
- * Note: It is useful if the buffer used in the components comes from the backend in different ways.
- * @param {(string|Object)} buffer - Buffer
- * @param {(Object)} buffer.data - Buffer as byte array
- * @returns Returns Base64 string representation of buffer.
+ * It is useful if the buffer used in the components comes from the backend in different ways.
  */
-export function bufferToBase64(buffer) {
+export function byteArrayToBase64(buffer) {
   if (buffer.data) {
     return btoa(
       buffer.data.reduce((data, byte) => data + String.fromCharCode(byte), ''),
@@ -41,7 +37,7 @@ export function bufferToBase64(buffer) {
 }
 
 export function createFile(item) {
-  const c = bufferToBase64(item.content);
+  const c = byteArrayToBase64(item.content);
   const byteString = atob(c);
   const ab = byteString.length;
   const ia = new Uint8Array(ab);
@@ -106,9 +102,8 @@ export function areObjectsEqual(object1, object2) {
     && !areJSONValuesDifferent(object1, object2);
 }
 
-export function useMemoAndDebounce(handler) {
-  const waitMilliseconds = 100;
+export function useMemoAndDebounce(handler, waitMilliseconds = 100) {
   const debouncedHandler = () => debounce(handler, waitMilliseconds);
 
-  return useMemo(debouncedHandler, [handler]);
+  return useMemo(debouncedHandler, [handler, waitMilliseconds]);
 }
