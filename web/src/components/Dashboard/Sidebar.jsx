@@ -77,7 +77,7 @@ const SidebarItemList = () => (
 );
 
 export default function Sidebar({ isSidebarOpen }) {
-  const user = useAuthState;
+  const user = useAuthState();
   const emptyPost = {
     description: '',
     links: [],
