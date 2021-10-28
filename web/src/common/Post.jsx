@@ -4,7 +4,8 @@ import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import { GRAY3, GRAY4, PRIMARY } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
 import POST_TYPES from '../constants/post-types';
-import { convertDate, bufferToBase64 } from '../utils';
+import { convertDate, byteArrayToBase64 } from '../utils';
+import MarkdownPreview from './MarkdownPreview';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -85,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: GRAY4,
     borderRadius: 4,
     height: 'auto',
-    maxHeight: 200,
+    maxHeight: 500,
     overflow: 'auto',
     padding: theme.spacing(2),
   },
@@ -201,10 +202,10 @@ const Post = ({
         {type === POST_TYPES.get('bugfix').value ? (
           <>
             <PostBodySection title="Error">
-              <div>{content.error}</div>
+              <MarkdownPreview text={content.error} />
             </PostBodySection>
             <PostBodySection title="Solution">
-              <div>{content.solution}</div>
+              <MarkdownPreview text={content.solution} />
             </PostBodySection>
           </>
         ) : null}
@@ -214,7 +215,7 @@ const Post = ({
               content.images.map((i) => (
                 <img
                   key={i._id}
-                  src={`data:${i.mime};base64,${bufferToBase64(i.content)}`}
+                  src={`data:${i.mime};base64,${byteArrayToBase64(i.content)}`}
                   width="300"
                   height="200"
                   alt={i.name ? i.name : 'image'}
