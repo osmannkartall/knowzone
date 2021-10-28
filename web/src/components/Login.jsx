@@ -1,36 +1,12 @@
+import { makeStyles, TextField } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import PersonIcon from '@material-ui/icons/Person';
-import LockIcon from '@material-ui/icons/Lock';
-import { FilledInput } from '@material-ui/core';
+import { FE_ROUTES } from '../constants/routes';
+import AuthFormWrapper from '../common/AuthFormWrapper';
 
 const useStyles = makeStyles((theme) => ({
-  inputRow: {
-    backgroundColor: 'rgba(255, 255, 255, .15)',
-    display: '-webkit-flex',
-    marginBottom: '20px',
-  },
-  icon: {
-    padding: theme.spacing(1.5),
-    backgroundColor: 'rgba(0, 0, 0, 0.09)',
-  },
-  loginForm: {
-    padding: theme.spacing(2),
-    // backgroundColor: 'rgba(123, 64, 97, .15)',
-  },
   input: {
-    '& .MuiFilledInput-input': {
-      padding: theme.spacing(1.76),
-    },
-    '& .MuiInputBase-input': {
-      fontSize: 20,
-    },
-  },
-  root: {
-    '& .MuiFilledInput-root': {
-      'border-top-left-radius': 0,
-      'border-top-right-radius': 0,
-    },
+    marginBottom: theme.spacing(4),
   },
 }));
 
@@ -38,37 +14,42 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const classes = useStyles();
+  const history = useHistory();
 
   return (
-    <div className={classes.loginForm}>
-      <div className={classes.inputRow}>
-        <div className={classes.icon}>
-          <PersonIcon />
-        </div>
-        <div className={classes.root}>
-          <FilledInput
-            className={classes.input}
-            placeholder="Username"
-            disableUnderline
-            required
-          />
-        </div>
-      </div>
-      <div className={classes.inputRow}>
-        <div className={classes.icon}>
-          <LockIcon />
-        </div>
-        <div className={classes.root}>
-          <FilledInput
-            className={classes.input}
-            placeholder="Password"
-            type="password"
-            disableUnderline
-            required
-          />
-        </div>
-      </div>
-    </div>
+    <AuthFormWrapper
+      title="Login to your Knowzone accout"
+      mainFormAction={{
+        title: 'Login',
+        handler: () => alert(`username: ${username}, pass: ${password}`),
+      }}
+      otherFormAction={{
+        title: 'Create a new account',
+        handler: () => history.push(FE_ROUTES.REGISTER),
+      }}
+    >
+      <TextField
+        id="username"
+        label="Username"
+        variant="outlined"
+        className={classes.input}
+        fullWidth
+        required
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <TextField
+        id="password"
+        label="Password"
+        variant="outlined"
+        className={classes.input}
+        fullWidth
+        required
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        type="password"
+      />
+    </AuthFormWrapper>
   );
 };
 
