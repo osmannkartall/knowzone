@@ -1,8 +1,11 @@
 import { makeStyles, TextField } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { toast } from 'react-toastify';
 import { FE_ROUTES } from '../constants/routes';
 import AuthFormWrapper from '../common/AuthFormWrapper';
+import { useAuthDispatch } from '../contexts/AuthContext';
+import { login } from '../contexts/AuthActions';
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -15,13 +18,32 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const classes = useStyles();
   const history = useHistory();
+  const authDispatch = useAuthDispatch();
+  const isMounted = useRef(true);
+
+  const handleLogin = useCallback(async () => {
+    if (isMounted.current) {
+      const response = await login(authDispatch, { username, password });
+      if (response.status === 'success') {
+        toast.info(response.message);
+        history.push(FE_ROUTES.TIPS);
+      } else {
+        toast.error(response.message);
+        console.log('Something bad happened during login!');
+      }
+    }
+  }, [authDispatch, username, password, history]);
+
+  useEffect(() => function cleanup() {
+    isMounted.current = false;
+  }, []);
 
   return (
     <AuthFormWrapper
       title="Login to your Knowzone accout"
       mainFormAction={{
         title: 'Login',
-        handler: () => alert(`username: ${username}, pass: ${password}`),
+        handler: handleLogin,
       }}
       otherFormAction={{
         title: 'Create a new account',

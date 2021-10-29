@@ -1,4 +1,3 @@
-import { useEffect, useCallback } from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import { ToastContainer } from 'react-toastify';
@@ -10,11 +9,10 @@ import YourPosts from './components/YourPosts';
 import SearchResults from './components/SearchResults';
 import NotFound from './components/NotFound';
 import { PRIMARY, WHITE } from './constants/colors';
-import { AuthProvider, useAuthDispatch, useAuthState } from './contexts/AuthContext';
+import { AuthProvider, useAuthState } from './contexts/AuthContext';
 import { FE_ROUTES } from './constants/routes';
 import Login from './components/Login';
 import Register from './components/Register';
-import { login } from './contexts/AuthActions';
 import RouteWrapper from './components/RouteWrapper';
 
 const theme = createTheme({
@@ -29,21 +27,7 @@ const theme = createTheme({
 });
 
 const Wrapper = () => {
-  const authDispatch = useAuthDispatch();
   const { isLoggedIn } = useAuthState();
-
-  const loginFunc = useCallback(async () => login(authDispatch), [authDispatch]);
-
-  // Simulates a log in operation with the credentials stored in user context variable.
-  useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      loginFunc();
-    }
-    return function cleanup() {
-      mounted = false;
-    };
-  }, [loginFunc]);
 
   return (
     <>

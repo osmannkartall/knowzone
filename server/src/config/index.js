@@ -1,4 +1,6 @@
 const dotenv = require('dotenv');
+const crypto = require('crypto');
+const MongoStore = require('connect-mongo');
 
 const result = dotenv.config();
 
@@ -14,6 +16,20 @@ module.exports = {
 
   corsOptions: {
     origin: process.env.REACT_URL,
+  },
+
+  sessionOptions: {
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
+    genid: () => crypto.randomBytes(64).toString('hex').toUpperCase(),
+    name: process.env.SESSION_NAME,
+    resave: false,
+    saveUninitialized: true,
+    secret: process.env.SESSION_SECRET,
+    cookie: {
+      maxAge: parseInt(process.env.SESSION_LIFETIME, 10),
+      sameSite: true,
+      secure: process.env.SESSION_LIFETIME === 'true',
+    },
   },
 
   databaseURL: process.env.MONGODB_URI,

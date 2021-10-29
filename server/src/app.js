@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
+const session = require('express-session');
 const config = require('./config');
 const tipController = require('./controllers/TipController');
 const helloController = require('./controllers/HelloController');
@@ -34,13 +35,15 @@ function addControllers(app) {
 
 async function startExpress() {
   const app = express();
-  const { port, corsOptions } = config;
+  const { port, corsOptions, sessionOptions } = config;
 
   app.use(cors(corsOptions));
 
   app.use(express.json());
 
   app.use(express.urlencoded({ extended: true }));
+
+  app.use(session(sessionOptions));
 
   app.get('/', (req, res) => {
     res.send('Knowzone Back-End');
