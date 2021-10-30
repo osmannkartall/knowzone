@@ -18,16 +18,13 @@ const registerValidationSchema = Joi.object({
     .required(),
 
   username: Joi.string()
-    .min(3)
-    .max(50)
+    .min(1)
+    .max(15)
     .lowercase()
-    // Username should start with alphanumeric characters and can include
-    // underscore and period special characters. It cannot end with special character.
-    .regex(/^[a-zA-Z0-9]+([_.]?[a-zA-Z0-9])*$/)
+    .regex(/^@?([a-z0-9_])*$/)
     .required()
     .messages({
-      'string.pattern.base': 'Username should start with alphanumeric characters and can include '
-        + 'underscore and period special characters. It cannot end with a special character as well.',
+      'string.pattern.base': 'Username should start with alphanumeric characters and can include underscore character.',
     }),
 
   password: Joi.string()
@@ -46,14 +43,13 @@ const registerValidationSchema = Joi.object({
 
 const loginValidationSchema = Joi.object({
   username: Joi.string()
-    .min(3)
-    .max(50)
+    .min(1)
+    .max(15)
     .lowercase()
-    .regex(/^[a-zA-Z0-9]+([_.]?[a-zA-Z0-9])*$/)
+    .regex(/^@?([a-z0-9_])*$/)
     .required()
     .messages({
-      'string.pattern.base': 'Username should start with alphanumeric characters and can include '
-        + 'underscore and period special characters. It cannot end with a special character as well.',
+      'string.pattern.base': 'Username should start with alphanumeric characters and can include underscore.',
     }),
 
   password: Joi.string()
