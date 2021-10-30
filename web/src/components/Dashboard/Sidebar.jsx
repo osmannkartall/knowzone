@@ -119,6 +119,7 @@ export default function Sidebar({ isSidebarOpen }) {
     fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}`, {
       method: 'POST',
       body: fd,
+      credentials: 'include',
     })
       .then((res) => res.json())
       .then(
