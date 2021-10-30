@@ -18,5 +18,5 @@ export const BE_ROUTES = Object.freeze({
   LOGIN: 'login',
   LOGOUT: 'logout',
   REGISTER: 'register',
-  IS_AUTHENTICATED: 'is-authenticated',
+  IS_USER_LOGGED_IN: 'is-user-logged-in',
 });

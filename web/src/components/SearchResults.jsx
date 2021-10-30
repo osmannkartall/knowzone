@@ -17,6 +17,7 @@ const SearchResults = () => {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
       body: JSON.stringify(location.state),
+      credentials: 'include',
     })
       .then((response) => response.json())
       .then((data) => {

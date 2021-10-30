@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const SearchService = require('../services/SearchService');
+const { checkAuthentication } = require('../middlewares/auth');
 
 const getPostsByOwner = async (req, res) => {
   const { owner } = req.query;
@@ -26,7 +27,7 @@ const filter = async (req, res) => {
 };
 
 // Retrieve all posts by owner
-router.get('/', getPostsByOwner);
-router.post('/filter', filter);
+router.get('/', checkAuthentication, getPostsByOwner);
+router.post('/filter', checkAuthentication, filter);
 
 module.exports = router;

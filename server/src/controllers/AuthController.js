@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const UserModel = require('../models/User');
 const AuthService = require('../services/AuthService');
-const { loginValidation, registerValidation } = require('../middlewares/auth-validation');
+const { loginValidation, registerValidation, checkAuthentication } = require('../middlewares/auth');
 
 const auth = new AuthService(UserModel);
 
@@ -44,7 +44,6 @@ const register = async (req, res) => {
 
 const logout = (req, res) => {
   req.session.destroy((err) => {
-    console.log(req);
     if (err) {
       res.status(400).json({ status: 'fail', message: err });
     } else {
@@ -54,7 +53,7 @@ const logout = (req, res) => {
   });
 };
 
-const isAuthenticated = async (req, res) => {
+const isUserLoggedIn = async (req, res) => {
   const { id } = req.params;
 
   req.session.reload(async (error) => {
@@ -62,18 +61,22 @@ const isAuthenticated = async (req, res) => {
       const result = await auth.getUserInformation(id);
       res.json(result);
     } else {
-      console.log('isAuthenticated: User is not authenticated.');
-      res.status(400).json({ status: 'fail', message: 'User is not authenticated.' });
+      console.log('isUserLoggedIn: User is not authorized.');
+      res.status(401).json({ status: 'fail', message: 'User is not authorized.' });
     }
   });
 };
 
+// Login a user.
 router.post('/login', loginValidation, login);
 
+// Register a user.
 router.post('/register', registerValidation, register);
 
-router.post('/logout', logout);
+// Logout user.
+router.post('/logout', checkAuthentication, logout);
 
-router.get('/is-authenticated/:id', isAuthenticated);
+// Check if user is logged in. If user is logged in then return user information.
+router.get('/is-user-logged-in/:id', isUserLoggedIn);
 
 module.exports = router;

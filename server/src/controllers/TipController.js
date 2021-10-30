@@ -2,6 +2,7 @@ const router = require('express').Router();
 const TipModel = require('../models/Tip');
 const TipRepository = require('../repositories/TipRepository');
 const { uploadImages, preparePost } = require('../middlewares/uploader');
+const { checkAuthentication } = require('../middlewares/auth');
 
 const tipRepository = new TipRepository(TipModel);
 
@@ -38,21 +39,21 @@ const deleteAll = async (_, res) => {
 };
 
 // Create a new tip post
-router.post('/', uploadImages, preparePost, create);
+router.post('/', checkAuthentication, uploadImages, preparePost, create);
 
 // Retrieve all tip posts
-router.get('/', findAll);
+router.get('/', checkAuthentication, findAll);
 
 // Retrieve a single tip post with id
-router.get('/:id', findById);
+router.get('/:id', checkAuthentication, findById);
 
 // Update a tip post with id
-router.put('/:id', uploadImages, preparePost, updateById);
+router.put('/:id', checkAuthentication, uploadImages, preparePost, updateById);
 
 // Delete a tip post with id
-router.delete('/:id', deleteById);
+router.delete('/:id', checkAuthentication, deleteById);
 
 // Delete all tip posts
-router.delete('/', deleteAll);
+router.delete('/', checkAuthentication, deleteAll);
 
 module.exports = router;

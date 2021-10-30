@@ -72,7 +72,7 @@ const YourPosts = () => {
               }
             });
 
-            const response = await fetch(url, { method: 'PUT', body: fd });
+            const response = await fetch(url, { method: 'PUT', body: fd, credentials: 'include' });
             const result = await response.json();
             const newPosts = [...posts];
             newPosts[idx] = { ...result, type: selectedPost.type };
@@ -99,6 +99,7 @@ const YourPosts = () => {
         fetch(url, {
           headers: { 'Content-Type': 'application/json' },
           method: 'DELETE',
+          credentials: 'include',
         })
           .then((res) => res.json())
           .then(
@@ -129,7 +130,9 @@ const YourPosts = () => {
     let mounted = true;
 
     function getPosts() {
-      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}?owner=${user.id}`)
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}?owner=${user.id}`, {
+        credentials: 'include',
+      })
         .then((res) => res.json())
         .then(
           (data) => {

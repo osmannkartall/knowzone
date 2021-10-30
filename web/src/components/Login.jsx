@@ -24,6 +24,7 @@ const Login = () => {
   const handleLogin = useCallback(async () => {
     if (isMounted.current) {
       const response = await login(authDispatch, { username, password });
+      console.log(response);
       if (response.status === 'success') {
         toast.info(response.message);
         history.push(FE_ROUTES.TIPS);

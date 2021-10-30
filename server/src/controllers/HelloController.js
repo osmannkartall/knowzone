@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const HelloModel = require('../models/Hello');
 const HelloRepository = require('../repositories/HelloRepository');
+const { checkAuthentication } = require('../middlewares/auth');
 
 const helloRepository = new HelloRepository(HelloModel);
 
@@ -20,8 +21,8 @@ const findById = async (req, res) => {
   res.send(result);
 };
 
-router.post('/', create);
-router.get('/', findAll);
-router.get('/:id', findById);
+router.post('/', checkAuthentication, create);
+router.get('/', checkAuthentication, findAll);
+router.get('/:id', checkAuthentication, findById);
 
 module.exports = router;

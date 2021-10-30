@@ -2,6 +2,7 @@ const router = require('express').Router();
 const BugfixModel = require('../models/Bugfix');
 const BugfixRepository = require('../repositories/BugfixRepository');
 const { uploadImages, preparePost } = require('../middlewares/uploader');
+const { checkAuthentication } = require('../middlewares/auth');
 
 const bugfixRepository = new BugfixRepository(BugfixModel);
 
@@ -38,21 +39,21 @@ const deleteAll = async (_, res) => {
 };
 
 // Create a new bugfix post
-router.post('/', uploadImages, preparePost, create);
+router.post('/', checkAuthentication, uploadImages, preparePost, create);
 
 // Retrieve all bugfix posts
-router.get('/', findAll);
+router.get('/', checkAuthentication, findAll);
 
 // Retrieve a single bugfix post with id
-router.get('/:id', findById);
+router.get('/:id', checkAuthentication, findById);
 
 // Update a bugfix post with id
-router.put('/:id', uploadImages, preparePost, updateById);
+router.put('/:id', checkAuthentication, uploadImages, preparePost, updateById);
 
 // Delete a bugfix post with id
-router.delete('/:id', deleteById);
+router.delete('/:id', checkAuthentication, deleteById);
 
 // Delete all bugfix posts
-router.delete('/', deleteAll);
+router.delete('/', checkAuthentication, deleteAll);
 
 module.exports = router;
