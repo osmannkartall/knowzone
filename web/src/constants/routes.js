@@ -16,5 +16,7 @@ export const BE_ROUTES = Object.freeze({
   SEARCH: 'search',
   SEARCH_FILTER: 'search/filter',
   LOGIN: 'login',
+  LOGOUT: 'logout',
   REGISTER: 'register',
+  IS_AUTHENTICATED: 'is-authenticated',
 });

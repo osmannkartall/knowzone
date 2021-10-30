@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import { ToastContainer } from 'react-toastify';
@@ -9,11 +10,12 @@ import YourPosts from './components/YourPosts';
 import SearchResults from './components/SearchResults';
 import NotFound from './components/NotFound';
 import { PRIMARY, WHITE } from './constants/colors';
-import { AuthProvider, useAuthState } from './contexts/AuthContext';
+import { AuthProvider, useAuthDispatch, useAuthState } from './contexts/AuthContext';
 import { FE_ROUTES } from './constants/routes';
 import Login from './components/Login';
 import Register from './components/Register';
 import RouteWrapper from './components/RouteWrapper';
+import { isAuthenticated } from './contexts/AuthActions';
 
 const theme = createTheme({
   palette: {
@@ -28,6 +30,17 @@ const theme = createTheme({
 
 const Wrapper = () => {
   const { isLoggedIn } = useAuthState();
+  const authDispatch = useAuthDispatch();
+
+  useEffect(() => {
+    let isMounted = true;
+    if (isMounted) {
+      isAuthenticated(authDispatch);
+    }
+    return function cleanup() {
+      isMounted = false;
+    };
+  }, [authDispatch]);
 
   return (
     <>

@@ -40,7 +40,7 @@ const Login = () => {
 
   return (
     <AuthFormWrapper
-      title="Login to your Knowzone accout"
+      title="Login to your Knowzone account"
       mainFormAction={{
         title: 'Login',
         handler: handleLogin,

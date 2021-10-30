@@ -11,7 +11,7 @@ const create = async (_, res) => {
   res.json({ message: result });
 };
 
-const findAll = async (_, res) => {
+const findAll = async (req, res) => {
   const result = await tipRepository.findAll();
   res.send(result);
 };

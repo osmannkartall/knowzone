@@ -40,6 +40,8 @@ const registerValidationSchema = Joi.object({
       'string.pattern.base': 'Password should be at least 8 characters and contain at least one '
         + 'letter, one special character "@$!%*#?&_." and one integer.',
     }),
+
+  bio: Joi.string(),
 });
 
 const loginValidationSchema = Joi.object({
@@ -70,24 +72,26 @@ const registerValidation = (req, res, next) => {
   const validation = registerValidationSchema.validate(req.body);
   if ('error' in validation) {
     const { error } = validation;
-    return res.status(400).send({
+    res.status(400).send({
       status: 'fail',
       message: error.details[0].message,
     });
+  } else {
+    next();
   }
-  return next();
 };
 
 const loginValidation = (req, res, next) => {
   const validation = loginValidationSchema.validate(req.body);
   if ('error' in validation) {
     const { error } = validation;
-    return res.status(400).send({
+    res.status(400).send({
       status: 'fail',
       message: error.details[0].message,
     });
+  } else {
+    next();
   }
-  return next();
 };
 
 module.exports.registerValidation = registerValidation;

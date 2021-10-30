@@ -16,6 +16,7 @@ module.exports = {
 
   corsOptions: {
     origin: process.env.REACT_URL,
+    credentials: true,
   },
 
   sessionOptions: {
@@ -23,7 +24,7 @@ module.exports = {
     genid: () => crypto.randomBytes(64).toString('hex').toUpperCase(),
     name: process.env.SESSION_NAME,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     secret: process.env.SESSION_SECRET,
     cookie: {
       maxAge: parseInt(process.env.SESSION_LIFETIME, 10),

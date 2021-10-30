@@ -20,7 +20,7 @@ class AuthService {
         return { status: 'fail', message: 'Username or password is wrong' };
       }
 
-      const responseResult = {
+      return {
         status: 'success',
         id: result._id,
         username: result.username,
@@ -29,7 +29,6 @@ class AuthService {
         bio: result.bio,
         message: 'Log in is successful',
       };
-      return responseResult;
     } catch (err) {
       return { status: 'fail', message: err.message };
     }
@@ -56,6 +55,27 @@ class AuthService {
       // Add new user to database.
       await this.userModel.create(newUser);
       return { status: 'success', message: `Register is successful - ${user.username}` };
+    } catch (err) {
+      return { status: 'fail', message: err.message };
+    }
+  }
+
+  async getUserInformation(userId) {
+    try {
+      const user = await this.userModel.findOne({ _id: userId });
+      if (!user) {
+        return { status: 'fail', message: 'Could not find user.' };
+      }
+
+      return {
+        status: 'success',
+        id: user._id,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        bio: user.bio,
+        message: 'Fetched user information from database.',
+      };
     } catch (err) {
       return { status: 'fail', message: err.message };
     }
