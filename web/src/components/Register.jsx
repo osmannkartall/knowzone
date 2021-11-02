@@ -25,6 +25,7 @@ const Register = () => {
 
   const handleRegister = useCallback(async () => {
     if (isMounted.current) {
+      console.log('giris');
       const response = await register(authDispatch, {
         name,
         username,
@@ -32,6 +33,7 @@ const Register = () => {
         password,
         bio: 'This is mock bio',
       });
+
 
       if (response.status === 'success') {
         toast.info(`${response.message}. Redirecting to login page...`);

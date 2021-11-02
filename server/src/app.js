@@ -8,6 +8,7 @@ const helloController = require('./controllers/HelloController');
 const bugfixController = require('./controllers/BugfixController');
 const searchController = require('./controllers/SearchController');
 const authController = require('./controllers/AuthController');
+const { handleError } = require('./middlewares/errorHandler');
 
 async function startDB() {
   try {
@@ -50,6 +51,8 @@ async function startExpress() {
   });
 
   addControllers(app);
+
+  app.use(handleError);
 
   app.listen(port, () => {
     console.log(`Knowzone back-end listening at http://localhost:${port}`);

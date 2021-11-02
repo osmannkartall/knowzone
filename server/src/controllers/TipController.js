@@ -3,57 +3,110 @@ const TipModel = require('../models/Tip');
 const TipRepository = require('../repositories/TipRepository');
 const { uploadImages, preparePost } = require('../middlewares/uploader');
 const { checkAuthentication } = require('../middlewares/auth');
+const { KnowzoneError, KNOWZONE_ERROR_TYPES, createResponse } = require('../middlewares/errorHandler');
 
 const tipRepository = new TipRepository(TipModel);
 
-const create = async (_, res) => {
-  const tip = res.locals.data;
-  const result = await tipRepository.create(tip);
-  res.json({ message: result });
+const create = async (_, res, next) => {
+  try {
+    const tip = res.locals.data;
+
+    await tipRepository.create(tip);
+
+    res.json(createResponse('success', 'Created the record successfully'));
+  } catch (err) {
+    next(new KnowzoneError({
+      type: KNOWZONE_ERROR_TYPES.POST,
+      code: 400,
+      description: 'Error when creating the record',
+      stack: err.stack,
+    }));
+  }
 };
 
-const findAll = async (req, res) => {
-  const result = await tipRepository.findAll();
-  res.send(result);
+const findAll = async (_req, res, next) => {
+  try {
+    res.send(await tipRepository.findAll());
+  } catch (err) {
+    next(new KnowzoneError({
+      type: KNOWZONE_ERROR_TYPES.POST,
+      code: 400,
+      description: 'Error when reading record list',
+      stack: err.stack,
+    }));
+  }
 };
 
-const findById = async (req, res) => {
-  const { id } = req.params;
-  const result = await tipRepository.findById(id);
-  res.send(result);
+const findById = async (req, res, next) => {
+  try {
+    res.send(await tipRepository.findById(req.params.id));
+  } catch (err) {
+    next(new KnowzoneError({
+      type: KNOWZONE_ERROR_TYPES.POST,
+      code: 400,
+      description: 'Error when finding record with the given ID',
+      stack: err.stack,
+      id: req.params.id,
+    }));
+  }
 };
 
-const updateById = async (req, res) => {
-  const result = await tipRepository.updateById(req.params.id, res.locals.data);
-  res.json(result);
+const updateById = async (req, res, next) => {
+  try {
+    res.json(await tipRepository.updateById(req.params.id, res.locals.data));
+  } catch (err) {
+    next(new KnowzoneError({
+      type: KNOWZONE_ERROR_TYPES.POST,
+      code: 400,
+      description: 'Error when updating record with the given ID',
+      stack: err.stack,
+      id: req.params.id,
+      record: res.locals.data,
+    }));
+  }
 };
 
-const deleteById = async (req, res) => {
-  const result = await tipRepository.deleteById(req.params.id);
-  res.json({ message: result });
+const deleteById = async (req, res, next) => {
+  try {
+    await tipRepository.deleteById(req.params.id);
+
+    res.json(createResponse('success', 'Deleted the record successfully'));
+  } catch (err) {
+    next(new KnowzoneError({
+      type: KNOWZONE_ERROR_TYPES.POST,
+      code: 400,
+      description: 'Error when deleting record with the given ID',
+      stack: err.stack,
+      id: req.params.id,
+    }));
+  }
 };
 
-const deleteAll = async (_, res) => {
-  const result = await tipRepository.deleteAll();
-  res.send(result);
+const deleteAll = async (_, res, next) => {
+  try {
+    await tipRepository.deleteAll();
+
+    res.json(createResponse('success', 'Deleted record list successfully'));
+  } catch (err) {
+    next(new KnowzoneError({
+      type: KNOWZONE_ERROR_TYPES.POST,
+      code: 400,
+      description: 'Error when deleting record list',
+      stack: err.stack,
+    }));
+  }
 };
 
-// Create a new tip post
 router.post('/', checkAuthentication, uploadImages, preparePost, create);
 
-// Retrieve all tip posts
 router.get('/', checkAuthentication, findAll);
 
-// Retrieve a single tip post with id
 router.get('/:id', checkAuthentication, findById);
 
-// Update a tip post with id
 router.put('/:id', checkAuthentication, uploadImages, preparePost, updateById);
 
-// Delete a tip post with id
 router.delete('/:id', checkAuthentication, deleteById);
 
-// Delete all tip posts
 router.delete('/', checkAuthentication, deleteAll);
 
 module.exports = router;
