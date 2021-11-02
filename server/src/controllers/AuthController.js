@@ -13,10 +13,12 @@ const login = async (req, res) => {
     });
   } else {
     const result = await auth.login(req.body);
-
-    // Add user id to session.
     if (result.status === 'success') {
       req.session.userId = result.id;
+      req.session.username = result.username;
+      req.session.name = result.name;
+      req.session.email = result.email;
+      req.session.bio = result.bio;
     }
     res.json(result);
   }
