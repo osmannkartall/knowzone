@@ -18,7 +18,10 @@ function handleError(err, _req, res, next) {
     console.error(err.stack);
   }
 
-  res.status(500).json(createErrorResponse(err.description));
+  const code = err.code ? err.code : 500;
+  const description = err.description ? err.description : 'Error when handling request';
+
+  res.status(code).json(createErrorResponse(description));
 }
 
 module.exports = {

@@ -28,6 +28,10 @@ function createSuccessResponse(message) {
   return { status: 'success', message };
 }
 
+function isJoiError(err) {
+  return err && Array.isArray(err.details) && err.details[0] && err.details[0].message;
+}
+
 module.exports = {
   isLengthBetween,
   maxLengthMessage,
@@ -35,4 +39,5 @@ module.exports = {
   isArrayUnique,
   createErrorResponse,
   createSuccessResponse,
+  isJoiError,
 };
