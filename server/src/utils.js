@@ -20,9 +20,19 @@ function isArrayUnique(arr) {
   return arr.every((a, i) => arr.indexOf(a) === i);
 }
 
+function createErrorResponse(message) {
+  return { status: 'error', message };
+}
+
+function createSuccessResponse(message) {
+  return { status: 'success', message };
+}
+
 module.exports = {
   isLengthBetween,
   maxLengthMessage,
   transformToJSON,
   isArrayUnique,
+  createErrorResponse,
+  createSuccessResponse,
 };

@@ -3,7 +3,9 @@ const BugfixModel = require('../models/Bugfix');
 const BugfixRepository = require('../repositories/BugfixRepository');
 const { uploadImages, preparePost } = require('../middlewares/uploader');
 const { checkAuthentication } = require('../middlewares/auth');
-const { createResponse, KnowzoneError, KNOWZONE_ERROR_TYPES } = require('../middlewares/errorHandler');
+const { KNOWZONE_ERROR_TYPES } = require('../middlewares/errorHandler');
+const { createSuccessResponse } = require('../utils');
+const KnowzoneError = require('../KnowzoneError');
 
 const bugfixRepository = new BugfixRepository(BugfixModel);
 
@@ -13,7 +15,7 @@ const create = async (_, res, next) => {
 
     await bugfixRepository.create(bugfix);
 
-    res.json(createResponse('success', 'Created the record successfully'));
+    res.json(createSuccessResponse('Created the record successfully'));
   } catch (err) {
     next(new KnowzoneError({
       type: KNOWZONE_ERROR_TYPES.POST,
@@ -70,7 +72,7 @@ const deleteById = async (req, res, next) => {
   try {
     await bugfixRepository.deleteById(req.params.id);
 
-    res.json(createResponse('success', 'Deleted the record successfully'));
+    res.json(createSuccessResponse('Deleted the record successfully'));
   } catch (err) {
     next(new KnowzoneError({
       type: KNOWZONE_ERROR_TYPES.POST,
@@ -86,7 +88,7 @@ const deleteAll = async (_, res, next) => {
   try {
     await bugfixRepository.deleteAll();
 
-    res.json(createResponse('success', 'Deleted record list successfully'));
+    res.json(createSuccessResponse('Deleted record list successfully'));
   } catch (err) {
     next(new KnowzoneError({
       type: KNOWZONE_ERROR_TYPES.POST,

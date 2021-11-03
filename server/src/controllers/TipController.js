@@ -3,7 +3,9 @@ const TipModel = require('../models/Tip');
 const TipRepository = require('../repositories/TipRepository');
 const { uploadImages, preparePost } = require('../middlewares/uploader');
 const { checkAuthentication } = require('../middlewares/auth');
-const { KnowzoneError, KNOWZONE_ERROR_TYPES, createResponse } = require('../middlewares/errorHandler');
+const { KNOWZONE_ERROR_TYPES } = require('../middlewares/errorHandler');
+const { createSuccessResponse } = require('../utils');
+const KnowzoneError = require('../KnowzoneError');
 
 const tipRepository = new TipRepository(TipModel);
 
@@ -13,7 +15,7 @@ const create = async (_, res, next) => {
 
     await tipRepository.create(tip);
 
-    res.json(createResponse('success', 'Created the record successfully'));
+    res.json(createSuccessResponse('Created the record successfully'));
   } catch (err) {
     next(new KnowzoneError({
       type: KNOWZONE_ERROR_TYPES.POST,
@@ -60,8 +62,7 @@ const updateById = async (req, res, next) => {
       code: 400,
       description: 'Error when updating record with the given ID',
       stack: err.stack,
-      id: req.params.id,
-      record: res.locals.data,
+      info: { id: req.params.id, record: res.locals.data },
     }));
   }
 };
@@ -70,7 +71,7 @@ const deleteById = async (req, res, next) => {
   try {
     await tipRepository.deleteById(req.params.id);
 
-    res.json(createResponse('success', 'Deleted the record successfully'));
+    res.json(createSuccessResponse('Deleted the record successfully'));
   } catch (err) {
     next(new KnowzoneError({
       type: KNOWZONE_ERROR_TYPES.POST,
@@ -86,7 +87,7 @@ const deleteAll = async (_, res, next) => {
   try {
     await tipRepository.deleteAll();
 
-    res.json(createResponse('success', 'Deleted record list successfully'));
+    res.json(createSuccessResponse('Deleted record list successfully'));
   } catch (err) {
     next(new KnowzoneError({
       type: KNOWZONE_ERROR_TYPES.POST,
