@@ -8,7 +8,8 @@ const helloController = require('./controllers/HelloController');
 const bugfixController = require('./controllers/BugfixController');
 const searchController = require('./controllers/SearchController');
 const authController = require('./controllers/AuthController');
-const { handleError } = require('./middlewares/errorHandler');
+const { handleError, KNOWZONE_ERROR_TYPES } = require('./middlewares/errorHandler');
+const KnowzoneError = require('./KnowzoneError');
 
 async function startDB() {
   try {
@@ -51,6 +52,14 @@ async function startExpress() {
   });
 
   addControllers(app);
+
+  app.use((req, res, next) => {
+    next(new KnowzoneError({
+      type: KNOWZONE_ERROR_TYPES.NOT_FOUND,
+      code: 404,
+      description: 'Not Found',
+    }));
+  });
 
   app.use(handleError);
 
