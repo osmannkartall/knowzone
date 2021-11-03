@@ -124,10 +124,9 @@ export default function Sidebar({ isSidebarOpen }) {
       .then((res) => res.json())
       .then(
         (result) => {
-          console.log(result.message);
-          console.log(result.status);
-          // setIsPostFormOpen(false);
-          // setNewPost(emptyPost);
+          console.log(result.status, result.message);
+          setIsPostFormOpen(false);
+          setNewPost(emptyPost);
         },
         (error) => {
           console.log(error.message);
