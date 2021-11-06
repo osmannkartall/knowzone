@@ -2,7 +2,7 @@ const router = require('express').Router();
 const Joi = require('joi');
 const UserModel = require('../models/User');
 const AuthService = require('../services/AuthService');
-const { registerValidation, checkAuthentication } = require('../middlewares/auth');
+const { checkAuthentication } = require('../middlewares/auth');
 const {
   hasLowerLayerCustomError,
   changeToCustomError,
@@ -35,28 +35,46 @@ const loginApiSchema = Joi.object({
     }),
 });
 
-const registerApiSchema = {
-  ...{
-    name: Joi.string()
-      .min(3)
-      .max(50)
-      .regex(/^[A-Za-z ,.'-]+$/)
-      .required()
-      .messages({
-        'string.pattern.base': 'Name includes invalid character.',
-      }),
+const registerApiSchema = Joi.object({
+  username: Joi.string()
+    .min(1)
+    .max(15)
+    .lowercase()
+    .regex(/^@?([a-z0-9_])*$/)
+    .required()
+    .messages({
+      'string.pattern.base': 'Username should start with alphanumeric characters and can include underscore.',
+    }),
 
-    email: Joi.string()
-      .email()
-      .min(3)
-      .max(254)
-      .lowercase()
-      .required(),
+  password: Joi.string()
+    .min(8)
+    .max(128)
+    // Minimum eight characters, at least one letter, one number and one special character.
+    .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&_.,][\S]*$/)
+    .required()
+    .messages({
+      'string.pattern.base': 'Password should be at least 8 characters and contain at least one '
+        + 'letter, one special character "@$!%*#?&_." and one integer.',
+    }),
 
-    bio: Joi.string(),
-  },
-  ...loginApiSchema,
-};
+  name: Joi.string()
+    .min(3)
+    .max(50)
+    .regex(/^[A-Za-z ,.'-]+$/)
+    .required()
+    .messages({
+      'string.pattern.base': 'Name includes invalid character.',
+    }),
+
+  email: Joi.string()
+    .email()
+    .min(3)
+    .max(254)
+    .lowercase()
+    .required(),
+
+  bio: Joi.string(),
+});
 
 const login = async (req, res, next) => {
   try {
@@ -83,23 +101,22 @@ const login = async (req, res, next) => {
   }
 };
 
-const register = async (req, res) => {
-  if (!req.body) {
-    res.status(500).send({
-      status: 'fail',
-      message: 'No user info',
-    });
-  } else {
-    const user = {
-      username: req.body.username,
-      password: req.body.password,
-      email: req.body.email,
-      name: req.body.name,
-      bio: req.body.bio,
-    };
-    const result = await auth.register(user);
+const register = async (req, res, next) => {
+  try {
+    await registerApiSchema.validateAsync(req.body);
+    await auth.register(req.body);
 
-    res.json(result);
+    res.json(createSuccessResponse(`Register is successful - ${req.body.username}`));
+  } catch (err) {
+    if (!hasLowerLayerCustomError(err)) {
+      changeToCustomError(err, {
+        description: 'Error when register',
+        statusCode: 500,
+        type: KNOWZONE_ERROR_TYPES.AUTH,
+      });
+    }
+
+    next(err);
   }
 };
 
@@ -132,7 +149,7 @@ const isUserLoggedIn = async (req, res) => {
 router.post('/login', login);
 
 // Register a user.
-router.post('/register', registerValidation(registerApiSchema), register);
+router.post('/register', register);
 
 // Logout user.
 router.post('/logout', checkAuthentication, logout);

@@ -35,29 +35,26 @@ class AuthService {
   }
 
   async register(user) {
-    try {
-      // Check if the user exists in the database.
-      const doesUserExist = await this.userModel.findOne({
-        $or: [
-          { username: user.username },
-          { email: user.email },
-        ],
+    const doesUserExist = await this.userModel.findOne({
+      $or: [
+        { username: user.username },
+        { email: user.email },
+      ],
+    });
+
+    if (doesUserExist) {
+      throw createCustomError({
+        description: 'User has already registered. Please choose different username/email.',
+        statusCode: 400,
+        type: KNOWZONE_ERROR_TYPES.AUTH,
       });
-      if (doesUserExist) {
-        return { status: 'fail', message: 'User has already registered. Please choose different username/email.' };
-      }
-
-      // Hash password.
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(user.password, salt);
-      const newUser = { ...user, password: hashedPassword };
-
-      // Add new user to database.
-      await this.userModel.create(newUser);
-      return { status: 'success', message: `Register is successful - ${user.username}` };
-    } catch (err) {
-      return { status: 'fail', message: err.message };
     }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(user.password, salt);
+    const newUser = { ...user, password: hashedPassword };
+
+    await this.userModel.create(newUser);
   }
 
   async getUserInformation(userId) {
