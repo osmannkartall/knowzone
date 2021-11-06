@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const TipRepository = require('../repositories/TipRepository');
 const { uploadImages, preparePost } = require('../middlewares/uploader');
-const { checkAuthentication } = require('../middlewares/auth');
+const { checkAuthentication } = require('../middlewares/checkAuthentication');
 const { createSuccessResponse } = require('../utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../knowzoneErrorHandler');
 

@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const HelloModel = require('../models/Hello');
 const HelloRepository = require('../repositories/HelloRepository');
-const { checkAuthentication } = require('../middlewares/auth');
+const { checkAuthentication } = require('../middlewares/checkAuthentication');
 
 const helloRepository = new HelloRepository(HelloModel);
 

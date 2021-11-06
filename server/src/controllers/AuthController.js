@@ -2,7 +2,7 @@ const router = require('express').Router();
 const Joi = require('joi');
 const UserModel = require('../models/User');
 const AuthService = require('../services/AuthService');
-const { checkAuthentication } = require('../middlewares/auth');
+const { checkAuthentication } = require('../middlewares/checkAuthentication');
 const {
   hasLowerLayerCustomError,
   changeToCustomError,

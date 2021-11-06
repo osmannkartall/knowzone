@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const Joi = require('joi');
 const SearchService = require('../services/SearchService');
-const { checkAuthentication } = require('../middlewares/auth');
+const { checkAuthentication } = require('../middlewares/checkAuthentication');
 const { KNOWZONE_ERROR_TYPES, hasLowerLayerCustomError } = require('../knowzoneErrorHandler');
 
 const postsByOwnerSchema = (sessionUserId) => Joi.object({
