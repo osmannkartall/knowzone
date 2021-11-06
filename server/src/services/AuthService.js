@@ -1,37 +1,37 @@
 const bcrypt = require('bcryptjs');
+const { createCustomError, KNOWZONE_ERROR_TYPES } = require('../knowzoneErrorHandler');
 
 class AuthService {
   constructor(userModel) {
     this.userModel = userModel;
   }
 
+  static throwInvalidLoginError() {
+    throw createCustomError({
+      description: 'Username or password is wrong',
+      statusCode: 400,
+      type: KNOWZONE_ERROR_TYPES.AUTH,
+    });
+  }
+
   async login(user) {
-    try {
-      // Get user by username.
-      const result = await this.userModel.findOne({ username: user.username });
-      if (!result) {
-        return { status: 'fail', message: 'Username or password is wrong' };
-      }
-
-      // Check if password in the request body is the same password in database.
-      // The message in authentication should be ambiguous for the sake of security.
-      const isPasswordTheSame = await bcrypt.compare(user.password, result.password);
-      if (!isPasswordTheSame) {
-        return { status: 'fail', message: 'Username or password is wrong' };
-      }
-
-      return {
-        status: 'success',
-        id: result._id,
-        username: result.username,
-        name: result.name,
-        email: result.email,
-        bio: result.bio,
-        message: 'Log in is successful',
-      };
-    } catch (err) {
-      return { status: 'fail', message: err.message };
+    const result = await this.userModel.findOne({ username: user.username });
+    if (!result) {
+      AuthService.throwInvalidLoginError();
     }
+
+    const isPasswordTheSame = await bcrypt.compare(user.password, result.password);
+    if (!isPasswordTheSame) {
+      AuthService.throwInvalidLoginError();
+    }
+
+    return {
+      id: result._id,
+      username: result.username,
+      name: result.name,
+      email: result.email,
+      bio: result.bio,
+    };
   }
 
   async register(user) {

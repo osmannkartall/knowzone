@@ -2,9 +2,7 @@ const router = require('express').Router();
 const Joi = require('joi');
 const SearchService = require('../services/SearchService');
 const { checkAuthentication } = require('../middlewares/auth');
-const KnowzoneError = require('../KnowzoneError');
-const { KNOWZONE_ERROR_TYPES } = require('../middlewares/errorHandler');
-const { isJoiError } = require('../utils');
+const { KNOWZONE_ERROR_TYPES, hasLowerLayerCustomError } = require('../knowzoneErrorHandler');
 
 const postsByOwnerSchema = (sessionUserId) => Joi.object({
   owner: Joi.string()
@@ -24,15 +22,16 @@ const getPostsByOwner = async (req, res, next) => {
 
     res.json(result);
   } catch (err) {
-    const joiError = isJoiError(err);
+    if (!hasLowerLayerCustomError()) {
+      err.description = 'Error when getting posts by owner';
+      err.statusCode = 500;
+      err.type = KNOWZONE_ERROR_TYPES.SEARCH;
+      err.data = {
+        id: req.params.id,
+      };
+    }
 
-    next(new KnowzoneError({
-      type: KNOWZONE_ERROR_TYPES.SEARCH,
-      code: joiError ? 400 : 500,
-      description: joiError ? err.details[0].message : 'Error when getting posts by owner',
-      stack: err.stack,
-      id: req.params.id,
-    }));
+    next(err);
   }
 };
 

@@ -20,16 +20,8 @@ function isArrayUnique(arr) {
   return arr.every((a, i) => arr.indexOf(a) === i);
 }
 
-function createErrorResponse(message) {
-  return { status: 'error', message };
-}
-
 function createSuccessResponse(message) {
   return { status: 'success', message };
-}
-
-function isJoiError(err) {
-  return err && Array.isArray(err.details) && err.details[0] && err.details[0].message;
 }
 
 module.exports = {
@@ -37,7 +29,5 @@ module.exports = {
   maxLengthMessage,
   transformToJSON,
   isArrayUnique,
-  createErrorResponse,
   createSuccessResponse,
-  isJoiError,
 };

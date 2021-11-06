@@ -8,8 +8,8 @@ const helloController = require('./controllers/HelloController');
 const bugfixController = require('./controllers/BugfixController');
 const searchController = require('./controllers/SearchController');
 const authController = require('./controllers/AuthController');
-const { handleError, KNOWZONE_ERROR_TYPES } = require('./middlewares/errorHandler');
-const KnowzoneError = require('./KnowzoneError');
+const { handleError } = require('./middlewares/handleError');
+const { handleNotFound } = require('./middlewares/handleNotFound');
 
 async function startDB() {
   try {
@@ -48,23 +48,17 @@ async function startExpress() {
   app.use(session(sessionOptions));
 
   app.get('/', (req, res) => {
-    res.send('Knowzone Back-End');
+    res.send('Knowzone Backend');
   });
 
   addControllers(app);
 
-  app.use((req, res, next) => {
-    next(new KnowzoneError({
-      type: KNOWZONE_ERROR_TYPES.NOT_FOUND,
-      code: 404,
-      description: 'Not Found',
-    }));
-  });
+  app.use(handleNotFound);
 
   app.use(handleError);
 
   app.listen(port, () => {
-    console.log(`Knowzone back-end listening at http://localhost:${port}`);
+    console.log(`Knowzone backend listening at http://localhost:${port}`);
   });
 }
 

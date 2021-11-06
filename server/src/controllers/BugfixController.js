@@ -3,9 +3,8 @@ const BugfixModel = require('../models/Bugfix');
 const BugfixRepository = require('../repositories/BugfixRepository');
 const { uploadImages, preparePost } = require('../middlewares/uploader');
 const { checkAuthentication } = require('../middlewares/auth');
-const { KNOWZONE_ERROR_TYPES } = require('../middlewares/errorHandler');
 const { createSuccessResponse } = require('../utils');
-const KnowzoneError = require('../KnowzoneError');
+const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../knowzoneErrorHandler');
 
 const bugfixRepository = new BugfixRepository(BugfixModel);
 
@@ -17,12 +16,13 @@ const create = async (_, res, next) => {
 
     res.json(createSuccessResponse('Created the record successfully'));
   } catch (err) {
-    next(new KnowzoneError({
+    changeToCustomError(err, {
+      description: 'Error when creating new record',
+      statusCode: 500,
       type: KNOWZONE_ERROR_TYPES.POST,
-      code: 400,
-      description: 'Error when creating the record',
-      stack: err.stack,
-    }));
+    });
+
+    next(err);
   }
 };
 
@@ -30,12 +30,13 @@ const findAll = async (_, res, next) => {
   try {
     res.send(await bugfixRepository.findAll());
   } catch (err) {
-    next(new KnowzoneError({
-      type: KNOWZONE_ERROR_TYPES.POST,
-      code: 400,
+    changeToCustomError(err, {
       description: 'Error when reading record list',
-      stack: err.stack,
-    }));
+      statusCode: 500,
+      type: KNOWZONE_ERROR_TYPES.POST,
+    });
+
+    next(err);
   }
 };
 
@@ -43,13 +44,16 @@ const findById = async (req, res, next) => {
   try {
     res.send(await bugfixRepository.findById(req.params.id));
   } catch (err) {
-    next(new KnowzoneError({
-      type: KNOWZONE_ERROR_TYPES.POST,
-      code: 400,
+    changeToCustomError(err, {
       description: 'Error when finding record with the given ID',
-      stack: err.stack,
-      id: req.params.id,
-    }));
+      statusCode: 500,
+      type: KNOWZONE_ERROR_TYPES.POST,
+      data: {
+        id: req.params.id,
+      },
+    });
+
+    next(err);
   }
 };
 
@@ -57,14 +61,17 @@ const updateById = async (req, res, next) => {
   try {
     res.json(await bugfixRepository.updateById(req.params.id, res.locals.data));
   } catch (err) {
-    next(new KnowzoneError({
-      type: KNOWZONE_ERROR_TYPES.POST,
-      code: 400,
+    changeToCustomError(err, {
       description: 'Error when updating record with the given ID',
-      stack: err.stack,
-      id: req.params.id,
-      record: res.locals.data,
-    }));
+      statusCode: 500,
+      type: KNOWZONE_ERROR_TYPES.POST,
+      data: {
+        id: req.params.id,
+        record: res.locals.data,
+      },
+    });
+
+    next(err);
   }
 };
 
@@ -74,13 +81,16 @@ const deleteById = async (req, res, next) => {
 
     res.json(createSuccessResponse('Deleted the record successfully'));
   } catch (err) {
-    next(new KnowzoneError({
-      type: KNOWZONE_ERROR_TYPES.POST,
-      code: 400,
+    changeToCustomError(err, {
       description: 'Error when deleting record with the given ID',
-      stack: err.stack,
-      id: req.params.id,
-    }));
+      statusCode: 500,
+      type: KNOWZONE_ERROR_TYPES.POST,
+      data: {
+        id: req.params.id,
+      },
+    });
+
+    next(err);
   }
 };
 
@@ -90,12 +100,13 @@ const deleteAll = async (_, res, next) => {
 
     res.json(createSuccessResponse('Deleted record list successfully'));
   } catch (err) {
-    next(new KnowzoneError({
-      type: KNOWZONE_ERROR_TYPES.POST,
-      code: 400,
+    changeToCustomError(err, {
       description: 'Error when deleting record list',
-      stack: err.stack,
-    }));
+      statusCode: 500,
+      type: KNOWZONE_ERROR_TYPES.POST,
+    });
+
+    next(err);
   }
 };
 
