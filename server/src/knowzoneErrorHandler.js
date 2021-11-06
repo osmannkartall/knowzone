@@ -9,6 +9,10 @@ function isApiSchemaError(err) {
   return err && Array.isArray(err.details) && err.details[0] && err.details[0].message;
 }
 
+function isCustomError(err) {
+  return err && err.statusCode && err.description;
+}
+
 function hasLowerLayerCustomError(err) {
   return err && err.type && err.type in KNOWZONE_ERROR_TYPES && err.statusCode && err.description;
 }
@@ -47,6 +51,7 @@ function createErrorResponse(message) {
 module.exports = {
   KNOWZONE_ERROR_TYPES,
   isApiSchemaError,
+  isCustomError,
   hasLowerLayerCustomError,
   changeToCustomError,
   createCustomError,
