@@ -1,12 +1,11 @@
 const router = require('express').Router();
-const BugfixModel = require('../models/Bugfix');
 const BugfixRepository = require('../repositories/BugfixRepository');
 const { uploadImages, preparePost } = require('../middlewares/uploader');
 const { checkAuthentication } = require('../middlewares/auth');
 const { createSuccessResponse } = require('../utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../knowzoneErrorHandler');
 
-const bugfixRepository = new BugfixRepository(BugfixModel);
+const bugfixRepository = new BugfixRepository();
 
 const create = async (_, res, next) => {
   try {

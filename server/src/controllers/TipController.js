@@ -1,12 +1,11 @@
 const router = require('express').Router();
-const TipModel = require('../models/Tip');
 const TipRepository = require('../repositories/TipRepository');
 const { uploadImages, preparePost } = require('../middlewares/uploader');
 const { checkAuthentication } = require('../middlewares/auth');
 const { createSuccessResponse } = require('../utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../knowzoneErrorHandler');
 
-const tipRepository = new TipRepository(TipModel);
+const tipRepository = new TipRepository();
 
 const create = async (_, res, next) => {
   try {
