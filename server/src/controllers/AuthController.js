@@ -7,6 +7,7 @@ const {
   hasLowerLayerCustomError,
   changeToCustomError,
   KNOWZONE_ERROR_TYPES,
+  createErrorResponse,
 } = require('../knowzoneErrorHandler');
 const { createSuccessResponse } = require('../utils');
 
@@ -123,10 +124,10 @@ const register = async (req, res, next) => {
 const logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      res.status(400).json({ status: 'fail', message: err });
+      res.status(400).json(createErrorResponse(err));
     } else {
       res.clearCookie(process.env.SESSION_NAME);
-      res.json({ status: 'success', message: 'Logout is successful' });
+      res.json(createSuccessResponse('Logout is successful'));
     }
   });
 };
@@ -139,8 +140,7 @@ const isUserLoggedIn = async (req, res) => {
       const result = await auth.getUserInformation(id);
       res.json(result);
     } else {
-      console.log('isUserLoggedIn: User is not authorized.');
-      res.status(401).json({ status: 'fail', message: 'User is not authorized.' });
+      res.status(401).json(createErrorResponse('User is not authorized.'));
     }
   });
 };
