@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const BugfixRepository = require('../repositories/BugfixRepository');
-const { uploadImages, preparePost } = require('../middlewares/uploader');
+const { uploadImages, preparePostForCreate, preparePostForUpdate } = require('../middlewares/uploader');
 const { checkAuthentication } = require('../middlewares/checkAuthentication');
 const { createSuccessResponse } = require('../utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../knowzoneErrorHandler');
@@ -110,7 +110,7 @@ const deleteAll = async (_, res, next) => {
 };
 
 // Create a new bugfix post
-router.post('/', checkAuthentication, uploadImages, preparePost, create);
+router.post('/', checkAuthentication, uploadImages, preparePostForCreate, create);
 
 // Retrieve all bugfix posts
 router.get('/', checkAuthentication, findAll);
@@ -119,7 +119,7 @@ router.get('/', checkAuthentication, findAll);
 router.get('/:id', checkAuthentication, findById);
 
 // Update a bugfix post with id
-router.put('/:id', checkAuthentication, uploadImages, preparePost, updateById);
+router.put('/:id', checkAuthentication, uploadImages, preparePostForUpdate, updateById);
 
 // Delete a bugfix post with id
 router.delete('/:id', checkAuthentication, deleteById);

@@ -7,7 +7,6 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { toast } from 'react-toastify';
 import uniqueId from 'lodash/uniqueId';
 import { GRAY2, GRAY3, GRAY4, IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../constants/colors';
-import { byteArrayToBase64 } from '../utils';
 
 const NUM_MAX_FILES = 2;
 const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
@@ -127,7 +126,7 @@ const getImageSource = (file) => {
   if (file.preview) {
     return file.preview;
   }
-  return `data:${file.mime};base64,${byteArrayToBase64(file.content)}`;
+  return `${process.env.REACT_APP_KNOWZONE_BE_URI}/${file.path}`;
 };
 
 const Image = ({ file }) => {

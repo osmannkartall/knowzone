@@ -1,31 +1,113 @@
 const multer = require('multer');
+const path = require('path');
+const { createCustomError, KNOWZONE_ERROR_TYPES } = require('../knowzoneErrorHandler');
 
-const upload = multer({ storage: multer.memoryStorage() });
+const imageStorage = multer.diskStorage({
+  destination(_req, _file, cb) {
+    cb(null, `${process.env.PUBLIC_UPLOAD_PATH}/${process.env.IMAGE_UPLOAD_SUBPATH}`);
+  },
+  filename(_req, file, cb) {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+    cb(null, `${file.fieldname}_${uniqueSuffix}${path.extname(file.originalname)}`);
+  },
+});
+
+const upload = multer({
+  storage: imageStorage,
+  limits: {
+    fileSize: 1048576,
+  },
+  fileFilter(req, file, cb) {
+    if (file.mimetype.split('/')[0] !== 'image') {
+      return cb(createCustomError({
+        description: 'Only images are allowed for uploading',
+        statusCode: 400,
+        type: KNOWZONE_ERROR_TYPES.UPLOAD,
+      }));
+    }
+    if (parseInt(req.headers['content-length'], 10) > 1048576) {
+      return cb(createCustomError({
+        description: 'The maximum allowed size of a single file is 1 MB',
+        statusCode: 400,
+        type: KNOWZONE_ERROR_TYPES.UPLOAD,
+      }));
+    }
+    return cb(null, true);
+  },
+});
 
 const uploadImages = upload.array('image');
 
-const preparePost = (req, res, next) => {
-  const { saveImage, ...rest } = req.body;
-  const data = {};
-  const images = [];
+const isAnyFileUploaded = (files) => Array.isArray(files) && files.length;
 
-  if (rest) {
-    Object.entries(rest).forEach(([k, v]) => { data[k] = JSON.parse(v); });
+const getOwner = (session) => ({
+  id: session.userId,
+  username: session.username,
+  name: session.name,
+});
+
+const createPostBody = (body, session) => {
+  const postBody = {};
+
+  if (body) {
+    Object.entries(body).forEach(([k, v]) => {
+      postBody[k] = JSON.parse(v);
+    });
   }
 
-  data.owner = {
-    id: req.session.userId,
-    username: req.session.username,
-    name: req.session.name,
-  };
+  postBody.owner = getOwner(session);
 
-  if (req.files && (saveImage === undefined || JSON.parse(saveImage))) {
-    req.files.forEach((f) => {
-      if (f.originalname && f.buffer && f.mimetype) {
-        images.push({ name: f.originalname, content: f.buffer, mime: f.mimetype });
-      }
+  return postBody;
+};
+
+const getPathsOfUploadedFiles = (files) => {
+  const images = [];
+
+  if (isAnyFileUploaded(files)) {
+    files.forEach((f) => {
+      const segments = f.path.split(path.sep);
+
+      images.push({
+        name: f.originalname,
+        path: `${process.env.IMAGE_UPLOAD_SUBPATH}/${segments[segments.length - 1]}`,
+      });
     });
-    data.images = images;
+  }
+
+  return images;
+};
+
+const preparePostForCreate = (req, res, next) => {
+  const data = createPostBody(req.body, req.session);
+  data.images = getPathsOfUploadedFiles(req.files);
+
+  res.locals.data = data;
+
+  next();
+};
+
+const mergeImages = (oldImages, newImageFiles) => {
+  const oldImagePaths = oldImages ? JSON.parse(oldImages) : [];
+  const newImagePaths = getPathsOfUploadedFiles(newImageFiles);
+
+  return oldImagePaths.concat(newImagePaths);
+};
+
+const isNoImageAfterUpdate = (oldImages) => (
+  oldImages
+    && Array.isArray(JSON.parse(oldImages))
+    && !(JSON.parse(oldImages).length)
+);
+
+const preparePostForUpdate = (req, res, next) => {
+  const { oldImages, ...rest } = req.body;
+  const data = createPostBody(rest, req.session);
+  const changedImages = mergeImages(oldImages, req.files);
+
+  if (changedImages.length) {
+    data.images = changedImages;
+  } else if (isNoImageAfterUpdate(oldImages)) {
+    data.images = [];
   }
 
   res.locals.data = data;
@@ -35,5 +117,6 @@ const preparePost = (req, res, next) => {
 
 module.exports = {
   uploadImages,
-  preparePost,
+  preparePostForCreate,
+  preparePostForUpdate,
 };

@@ -6,7 +6,6 @@ import { useAuthState } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
 import POST_TYPES from '../constants/post-types';
 import {
-  createFile,
   getChangesInObject,
   isObjectEmptyOrNotValid,
   areObjectsEqual,
@@ -14,6 +13,8 @@ import {
 import { BE_ROUTES } from '../constants/routes';
 import ContentWrapper from '../common/ContentWrapper';
 import { IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../constants/colors';
+
+const isNewImage = (image) => image instanceof File;
 
 const YourPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -49,6 +50,7 @@ const YourPosts = () => {
     try {
       if (selectedPost && selectedPost.id) {
         const idx = posts.findIndex((p) => p.id === selectedPost.id);
+
         if (idx !== -1 && !areObjectsEqual(selectedPost, posts[idx])) {
           const changes = getChangesInObject(posts[idx], selectedPost);
           const { route } = POST_TYPES.get(selectedPost.type);
@@ -56,17 +58,18 @@ const YourPosts = () => {
           if (!isObjectEmptyOrNotValid(changes)) {
             const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
             const fd = new FormData();
-            changes.saveImage = changes.images !== undefined;
 
             Object.entries(changes).forEach(([k, v]) => {
               if (k === 'images') {
+                const oldImages = [];
                 v.forEach((image) => {
-                  let imageObject = image;
-                  if (!(image instanceof File)) {
-                    imageObject = createFile(image);
+                  if (isNewImage(image)) {
+                    fd.append('image', image);
+                  } else {
+                    oldImages.push(image);
                   }
-                  fd.append('image', imageObject);
                 });
+                fd.append('oldImages', JSON.stringify(oldImages));
               } else {
                 fd.append(k, JSON.stringify(v));
               }

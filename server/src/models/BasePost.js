@@ -7,11 +7,6 @@ const MAX_NUM_IMAGES = 2;
 const MAX_NUM_LINKS = 5;
 const MAX_LEN_DESCRIPTION = 1000;
 
-const validateMimeType = () => [
-  (mime) => mime.split('/')[0] === 'image',
-  (props) => `Unsupported mime-type, RECEIVED: ${props.value}`,
-];
-
 const validateArrayLength = (name, max, min = 0) => ({
   validator: (items) => isLengthBetween(items, max, min),
   message: (props) => `Number of ${name} should be in [${min}, ${max}], RECEIVED: ${props.value.length}`,
@@ -74,14 +69,9 @@ const basePostObject = {
     type: [
       {
         name: String,
-        content: {
-          type: Buffer,
-          required: true,
-        },
-        mime: {
+        path: {
           type: String,
           required: true,
-          validate: validateMimeType(),
         },
       },
     ],
