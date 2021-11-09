@@ -89,8 +89,6 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
   const [solutionCheck, setSolutionCheck] = useState({ text: '', isInvalid: false });
   const [linksCheck, setLinksCheck] = useState({ text: '', isInvalid: false, isUnique: true });
 
-  const markdownTextChangeError = (value) => changeHandler('error', value);
-
   const validateForm = () => {
     const isValidDescription = validate(
       form.description, descriptionCheck, setDescriptionCheck, DESCRIPTION_CONSTRAINTS,
