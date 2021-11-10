@@ -110,8 +110,8 @@ const MarkdownEditor = ({ text, onChangeText, containerMaxHeight }) => {
               </div>
               <div className={classes.editorContainer} style={{ borderRight: borderRightStyle }}>
                 <textarea
-                  defaultValue={text}
                   className={classes.editor}
+                  value={text}
                   onChange={(e) => onChangeText(e.target.value)}
                 />
               </div>
