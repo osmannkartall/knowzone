@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import {
   makeStyles,
   List,
@@ -12,7 +12,7 @@ import { GRAY3, WHITE } from '../../constants/colors';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
 import POST_TYPES from '../../constants/post-types';
 import { preparePost } from '../../utils';
-import { AuthContext } from '../../contexts/AuthContext';
+import { useAuthState } from '../../contexts/AuthContext';
 import PostForm from '../../common/PostForm';
 
 const useStyles = makeStyles((theme) => ({
@@ -77,7 +77,7 @@ const SidebarItemList = () => (
 );
 
 export default function Sidebar({ isSidebarOpen }) {
-  const [user] = useContext(AuthContext);
+  const user = useAuthState();
   const emptyPost = {
     description: '',
     links: [],
@@ -119,11 +119,12 @@ export default function Sidebar({ isSidebarOpen }) {
     fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}`, {
       method: 'POST',
       body: fd,
+      credentials: 'include',
     })
       .then((res) => res.json())
       .then(
         (result) => {
-          console.log(result.message);
+          console.log(result.status, result.message);
           setIsPostFormOpen(false);
           setNewPost(emptyPost);
         },

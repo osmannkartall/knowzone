@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles, IconButton, MenuItem, Menu } from '@material-ui/core';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -8,6 +8,8 @@ import { GRAY1, GRAY3, PRIMARY } from '../../constants/colors';
 import { FE_ROUTES } from '../../constants/routes';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
 import AppLogo from '../../common/AppLogo';
+import { useAuthDispatch } from '../../contexts/AuthContext';
+import { logout } from '../../contexts/AuthActions';
 
 const useStyles = makeStyles((theme) => ({
   topbar: {
@@ -79,6 +81,8 @@ const Topbar = ({ openSidebar }) => {
   const history = useHistory();
   const classes = useStyles();
   const isMenuOpen = Boolean(anchorMenu);
+  const authDispatch = useAuthDispatch();
+  const isMounted = useRef(true);
 
   const toggleMenu = (event) => setAnchorMenu(event.currentTarget);
 
@@ -95,11 +99,21 @@ const Topbar = ({ openSidebar }) => {
     // history.push('account');
   };
 
-  const onClickLogout = () => {
-    closeMenu();
-    console.log('logout');
-    // history.push('/');
-  };
+  const onClickLogout = useCallback(async () => {
+    if (isMounted.current) {
+      closeMenu();
+      const response = await logout(authDispatch);
+      if (response.status === 'success') {
+        history.push('/');
+      } else {
+        console.log(response.message);
+      }
+    }
+  }, [history, authDispatch]);
+
+  useEffect(() => function cleanup() {
+    isMounted.current = false;
+  }, []);
 
   return (
     <div className={classes.topbar}>

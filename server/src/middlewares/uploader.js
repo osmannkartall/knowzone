@@ -13,6 +13,12 @@ const preparePost = (req, res, next) => {
     Object.entries(rest).forEach(([k, v]) => { data[k] = JSON.parse(v); });
   }
 
+  data.owner = {
+    id: req.session.userId,
+    username: req.session.username,
+    name: req.session.name,
+  };
+
   if (req.files && (saveImage === undefined || JSON.parse(saveImage))) {
     req.files.forEach((f) => {
       if (f.originalname && f.buffer && f.mimetype) {

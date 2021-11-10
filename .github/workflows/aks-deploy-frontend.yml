@@ -13,6 +13,7 @@ env:
   VERSION: ${{ github.sha }}
   FRONTEND_LB_PREFIX: ${{ secrets.FRONTEND_LB_PREFIX }}
   BACKEND_URL: ${{ secrets.BACKEND_URL }}
+  FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
 
 jobs:
   deploy:
@@ -30,7 +31,7 @@ jobs:
     - name: Build and push image to ACR
       id: build-image
       run: |
-        docker build . --build-arg KNOWZONE_BE_URI=${BACKEND_URL} -f infra/Dockerfile.web -t ${REGISTRY_NAME}/knowzone-frontend:${VERSION}
+        docker build . --build-arg KNOWZONE_BE_URI=${BACKEND_URL} --build-arg KNOWZONE_FE_URI=${FRONTEND_URL} -f infra/Dockerfile.web -t ${REGISTRY_NAME}/knowzone-frontend:${VERSION}
         docker push ${REGISTRY_NAME}/knowzone-frontend:${VERSION}
 
     - uses: azure/k8s-set-context@v1

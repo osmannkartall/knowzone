@@ -66,7 +66,7 @@ build-frontend() {
     log_green "Build and push frontend"
 
     log_blue "Building frontend image..."
-    docker build ${SCRIPT_DIR}/../ --build-arg KNOWZONE_BE_URI=${BACKEND_URL} -f ${SCRIPT_DIR}/Dockerfile.web --tag ${REGISTRY_NAME}/knowzone-frontend:${VERSION}
+    docker build ${SCRIPT_DIR}/../ --build-arg KNOWZONE_BE_URI=${BACKEND_URL} --build-arg KNOWZONE_FE_URI=${FRONTEND_URL} -f ${SCRIPT_DIR}/Dockerfile.web --tag ${REGISTRY_NAME}/knowzone-frontend:${VERSION}
 
     log_blue "Pushing frontend to ${REGISTRY_NAME}..."
     docker push ${REGISTRY_NAME}/knowzone-frontend:${VERSION}

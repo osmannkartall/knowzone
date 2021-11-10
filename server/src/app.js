@@ -1,12 +1,15 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
+const session = require('express-session');
 const config = require('./config');
 const tipController = require('./controllers/TipController');
 const helloController = require('./controllers/HelloController');
 const bugfixController = require('./controllers/BugfixController');
 const searchController = require('./controllers/SearchController');
 const authController = require('./controllers/AuthController');
+const { handleError } = require('./middlewares/handleError');
+const { handleNotFound } = require('./middlewares/handleNotFound');
 
 async function startDB() {
   try {
@@ -34,7 +37,7 @@ function addControllers(app) {
 
 async function startExpress() {
   const app = express();
-  const { port, corsOptions } = config;
+  const { port, corsOptions, sessionOptions } = config;
 
   app.use(cors(corsOptions));
 
@@ -42,14 +45,20 @@ async function startExpress() {
 
   app.use(express.urlencoded({ extended: true }));
 
+  app.use(session(sessionOptions));
+
   app.get('/', (req, res) => {
-    res.send('Knowzone Back-End');
+    res.send('Knowzone Backend');
   });
 
   addControllers(app);
 
+  app.use(handleNotFound);
+
+  app.use(handleError);
+
   app.listen(port, () => {
-    console.log(`Knowzone back-end listening at http://localhost:${port}`);
+    console.log(`Knowzone backend listening at http://localhost:${port}`);
   });
 }
 

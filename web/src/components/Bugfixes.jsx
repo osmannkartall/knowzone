@@ -10,7 +10,9 @@ const Bugfixes = () => {
   useEffect(() => {
     let mounted = true;
 
-    fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.BUG_FIXES}`)
+    fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.BUG_FIXES}`, {
+      credentials: 'include',
+    })
       .then((response) => response.json())
       .then((data) => {
         if (mounted) {
