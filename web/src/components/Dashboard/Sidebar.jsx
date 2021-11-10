@@ -14,6 +14,7 @@ import POST_TYPES from '../../constants/post-types';
 import { preparePost } from '../../utils';
 import { useAuthState } from '../../contexts/AuthContext';
 import PostForm from '../../common/PostForm';
+import LinearProgressModal from '../../common/LinearProgressModal';
 
 const useStyles = makeStyles((theme) => ({
   sidebar: {
@@ -90,6 +91,7 @@ export default function Sidebar({ isSidebarOpen }) {
   };
   const [newPost, setNewPost] = useState(emptyPost);
   const [isPostFormOpen, setIsPostFormOpen] = useState(false);
+  const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const classes = useStyles();
 
   const changeNewPostField = (key, value) => {
@@ -99,6 +101,7 @@ export default function Sidebar({ isSidebarOpen }) {
   const onClickCreate = () => setIsPostFormOpen(true);
 
   const addPost = () => {
+    setIsLinearProgressModalOpen(true);
     const { post, route } = preparePost(newPost);
     const fd = new FormData();
 
@@ -122,49 +125,48 @@ export default function Sidebar({ isSidebarOpen }) {
       credentials: 'include',
     })
       .then((res) => res.json())
-      .then(
-        (result) => {
-          console.log(result.status, result.message);
-          setIsPostFormOpen(false);
-          setNewPost(emptyPost);
-        },
-        (error) => {
-          console.log(error.message);
-        },
-      );
+      .then((result) => {
+        console.log(result.status, result.message);
+        setIsPostFormOpen(false);
+        setNewPost(emptyPost);
+      })
+      .catch((error) => console.log(error.message))
+      .finally(() => setIsLinearProgressModalOpen(false));
   };
 
   return (
-    <div
-      className={classes.sidebarContainer}
-      style={
-        isSidebarOpen
-          ? { display: 'flex' }
-          : { display: 'none' }
-      }
-    >
-      <div className={classes.sidebar}>
-        <SidebarItemList />
+    <LinearProgressModal isOpen={isLinearProgressModalOpen}>
+      <div
+        className={classes.sidebarContainer}
+        style={
+          isSidebarOpen
+            ? { display: 'flex' }
+            : { display: 'none' }
+        }
+      >
+        <div className={classes.sidebar}>
+          <SidebarItemList />
+        </div>
+        <div className={classes.sidebarBottomContainer}>
+          <Button
+            className={classes.createButton}
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={onClickCreate}
+          >
+            Create
+          </Button>
+        </div>
+        <PostForm
+          title="Create Post"
+          open={isPostFormOpen}
+          setOpen={setIsPostFormOpen}
+          form={newPost}
+          changeHandler={changeNewPostField}
+          onClickBtn={addPost}
+        />
       </div>
-      <div className={classes.sidebarBottomContainer}>
-        <Button
-          className={classes.createButton}
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={onClickCreate}
-        >
-          Create
-        </Button>
-      </div>
-      <PostForm
-        title="Create Post"
-        open={isPostFormOpen}
-        setOpen={setIsPostFormOpen}
-        form={newPost}
-        changeHandler={changeNewPostField}
-        onClickBtn={addPost}
-      />
-    </div>
+    </LinearProgressModal>
   );
 }

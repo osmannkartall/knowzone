@@ -13,6 +13,7 @@ import {
 import { BE_ROUTES } from '../constants/routes';
 import ContentWrapper from '../common/ContentWrapper';
 import { IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../constants/colors';
+import LinearProgressModal from '../common/LinearProgressModal';
 
 const isNewImage = (image) => image instanceof File;
 
@@ -22,6 +23,7 @@ const YourPosts = () => {
   const [openForm, setOpenForm] = useState(false);
   const [action, setAction] = useState('update');
   const [openDialog, setOpenDialog] = useState(false);
+  const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const user = useAuthState();
 
   const handleClose = () => setOpenDialog(false);
@@ -48,6 +50,7 @@ const YourPosts = () => {
 
   const updatePost = async () => {
     try {
+      setIsLinearProgressModalOpen(true);
       if (selectedPost && selectedPost.id) {
         const idx = posts.findIndex((p) => p.id === selectedPost.id);
 
@@ -88,11 +91,13 @@ const YourPosts = () => {
     } finally {
       setOpenForm(false);
       setOpenDialog(false);
+      setIsLinearProgressModalOpen(false);
     }
   };
 
   const deletePost = () => {
     if (selectedPost && selectedPost.type && selectedPost.id) {
+      setIsLinearProgressModalOpen(true);
       const { route } = POST_TYPES.get(selectedPost.type);
       const idx = posts.findIndex((p) => p.id === selectedPost.id);
 
@@ -105,18 +110,15 @@ const YourPosts = () => {
           credentials: 'include',
         })
           .then((res) => res.json())
-          .then(
-            (result) => {
-              console.log(result.message);
-              const newPosts = [...posts];
-              newPosts.splice(idx, 1);
-              setPosts(newPosts);
-              setOpenDialog(false);
-            },
-            (error) => {
-              console.log(error.message);
-            },
-          );
+          .then((result) => {
+            console.log(result.message);
+            const newPosts = [...posts];
+            newPosts.splice(idx, 1);
+            setPosts(newPosts);
+            setOpenDialog(false);
+          })
+          .catch((error) => console.log(error.message))
+          .finally(() => setIsLinearProgressModalOpen(false));
       }
     }
   };
@@ -157,7 +159,7 @@ const YourPosts = () => {
   }, [user.id]);
 
   return (
-    <>
+    <LinearProgressModal isOpen={isLinearProgressModalOpen}>
       <ContentWrapper title="Your Posts">
         {Array.isArray(posts) && posts.length ? (
           posts.map((p) => (
@@ -217,7 +219,7 @@ const YourPosts = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </LinearProgressModal>
   );
 };
 
