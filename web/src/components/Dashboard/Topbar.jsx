@@ -10,6 +10,7 @@ import { sidebarWidth, topbarHeight } from '../../constants/styles';
 import AppLogo from '../../common/AppLogo';
 import { useAuthDispatch } from '../../contexts/AuthContext';
 import { logout } from '../../contexts/AuthActions';
+import LinearProgressModal from '../../common/LinearProgressModal';
 
 const useStyles = makeStyles((theme) => ({
   topbar: {
@@ -78,6 +79,7 @@ const AppLogoWithTitle = () => {
 
 const Topbar = ({ openSidebar }) => {
   const [anchorMenu, setAnchorMenu] = useState(null);
+  const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const history = useHistory();
   const classes = useStyles();
   const isMenuOpen = Boolean(anchorMenu);
@@ -100,13 +102,22 @@ const Topbar = ({ openSidebar }) => {
   };
 
   const onClickLogout = useCallback(async () => {
-    if (isMounted.current) {
-      closeMenu();
+    try {
+      setIsLinearProgressModalOpen(true);
+
       const response = await logout(authDispatch);
+
       if (response.status === 'success') {
         history.push('/');
       } else {
         console.log(response.message);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      if (isMounted.current) {
+        closeMenu();
+        setIsLinearProgressModalOpen(false);
       }
     }
   }, [history, authDispatch]);
@@ -116,51 +127,53 @@ const Topbar = ({ openSidebar }) => {
   }, []);
 
   return (
-    <div className={classes.topbar}>
-      <div className={classes.topbarLeftContainer}>
-        <IconButton
-          className={classes.menuButton}
-          color="inherit"
-          aria-label="menu"
-          onClick={openSidebar}
-        >
-          <MenuIcon />
-        </IconButton>
-        <AppLogoWithTitle />
+    <LinearProgressModal isOpen={isLinearProgressModalOpen}>
+      <div className={classes.topbar}>
+        <div className={classes.topbarLeftContainer}>
+          <IconButton
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="menu"
+            onClick={openSidebar}
+          >
+            <MenuIcon />
+          </IconButton>
+          <AppLogoWithTitle />
+        </div>
+        <SearchBar />
+        <div className={classes.accountButton}>
+          <IconButton
+            aria-label="account of current user"
+            aria-controls="menu-topbar"
+            aria-haspopup="true"
+            onClick={toggleMenu}
+            color="inherit"
+            style={{ width: 40, height: 40 }}
+          >
+            <AccountCircle />
+          </IconButton>
+          <Menu
+            id="menu-topbar"
+            anchorEl={anchorMenu}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            open={isMenuOpen}
+            onClose={closeMenu}
+          >
+            <MenuItem onClick={onClickYourPosts}>Your Posts</MenuItem>
+            <MenuItem onClick={onClickAccount}>Account</MenuItem>
+            <MenuItem onClick={onClickLogout}>Logout</MenuItem>
+          </Menu>
+        </div>
       </div>
-      <SearchBar />
-      <div className={classes.accountButton}>
-        <IconButton
-          aria-label="account of current user"
-          aria-controls="menu-topbar"
-          aria-haspopup="true"
-          onClick={toggleMenu}
-          color="inherit"
-          style={{ width: 40, height: 40 }}
-        >
-          <AccountCircle />
-        </IconButton>
-        <Menu
-          id="menu-topbar"
-          anchorEl={anchorMenu}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          keepMounted
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          open={isMenuOpen}
-          onClose={closeMenu}
-        >
-          <MenuItem onClick={onClickYourPosts}>Your Posts</MenuItem>
-          <MenuItem onClick={onClickAccount}>Account</MenuItem>
-          <MenuItem onClick={onClickLogout}>Logout</MenuItem>
-        </Menu>
-      </div>
-    </div>
+    </LinearProgressModal>
   );
 };
 
