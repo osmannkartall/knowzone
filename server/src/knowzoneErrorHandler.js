@@ -3,6 +3,7 @@ const KNOWZONE_ERROR_TYPES = Object.freeze({
   POST: 'POST',
   SEARCH: 'SEARCH',
   NOT_FOUND: 'NOT FOUND',
+  UPLOAD: 'UPLOAD',
 });
 
 function isApiSchemaError(err) {

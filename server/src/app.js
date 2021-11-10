@@ -47,6 +47,8 @@ async function startExpress() {
 
   app.use(session(sessionOptions));
 
+  app.use(express.static(process.env.PUBLIC_UPLOAD_PATH));
+
   app.get('/', (req, res) => {
     res.send('Knowzone Backend');
   });

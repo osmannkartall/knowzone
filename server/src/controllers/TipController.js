@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const TipRepository = require('../repositories/TipRepository');
-const { uploadImages, preparePost } = require('../middlewares/uploader');
+const { uploadImages, preparePostForCreate, preparePostForUpdate } = require('../middlewares/uploader');
 const { checkAuthentication } = require('../middlewares/checkAuthentication');
 const { createSuccessResponse } = require('../utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../knowzoneErrorHandler');
@@ -108,13 +108,13 @@ const deleteAll = async (_, res, next) => {
   }
 };
 
-router.post('/', checkAuthentication, uploadImages, preparePost, create);
+router.post('/', checkAuthentication, uploadImages, preparePostForCreate, create);
 
 router.get('/', checkAuthentication, findAll);
 
 router.get('/:id', checkAuthentication, findById);
 
-router.put('/:id', checkAuthentication, uploadImages, preparePost, updateById);
+router.put('/:id', checkAuthentication, uploadImages, preparePostForUpdate, updateById);
 
 router.delete('/:id', checkAuthentication, deleteById);
 
