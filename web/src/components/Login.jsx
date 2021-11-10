@@ -9,7 +9,9 @@ import { login } from '../contexts/AuthActions';
 
 const useStyles = makeStyles((theme) => ({
   input: {
-    marginBottom: theme.spacing(4),
+    display: 'flex',
+    width: 450,
+    marginBottom: theme.spacing(3),
   },
 }));
 
@@ -56,7 +58,6 @@ const Login = () => {
         label="Username"
         variant="outlined"
         className={classes.input}
-        fullWidth
         required
         value={username}
         onChange={(e) => setUsername(e.target.value)}
@@ -66,7 +67,6 @@ const Login = () => {
         label="Password"
         variant="outlined"
         className={classes.input}
-        fullWidth
         required
         value={password}
         onChange={(e) => setPassword(e.target.value)}

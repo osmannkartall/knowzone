@@ -9,7 +9,9 @@ import { register } from '../contexts/AuthActions';
 
 const useStyles = makeStyles((theme) => ({
   input: {
-    marginBottom: theme.spacing(4),
+    display: 'flex',
+    width: 450,
+    marginBottom: theme.spacing(3),
   },
 }));
 
@@ -64,7 +66,6 @@ const Register = () => {
         label="Name"
         variant="outlined"
         className={classes.input}
-        fullWidth
         required
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -74,7 +75,6 @@ const Register = () => {
         label="Username"
         variant="outlined"
         className={classes.input}
-        fullWidth
         required
         value={username}
         onChange={(e) => setUsername(e.target.value)}
@@ -84,7 +84,6 @@ const Register = () => {
         label="Email"
         variant="outlined"
         className={classes.input}
-        fullWidth
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -94,7 +93,6 @@ const Register = () => {
         label="Password"
         variant="outlined"
         className={classes.input}
-        fullWidth
         required
         value={password}
         onChange={(e) => setPassword(e.target.value)}
