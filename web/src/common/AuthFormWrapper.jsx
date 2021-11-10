@@ -56,6 +56,7 @@ const AuthFormContainer = ({ title, mainFormAction, otherFormAction, children })
   const handleMainFormAction = () => {
     setIsLinearProgressModalOpen(true);
     mainFormAction.handler();
+    setIsLinearProgressModalOpen(false);
   };
 
   return (
