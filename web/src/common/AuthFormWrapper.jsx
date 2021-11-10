@@ -9,12 +9,12 @@ const useStyles = makeStyles((theme) => ({
     width: '100vw',
     height: '100vh',
     margin: 'auto',
-    overflow: 'scroll',
+    overflow: 'auto',
     color: GRAY1,
   },
   form: {
     margin: 'auto',
-    padding: theme.spacing(4),
+    padding: theme.spacing(2),
     border: `1px solid ${GRAY3}`,
     borderRadius: 4,
     [theme.breakpoints.only('xs')]: {
@@ -34,16 +34,13 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: '500',
     margin: theme.spacing(3, 0),
   },
-  input: {
-    marginBottom: theme.spacing(4),
-  },
   buttonGroup: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
   orText: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(3),
     marginBottom: theme.spacing(0.5),
     opacity: 0.5,
   },
