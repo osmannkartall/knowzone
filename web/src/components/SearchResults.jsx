@@ -13,13 +13,14 @@ const SearchResults = () => {
     let mounted = true;
     const route = 'search/filter';
     const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}`;
+    const { from, ...body } = location.state;
 
     setIsLinearProgressModalOpen(true);
 
     fetch(url, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      body: JSON.stringify(location.state),
+      body: JSON.stringify(body),
       credentials: 'include',
     })
       .then((response) => response.json())
