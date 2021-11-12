@@ -58,7 +58,7 @@ const AuthFormContainer = ({ title, mainFormAction, otherFormAction, children })
   };
 
   return (
-    <form onSubmit={handleMainFormAction}>
+    <form onSubmit={handleMainFormAction} noValidate>
       <LinearProgressModal isOpen={isLinearProgressModalOpen}>
         <div className={classes.container}>
           <div className={classes.form}>

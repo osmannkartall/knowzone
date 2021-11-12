@@ -20,6 +20,7 @@ const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const classes = useStyles();
   const history = useHistory();
   const authDispatch = useAuthDispatch();
@@ -36,8 +37,7 @@ const Register = () => {
       });
 
       if (response.status === 'success') {
-        toast.info(`${response.message}. Redirecting to login page...`);
-        history.push(FE_ROUTES.LOGIN);
+        history.push(FE_ROUTES.TIPS);
       } else {
         toast.error(response.message);
         console.log('Something bad happened during register!');
@@ -96,6 +96,16 @@ const Register = () => {
         required
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        type="password"
+      />
+      <TextField
+        id="confirm-password"
+        label="Confirm Password"
+        variant="outlined"
+        className={classes.input}
+        required
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
         type="password"
       />
     </AuthFormWrapper>

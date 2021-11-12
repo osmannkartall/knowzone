@@ -49,8 +49,23 @@ export async function register(dispatch, userCredentials) {
     .then((res) => res.json())
     .then(
       (result) => {
-        console.log(result.message);
-        return { status: 'success', message: result.message };
+        if (result.status === 'success') {
+          // Save user id to local storage for login automatically
+          // after browser tab/window is closed.
+          localStorage.setItem('knowzone:uid', Buffer.from(result.id).toString('base64'));
+          dispatch({
+            type: 'LOGIN',
+            payload: {
+              id: result.id,
+              name: result.name,
+              username: result.username,
+              email: result.email,
+              bio: result.bio,
+            },
+          });
+          return { status: 'success', message: result.message };
+        }
+        return { status: 'fail', message: result.message };
       },
       (error) => {
         console.log(error);
