@@ -1,12 +1,11 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogActions, DialogTitle, Button } from '@material-ui/core';
 import { toast } from 'react-toastify';
 import Post from '../common/Post';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuthState } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
 import POST_TYPES from '../constants/post-types';
 import {
-  createFile,
   getChangesInObject,
   isObjectEmptyOrNotValid,
   areObjectsEqual,
@@ -14,6 +13,9 @@ import {
 import { BE_ROUTES } from '../constants/routes';
 import ContentWrapper from '../common/ContentWrapper';
 import { IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../constants/colors';
+import LinearProgressModal from '../common/LinearProgressModal';
+
+const isNewImage = (image) => image instanceof File;
 
 const YourPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -21,7 +23,8 @@ const YourPosts = () => {
   const [openForm, setOpenForm] = useState(false);
   const [action, setAction] = useState('update');
   const [openDialog, setOpenDialog] = useState(false);
-  const [user] = useContext(AuthContext);
+  const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
+  const user = useAuthState();
 
   const handleClose = () => setOpenDialog(false);
 
@@ -47,8 +50,10 @@ const YourPosts = () => {
 
   const updatePost = async () => {
     try {
+      setIsLinearProgressModalOpen(true);
       if (selectedPost && selectedPost.id) {
         const idx = posts.findIndex((p) => p.id === selectedPost.id);
+
         if (idx !== -1 && !areObjectsEqual(selectedPost, posts[idx])) {
           const changes = getChangesInObject(posts[idx], selectedPost);
           const { route } = POST_TYPES.get(selectedPost.type);
@@ -56,23 +61,24 @@ const YourPosts = () => {
           if (!isObjectEmptyOrNotValid(changes)) {
             const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}/${selectedPost.id}`;
             const fd = new FormData();
-            changes.saveImage = changes.images !== undefined;
 
             Object.entries(changes).forEach(([k, v]) => {
               if (k === 'images') {
+                const oldImages = [];
                 v.forEach((image) => {
-                  let imageObject = image;
-                  if (!(image instanceof File)) {
-                    imageObject = createFile(image);
+                  if (isNewImage(image)) {
+                    fd.append('image', image);
+                  } else {
+                    oldImages.push(image);
                   }
-                  fd.append('image', imageObject);
                 });
+                fd.append('oldImages', JSON.stringify(oldImages));
               } else {
                 fd.append(k, JSON.stringify(v));
               }
             });
 
-            const response = await fetch(url, { method: 'PUT', body: fd });
+            const response = await fetch(url, { method: 'PUT', body: fd, credentials: 'include' });
             const result = await response.json();
             const newPosts = [...posts];
             newPosts[idx] = { ...result, type: selectedPost.type };
@@ -85,11 +91,13 @@ const YourPosts = () => {
     } finally {
       setOpenForm(false);
       setOpenDialog(false);
+      setIsLinearProgressModalOpen(false);
     }
   };
 
   const deletePost = () => {
     if (selectedPost && selectedPost.type && selectedPost.id) {
+      setIsLinearProgressModalOpen(true);
       const { route } = POST_TYPES.get(selectedPost.type);
       const idx = posts.findIndex((p) => p.id === selectedPost.id);
 
@@ -99,20 +107,18 @@ const YourPosts = () => {
         fetch(url, {
           headers: { 'Content-Type': 'application/json' },
           method: 'DELETE',
+          credentials: 'include',
         })
           .then((res) => res.json())
-          .then(
-            (result) => {
-              console.log(result.message);
-              const newPosts = [...posts];
-              newPosts.splice(idx, 1);
-              setPosts(newPosts);
-              setOpenDialog(false);
-            },
-            (error) => {
-              console.log(error.message);
-            },
-          );
+          .then((result) => {
+            console.log(result.message);
+            const newPosts = [...posts];
+            newPosts.splice(idx, 1);
+            setPosts(newPosts);
+            setOpenDialog(false);
+          })
+          .catch((error) => console.log(error.message))
+          .finally(() => setIsLinearProgressModalOpen(false));
       }
     }
   };
@@ -129,7 +135,9 @@ const YourPosts = () => {
     let mounted = true;
 
     function getPosts() {
-      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}?owner=${user.id}`)
+      fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}?owner=${user.id}`, {
+        credentials: 'include',
+      })
         .then((res) => res.json())
         .then(
           (data) => {
@@ -151,7 +159,7 @@ const YourPosts = () => {
   }, [user.id]);
 
   return (
-    <>
+    <LinearProgressModal isOpen={isLinearProgressModalOpen}>
       <ContentWrapper title="Your Posts">
         {Array.isArray(posts) && posts.length ? (
           posts.map((p) => (
@@ -211,7 +219,7 @@ const YourPosts = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </LinearProgressModal>
   );
 };
 
