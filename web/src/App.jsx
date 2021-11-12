@@ -14,7 +14,7 @@ import { AuthProvider, useAuthDispatch, useAuthState } from './contexts/AuthCont
 import { FE_ROUTES } from './constants/routes';
 import Login from './components/Login';
 import Register from './components/Register';
-import RouteWrapper from './components/RouteWrapper';
+import RouteWrapper from './common/RouteWrapper';
 import { isUserLoggedIn } from './contexts/AuthActions';
 
 const theme = createTheme({

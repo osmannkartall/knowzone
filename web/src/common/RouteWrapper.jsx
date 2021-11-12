@@ -1,9 +1,9 @@
 import { Route, Redirect } from 'react-router-dom';
 
-const RouteWrapper = ({ children, isLoggedIn, redirectPath, ...rest }) => (
+const RouteWrapper = ({ exact, path, isLoggedIn, redirectPath, children }) => (
   <Route
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    {...rest}
+    exact={exact}
+    path={path}
     render={
       ({ location }) => (
         isLoggedIn ? (
