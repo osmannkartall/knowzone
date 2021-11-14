@@ -8,6 +8,7 @@ export FRONTEND_URL="http://${FRONTEND_LB_PREFIX}.<LOCATION>.cloudapp.azure.com"
 export BACKEND_LB_PREFIX="YOUR-BACKEND-PREFIX-URL"
 export BACKEND_URL="http://${BACKEND_LB_PREFIX}.<LOCATION>.cloudapp.azure.com"
 export MONGO_PASSWORD="MONGO-PASSWORD"
+export SESSION_SECRET="BACKEND-SESSION-SECRET"
 export VERSION="IMAGE-VERSION"
 
 #############################################################
@@ -38,18 +39,18 @@ done
 
 generate-manifests() {
     log_green "Generating Kubernetes manifests from templates..."
-    log_blue "Generated manifests will be under ${SCRIPT_DIR}/k8s-manifests/generated"
+    log_blue "Generated manifests will be under ${SCRIPT_DIR}/k8s-manifests/azure/generated"
 
-    mkdir -p ${SCRIPT_DIR}/k8s-manifests/generated
+    mkdir -p ${SCRIPT_DIR}/k8s-manifests/azure/generated
 
     log_blue "Generating knowzone secret..."
-    envsubst < ${SCRIPT_DIR}/k8s-manifests/knowzone-secret-template.yaml > ${SCRIPT_DIR}/k8s-manifests/generated/knowzone-secret.yaml
+    envsubst < ${SCRIPT_DIR}/k8s-manifests/azure/knowzone-secret-template.yaml > ${SCRIPT_DIR}/k8s-manifests/azure/generated/knowzone-secret.yaml
 
     log_blue "Generating backend manifest..." 
-    envsubst < ${SCRIPT_DIR}/k8s-manifests/backend-template.yaml > ${SCRIPT_DIR}/k8s-manifests/generated/backend.yaml
+    envsubst < ${SCRIPT_DIR}/k8s-manifests/azure/backend-template.yaml > ${SCRIPT_DIR}/k8s-manifests/azure/generated/backend.yaml
 
     log_blue "Generating frontend manifest..." 
-    envsubst < ${SCRIPT_DIR}/k8s-manifests/frontend-template.yaml > ${SCRIPT_DIR}/k8s-manifests/generated/frontend.yaml
+    envsubst < ${SCRIPT_DIR}/k8s-manifests/azure/frontend-template.yaml > ${SCRIPT_DIR}/k8s-manifests/azure/generated/frontend.yaml
 }
 
 build-backend() {
@@ -75,7 +76,7 @@ build-frontend() {
 deploy-secret() {
     log_green "Deploying secret to Kubernetes..."
 
-    kubectl apply -f ${SCRIPT_DIR}/k8s-manifests/generated/knowzone-secret.yaml
+    kubectl apply -f ${SCRIPT_DIR}/k8s-manifests/azure/generated/knowzone-secret.yaml
 }
 
 deploy-mongo() {
@@ -97,7 +98,7 @@ deploy-mongo() {
 
     log_blue "Deploying MongoDB replicaset..."
     # Apply user generated manifests
-    kubectl apply -f ${SCRIPT_DIR}/k8s-manifests/mongo-replicaset.yaml
+    kubectl apply -f ${SCRIPT_DIR}/k8s-manifests/azure/mongo-replicaset.yaml
     kubectl rollout status statefulset mongodb
 
     # For more information, check below link
@@ -108,7 +109,7 @@ deploy-frontend() {
     log_green "Deploy frontend to Kubernetes"
 
     log_blue "Deploying manifest to Kubernetes..."
-    kubectl apply -f ${SCRIPT_DIR}/k8s-manifests/generated/frontend.yaml
+    kubectl apply -f ${SCRIPT_DIR}/k8s-manifests/azure/generated/frontend.yaml
     kubectl rollout status deployment frontend
 }
 
@@ -116,7 +117,7 @@ deploy-backend() {
     log_green "Deploy backend to Kubernetes"
 
     log_blue "Deploying manifest to Kubernetes..."
-    kubectl apply -f ${SCRIPT_DIR}/k8s-manifests/generated/backend.yaml
+    kubectl apply -f ${SCRIPT_DIR}/k8s-manifests/azure/generated/backend.yaml
     kubectl rollout status deployment backend
 }
 
@@ -127,10 +128,10 @@ cleanup() {
         rm -rf ${SCRIPT_DIR}/mongodb-kubernetes-operator
     fi
 
-    if [[ -d "${SCRIPT_DIR}/k8s-manifests/generated" ]]
+    if [[ -d "${SCRIPT_DIR}/k8s-manifests/azure/generated" ]]
     then
         log_blue "Deleting generated manifests..."
-        rm -rf ${SCRIPT_DIR}/k8s-manifests/generated
+        rm -rf ${SCRIPT_DIR}/k8s-manifests/azure/generated
     fi
 }
 

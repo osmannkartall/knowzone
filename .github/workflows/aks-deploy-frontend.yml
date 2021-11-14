@@ -41,10 +41,10 @@ jobs:
 
     - name: Edit template manifests
       run: |
-        envsubst < infra/k8s-manifests/frontend-template.yaml > infra/k8s-manifests/frontend.yaml
+        envsubst < infra/k8s-manifests/azure/frontend-template.yaml > infra/k8s-manifests/azure/frontend.yaml
 
     - uses: azure/k8s-deploy@v1
       with:
         namespace: default
         manifests: |
-          infra/k8s-manifests/frontend.yaml
+          infra/k8s-manifests/azure/frontend.yaml

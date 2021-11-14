@@ -1,10 +1,15 @@
+const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 const { createCustomError, KNOWZONE_ERROR_TYPES } = require('../knowzoneErrorHandler');
 
 const imageStorage = multer.diskStorage({
   destination(_req, _file, cb) {
-    cb(null, `${process.env.PUBLIC_UPLOAD_PATH}/${process.env.IMAGE_UPLOAD_SUBPATH}`);
+    const dest = `${process.env.PUBLIC_UPLOAD_PATH}/${process.env.IMAGE_UPLOAD_SUBPATH}`;
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true });
+    }
+    cb(null, dest);
   },
   filename(_req, file, cb) {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;

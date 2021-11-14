@@ -1,6 +1,9 @@
 # dependencies
 node_modules/
 
+mongodb-kubernetes-operator/
+infra/local/generated
+
 .env
 .env.production
 
