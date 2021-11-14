@@ -88,7 +88,7 @@ const login = async (req, res, next) => {
     req.session.email = result.email;
     req.session.bio = result.bio;
 
-    res.json({ ...result, ...createSuccessResponse('Login is successfull') });
+    res.json({ ...result, ...createSuccessResponse('Login is successful') });
   } catch (err) {
     if (!hasLowerLayerCustomError(err)) {
       changeToCustomError(err, {
