@@ -71,7 +71,7 @@ interactive() {
 
 create-cluster() {
     log_green "Creating a minikube cluster"
-    minikube start --cpus 6 --memory 8192
+    minikube start --cpus 3 --memory 5120
     minikube addons enable metrics-server
 
     log_blue "Waiting until minikube node is ready..."
@@ -85,7 +85,7 @@ create-cluster() {
 
 generate-manifests() {
     log_green "Generating Kubernetes manifests from templates..."
-    log_blue "Generated manifests will be under ${SCRIPT_DIR}/k8s-manifests/generated-local"
+    log_blue "Generated manifests will be under ${SCRIPT_DIR}/local/generated"
 
     mkdir -p ${SCRIPT_DIR}/local/generated
 
