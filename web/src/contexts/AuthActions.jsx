@@ -78,13 +78,13 @@ export async function register(dispatch, userCredentials) {
     });
 }
 
-export async function isUserLoggedIn(dispatch) {
+export async function checkUserSession(dispatch) {
   const uidValue = localStorage.getItem('knowzone:uid');
   if (!uidValue) {
     return { status: 'success', message: 'Not login' };
   }
   const id = Buffer.from(uidValue, 'base64');
-  return fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.IS_USER_LOGGED_IN}/${id}`, {
+  return fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.CHECK_USER_SESSION}/${id}`, {
     credentials: 'include',
   })
     .then((res) => res.json())

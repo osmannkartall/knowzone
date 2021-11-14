@@ -144,7 +144,7 @@ const logout = (req, res) => {
   });
 };
 
-const isUserLoggedIn = async (req, res) => {
+const checkUserSession = async (req, res) => {
   const { id } = req.params;
 
   req.session.reload(async (error) => {
@@ -167,6 +167,6 @@ router.post('/register', register);
 router.post('/logout', checkAuthentication, logout);
 
 // Check if user is logged in. If user is logged in then return user information.
-router.get('/is-user-logged-in/:id', isUserLoggedIn);
+router.get('/checkUserSession/:id', checkUserSession);
 
 module.exports = router;

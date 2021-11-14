@@ -68,9 +68,6 @@ const Login = () => {
     }
   };
 
-  // For debugging purposes. It will be removed.
-  const handleError = (data) => console.error(`Error: ${data}`);
-
   useEffect(() => function cleanup() {
     isMounted.current = false;
   }, []);
@@ -80,7 +77,7 @@ const Login = () => {
       title="Login to your Knowzone account"
       mainFormAction={{
         title: 'Login',
-        handler: handleSubmit(handleLogin, handleError),
+        handler: handleSubmit(handleLogin),
       }}
       otherFormAction={{
         title: 'Create a new account',
