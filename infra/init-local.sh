@@ -77,7 +77,7 @@ create-cluster() {
     log_blue "Waiting until minikube node is ready..."
     kubectl wait --for=condition=Ready nodes --all --all-namespaces
 
-    log_blue "Changing image local image registry..."
+    log_blue "Changing local registry..."
     eval $(minikube docker-env)
 
     log_blue "minikube is ready."
