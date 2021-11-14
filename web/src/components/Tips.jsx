@@ -10,7 +10,9 @@ const Tips = () => {
   useEffect(() => {
     let mounted = true;
 
-    fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.TIPS}`)
+    fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.TIPS}`, {
+      credentials: 'include',
+    })
       .then((response) => response.json())
       .then((data) => {
         if (mounted) {

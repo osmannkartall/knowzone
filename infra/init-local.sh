@@ -4,11 +4,10 @@
 # Please do not modify below values.
 
 export REGISTRY_NAME="localhost:5000"
-export FRONTEND_LB_PREFIX="http://localhost:3000"
-export FRONTEND_URL="${FRONTEND_LB_PREFIX}"
-export BACKEND_LB_PREFIX="http://localhost:8000"
-export BACKEND_URL="${BACKEND_LB_PREFIX}"
+export FRONTEND_URL="http://localhost:3000"
+export BACKEND_URL="http://localhost:8000"
 export MONGO_PASSWORD="simplepassword"
+export SESSION_SECRET="knowzone-auth-secret"
 export VERSION="dev"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -25,7 +24,7 @@ then
 fi
 
 # Check if pre-requisites are on the path
-declare -a PREREQUISITES=("git" "kind" "docker" "tilt" "kubectl")
+declare -a PREREQUISITES=("git" "minikube" "docker" "tilt" "kubectl")
 for i in "${PREREQUISITES[@]}"
 do
     if ! [[ -x "$(command -v ${i})" ]]
@@ -71,29 +70,33 @@ interactive() {
 }
 
 create-cluster() {
-    log_green "Create a Kind cluster with local registry"
-    curl -s https://raw.githubusercontent.com/tilt-dev/kind-local/master/kind-with-registry.sh | bash
+    log_green "Creating a minikube cluster"
+    minikube start --cpus 3 --memory 5120
+    minikube addons enable metrics-server
 
-    log_blue "Waiting until Kind node is ready..."
+    log_blue "Waiting until minikube node is ready..."
     kubectl wait --for=condition=Ready nodes --all --all-namespaces
 
-    log_blue "Kind is ready."
+    log_blue "Changing local registry..."
+    eval $(minikube docker-env)
+
+    log_blue "minikube is ready."
 }
 
 generate-manifests() {
     log_green "Generating Kubernetes manifests from templates..."
-    log_blue "Generated manifests will be under ${SCRIPT_DIR}/k8s-manifests/generated-local"
+    log_blue "Generated manifests will be under ${SCRIPT_DIR}/local/generated"
 
     mkdir -p ${SCRIPT_DIR}/local/generated
 
     log_blue "Generating knowzone secret..."
-    envsubst < ${SCRIPT_DIR}/k8s-manifests/knowzone-secret-template.yaml > ${SCRIPT_DIR}/local/generated/knowzone-secret.yaml
+    envsubst < ${SCRIPT_DIR}/k8s-manifests/test/knowzone-secret-template.yaml > ${SCRIPT_DIR}/local/generated/knowzone-secret.yaml
 
     log_blue "Generating backend manifest..." 
-    envsubst < ${SCRIPT_DIR}/k8s-manifests/backend-template.yaml > ${SCRIPT_DIR}/local/generated/backend.yaml
+    envsubst < ${SCRIPT_DIR}/k8s-manifests/test/backend-template.yaml > ${SCRIPT_DIR}/local/generated/backend.yaml
 
     log_blue "Generating frontend manifest..." 
-    envsubst < ${SCRIPT_DIR}/k8s-manifests/frontend-template.yaml > ${SCRIPT_DIR}/local/generated/frontend.yaml
+    envsubst < ${SCRIPT_DIR}/k8s-manifests/test/frontend-template.yaml > ${SCRIPT_DIR}/local/generated/frontend.yaml
 }
 
 deploy-secret() {
@@ -121,7 +124,7 @@ deploy-mongo() {
 
     log_blue "Deploying MongoDB replicaset, this may take a few minutes..."
     # Apply user generated manifests
-    kubectl apply -f ${SCRIPT_DIR}/k8s-manifests/mongo-replicaset.yaml
+    kubectl apply -f ${SCRIPT_DIR}/k8s-manifests/test/mongo-replicaset.yaml
     sleep 10
     kubectl rollout status statefulset mongodb
 
@@ -148,10 +151,7 @@ cleanup() {
     fi
 
     log_blue "Deleting cluster..."
-    kind delete clusters kind
-
-    log_blue "Deleting local registry on port 5000..."
-    docker stop kind-registry && docker rm kind-registry
+    minikube delete
 }
 
 case "${1}" in

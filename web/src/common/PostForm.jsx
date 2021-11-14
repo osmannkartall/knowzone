@@ -22,7 +22,6 @@ import {
   TOPICS_CONSTRAINTS,
   validate,
 } from '../clientSideValidation';
-import { useMemoAndDebounce } from '../utils';
 import MarkdownEditor from './MarkdownEditor';
 
 const useStyles = makeStyles((theme) => ({
@@ -90,12 +89,6 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
   const [solutionCheck, setSolutionCheck] = useState({ text: '', isInvalid: false });
   const [linksCheck, setLinksCheck] = useState({ text: '', isInvalid: false, isUnique: true });
 
-  const memoizedAndDebouncedChangeHandler = useMemoAndDebounce(changeHandler);
-
-  const markdownTextChangeError = (value) => memoizedAndDebouncedChangeHandler('error', value);
-
-  const markdownTextChangeSolution = (value) => memoizedAndDebouncedChangeHandler('solution', value);
-
   const validateForm = () => {
     const isValidDescription = validate(
       form.description, descriptionCheck, setDescriptionCheck, DESCRIPTION_CONSTRAINTS,
@@ -159,8 +152,8 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
             label="Description"
             error={descriptionCheck.isInvalid}
             helperText={descriptionCheck.text}
-            defaultValue={form.description}
-            onChange={(e) => memoizedAndDebouncedChangeHandler('description', e.target.value)}
+            value={form.description}
+            onChange={(e) => changeHandler('description', e.target.value)}
           />
         </FormDataRow>
         {form.type === POST_TYPES.get('bugfix').value ? (
@@ -174,7 +167,7 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
               </InputLabel>
               <MarkdownEditor
                 text={form.error}
-                onChangeText={markdownTextChangeError}
+                onChangeText={(value) => changeHandler('error', value)}
                 containerMaxHeight="50vh"
               />
               <FormHelperText error={errorCheck.isInvalid}>{errorCheck.text}</FormHelperText>
@@ -188,7 +181,7 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
               </InputLabel>
               <MarkdownEditor
                 text={form.solution}
-                onChangeText={markdownTextChangeSolution}
+                onChangeText={(value) => changeHandler('solution', value)}
                 containerMaxHeight="50vh"
               />
               <FormHelperText error={solutionCheck.isInvalid}>{solutionCheck.text}</FormHelperText>

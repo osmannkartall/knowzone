@@ -4,7 +4,7 @@ import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import { GRAY3, GRAY4, PRIMARY } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
 import POST_TYPES from '../constants/post-types';
-import { convertDate, byteArrayToBase64 } from '../utils';
+import { convertDate } from '../utils';
 import MarkdownPreview from './MarkdownPreview';
 
 const useStyles = makeStyles((theme) => ({
@@ -215,7 +215,7 @@ const Post = ({
               content.images.map((i) => (
                 <img
                   key={i._id}
-                  src={`data:${i.mime};base64,${byteArrayToBase64(i.content)}`}
+                  src={`${process.env.REACT_APP_KNOWZONE_BE_URI}/${i.path}`}
                   width="300"
                   height="200"
                   alt={i.name ? i.name : 'image'}

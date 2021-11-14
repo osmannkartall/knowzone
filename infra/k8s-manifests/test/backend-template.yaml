@@ -12,9 +12,20 @@ spec:
       labels:
         app: backend
     spec:
+      volumes:
+      - name: backend-pv-storage
+        persistentVolumeClaim:
+          claimName: backend-pv-claim
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
       - name: node
         image: ${REGISTRY_NAME}/knowzone-backend:${VERSION}
+        volumeMounts:
+        - mountPath: "/data/upload"
+          name: backend-pv-storage
         resources:
           requests:
             memory: "128Mi"
@@ -47,19 +58,31 @@ spec:
               key: connectionString.standardSrv
         - name: REACT_URL
           value: ${FRONTEND_URL}
+        - name: PUBLIC_UPLOAD_PATH
+          value: /data/upload/public
+        - name: IMAGE_UPLOAD_SUBPATH
+          value: images
+        - name: SESSION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: knowzone-secret
+              key: session-secret
+        - name: SESSION_NAME
+          value: sid
+        - name: SESSION_LIFETIME
+          value: "3600000"
+        - name: SESSION_SECURE
+          value: "false"
         imagePullPolicy: Always
 ---
 apiVersion: v1
-kind: Service
+kind: PersistentVolumeClaim
 metadata:
-  annotations:
-    service.beta.kubernetes.io/azure-dns-label-name: ${BACKEND_LB_PREFIX}
-  name: backend
+  name: backend-pv-claim
 spec:
-  type: LoadBalancer
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8000
-  selector:
-    app: backend
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3Gi
+

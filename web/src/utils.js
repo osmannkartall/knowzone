@@ -1,5 +1,3 @@
-import { debounce } from 'lodash';
-import { useMemo } from 'react';
 import POST_TYPES from './constants/post-types';
 
 export function preparePost(form) {
@@ -22,31 +20,6 @@ export function preparePost(form) {
 
 export function convertDate(dateStr) {
   return new Date(dateStr).toLocaleString('en-GB');
-}
-
-/**
- * It is useful if the buffer used in the components comes from the backend in different ways.
- */
-export function byteArrayToBase64(buffer) {
-  if (buffer.data) {
-    return btoa(
-      buffer.data.reduce((data, byte) => data + String.fromCharCode(byte), ''),
-    );
-  }
-  return buffer;
-}
-
-export function createFile(item) {
-  const c = byteArrayToBase64(item.content);
-  const byteString = atob(c);
-  const ab = byteString.length;
-  const ia = new Uint8Array(ab);
-
-  for (let i = 0; i < byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i);
-  }
-
-  return new File([ia], item.name, { type: item.mime });
 }
 
 function isValidObject(object) {
@@ -100,10 +73,4 @@ export function areObjectsEqual(object1, object2) {
   return isValidObject(object1)
     && isValidObject(object2)
     && !areJSONValuesDifferent(object1, object2);
-}
-
-export function useMemoAndDebounce(handler, waitMilliseconds = 100) {
-  const debouncedHandler = () => debounce(handler, waitMilliseconds);
-
-  return useMemo(debouncedHandler, [handler, waitMilliseconds]);
 }

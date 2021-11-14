@@ -116,7 +116,8 @@ Change the **export** lines within `init.sh`. Descriptions are given below:
 - FRONTEND_URL: Full name of frontend URL, e.g. "http://${FRONTEND_LB_PREFIX}.westeurope.cloudapp.azure.com"
 - BACKEND_LB_PREFIX: Similar to FRONTEND_LB_PREFIX, for backend
 - BACKEND_URL: Full name of backend URL, e.g. "http://${BACKEND_LB_PREFIX}.westeurope.cloudapp.azure.com"
-- MONGO_PASSWORD: This will be put in Kubernetes secret, required for MongoDB creation and connection strings.
+- MONGO_PASSWORD: This will be put in Kubernetes secret, required for MongoDB creation and connection strings
+- SESSION_SECRET: This will be put in Kubernetes secret, required to sign the session ID cookie
 - VERSION: Version tag for Docker images
 
 ```bash
@@ -126,6 +127,7 @@ export FRONTEND_URL="YOUR-FRONTEND-URL"
 export BACKEND_LB_PREFIX="YOUR-BACKEND-PREFIX-URL"
 export BACKEND_URL="YOUR-BACKEND-URL"
 export MONGO_PASSWORD="YOUR-MONGO-PASSWORD"
+export SESSION_SECRET="YOUR-CUSTOM-SESSION-SECRET"
 export VERSION="YOUR-VERSION"
 ```
 
