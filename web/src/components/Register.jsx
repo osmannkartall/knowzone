@@ -92,14 +92,10 @@ const Register = () => {
   });
 
   const handleRegister = async (data) => {
-    const { name, username, email, password } = data;
     if (isMounted.current) {
       const response = await register(authDispatch, {
-        name,
-        username,
-        email,
-        password,
-        bio: 'This is mock bio',
+        ...data,
+        bio: 'This is a mock bio.',
       });
 
       if (response.status === 'success') {

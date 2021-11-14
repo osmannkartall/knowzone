@@ -56,10 +56,8 @@ const Login = () => {
   });
 
   const handleLogin = async (data) => {
-    console.log(data);
     if (isMounted.current) {
-      const { username, password } = data;
-      const response = await login(authDispatch, { username, password });
+      const response = await login(authDispatch, data);
       console.log(response);
       if (response.status === 'success') {
         history.push(FE_ROUTES.TIPS);
