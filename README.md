@@ -14,7 +14,6 @@
     - [React](#react)
   - [Running on local Kubernetes cluster](#running-on-local-kubernetes-cluster)
     - [Pre-requisites](#pre-requisites)
-      - [Notes](#notes)
     - [Running Startup Script](#running-startup-script)
   - [Running on Azure Kubernetes Service Cluster](#running-on-azure-kubernetes-service-cluster)
 
@@ -99,14 +98,13 @@ For Windows, running the cluster outside of WSL can cause performance issues. In
 ### Pre-requisites  
 
 - [Docker](https://docs.docker.com/engine/install)  
+  - Only the Docker CLI is required since we are using minikube's internal registry. If you are using Docker Desktop, you can stop Docker daemon by quitting the application.
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)  
-- [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation)  
-- [Tilt](https://docs.tilt.dev/install.html)
-
-    Since we are using Kind, you can skip these steps in the Tilt installation:
-
-  - In the preferences, click Enable Kubernetes
-  - Make Docker for Windows (or Mac) your local Kubernetes cluster: kubectl config use-context docker-desktop
+- [minikube](https://minikube.sigs.k8s.io/docs/start)  
+- [Tilt](https://docs.tilt.dev/install.html)  
+  - Since we are using minikube, you can skip these steps in the Tilt installation:  
+    - In the preferences, click Enable Kubernetes  
+    - Make Docker for Windows (or Mac) your local Kubernetes cluster: kubectl config use-context docker-desktop  
 
 - [git](https://git-scm.com/downloads)  
 
@@ -115,7 +113,7 @@ Make sure they are in the path by running:
 ```bash
 docker --version
 kubectl version --client
-kind --version
+minikube version
 tilt version
 git --version
 ```
@@ -129,12 +127,12 @@ cd infra
 
 Startup script is divided into 4 steps:  
 
-1. Create a Kind cluster  
+1. Create a minikube cluster  
 2. Generate Kubernetes manifests  
 3. Deploy secret and MongoDB operator  
 4. Run Tilt developer environment  
 
-You can quit Tilt by pressing Ctrl-C. This does not remove the environment, you can start the development environment again with `tilt up`. If you want to remove the whole infrastructure, run `./init-local.sh clean`. This tears down the Kind cluster, removes the generated manifests and the cloned MongoDB repository.  
+You can quit Tilt by pressing Ctrl-C. This does not remove the environment, you can start the development environment again with `tilt up`. If you want to remove the whole infrastructure, run `./init-local.sh clean`. This tears down the minikube cluster, removes the generated manifests and the cloned MongoDB repository.  
 
 ## Running on Azure Kubernetes Service Cluster  
 
