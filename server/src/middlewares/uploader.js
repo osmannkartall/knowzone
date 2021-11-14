@@ -5,7 +5,7 @@ const { createCustomError, KNOWZONE_ERROR_TYPES } = require('../knowzoneErrorHan
 
 const imageStorage = multer.diskStorage({
   destination(_req, _file, cb) {
-    dest = `${process.env.PUBLIC_UPLOAD_PATH}/${process.env.IMAGE_UPLOAD_SUBPATH}`;
+    const dest = `${process.env.PUBLIC_UPLOAD_PATH}/${process.env.IMAGE_UPLOAD_SUBPATH}`;
     if (!fs.existsSync(dest)) {
       fs.mkdirSync(dest, { recursive: true });
     }
