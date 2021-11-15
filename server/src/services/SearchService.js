@@ -93,7 +93,6 @@ class SearchService {
       query = filterQuery;
     }
 
-    console.log(query);
     if (postType === 'bugfix') {
       return BugfixModel.find(query).sort({ createdAt: -1 });
     }
