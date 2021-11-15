@@ -80,7 +80,9 @@ const registerApiSchema = Joi.object({
     .max(254)
     .lowercase(),
 
-  bio: Joi.string(),
+  bio: Joi
+    .string()
+    .max(256),
 });
 
 const login = async (req, res, next) => {

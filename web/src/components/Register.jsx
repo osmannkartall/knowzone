@@ -72,6 +72,10 @@ const registerSchema = yup.object().shape({
     .test('passwords-match', 'Passwords are not the same!', function compare(value) {
       return this.parent.password === value;
     }),
+
+  bio: yup
+    .string()
+    .max(256),
 });
 
 const Register = () => {
