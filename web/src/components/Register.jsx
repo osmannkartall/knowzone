@@ -18,11 +18,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RegisterSchema = yup.object().shape({
+const registerSchema = yup.object().shape({
   name: yup
     .string()
     .required()
-    .lowercase()
     .min(3)
     .max(50)
     .matches(
@@ -81,7 +80,7 @@ const Register = () => {
   const authDispatch = useAuthDispatch();
   const isMounted = useRef(true);
   const { handleSubmit, control, formState: { errors } } = useForm({
-    resolver: yupResolver(RegisterSchema),
+    resolver: yupResolver(registerSchema),
     defaultValues: {
       name: '',
       username: '',
