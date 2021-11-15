@@ -93,8 +93,12 @@ const Register = () => {
 
   const handleRegister = async (data) => {
     if (isMounted.current) {
+      const { name, username, email, password } = data;
       const response = await register(authDispatch, {
-        ...data,
+        name,
+        username,
+        email,
+        password,
         bio: 'This is a mock bio.',
       });
 
@@ -107,9 +111,6 @@ const Register = () => {
     }
   };
 
-  // For debugging purposes. It will be removed.
-  const handleError = (data) => console.error(`Error: ${data}`);
-
   useEffect(() => function cleanup() {
     isMounted.current = false;
   }, []);
@@ -119,7 +120,7 @@ const Register = () => {
       title="Create your Knowzone account"
       mainFormAction={{
         title: 'Create',
-        handler: handleSubmit(handleRegister, handleError),
+        handler: handleSubmit(handleRegister),
       }}
       otherFormAction={{
         title: 'Login instead',
