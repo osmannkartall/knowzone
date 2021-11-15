@@ -29,7 +29,7 @@ module.exports = {
     cookie: {
       maxAge: parseInt(process.env.SESSION_LIFETIME, 10),
       sameSite: true,
-      secure: process.env.SESSION_LIFETIME === 'true',
+      secure: process.env.SESSION_SECURE === 'true',
     },
   },
 
