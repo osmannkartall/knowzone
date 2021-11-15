@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const LoginSchema = yup.object().shape({
+const loginSchema = yup.object().shape({
   username: yup
     .string()
     .required()
@@ -48,7 +48,7 @@ const Login = () => {
   const authDispatch = useAuthDispatch();
   const isMounted = useRef(true);
   const { handleSubmit, control, formState: { errors } } = useForm({
-    resolver: yupResolver(LoginSchema),
+    resolver: yupResolver(loginSchema),
     defaultValues: {
       username: '',
       password: '',
