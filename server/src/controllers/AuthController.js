@@ -105,9 +105,15 @@ const login = async (req, res, next) => {
 const register = async (req, res, next) => {
   try {
     await registerApiSchema.validateAsync(req.body);
-    await auth.register(req.body);
+    const result = await auth.register(req.body);
 
-    res.json(createSuccessResponse(`Register is successful - ${req.body.username}`));
+    req.session.userId = result.id;
+    req.session.username = result.username;
+    req.session.name = result.name;
+    req.session.email = result.email;
+    req.session.bio = result.bio;
+
+    res.json({ ...result, ...createSuccessResponse('Register is successful') });
   } catch (err) {
     if (!hasLowerLayerCustomError(err)) {
       changeToCustomError(err, {
