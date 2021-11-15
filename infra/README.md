@@ -74,6 +74,8 @@ az acr repository delete --name ${REGISTRY_PREFIX} --image hello-world:v1
 ```bash
 # Enable the Container Service
 az provider register --namespace Microsoft.ContainerService
+# Enable the Storage Service for ReadWriteMany supported Storage Classes
+az provider register --namespace Microsoft.Storage
 
 # Create a 2-Node AKS cluster with ACR attached
 # Each machine has 2vCPU, 8 GB RAM, and 50 GB storage

@@ -53,8 +53,15 @@ class AuthService {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(user.password, salt);
     const newUser = { ...user, password: hashedPassword };
+    const result = await this.userModel.create(newUser);
 
-    await this.userModel.create(newUser);
+    return {
+      id: result._id,
+      username: result.username,
+      name: result.name,
+      email: result.email,
+      bio: result.bio,
+    };
   }
 
   async getUserInformation(userId) {

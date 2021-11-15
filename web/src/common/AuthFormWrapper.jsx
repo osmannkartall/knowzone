@@ -50,43 +50,46 @@ const AuthFormContainer = ({ title, mainFormAction, otherFormAction, children })
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const classes = useStyles();
 
-  const handleMainFormAction = () => {
+  const handleMainFormAction = (event) => {
+    event.preventDefault();
     setIsLinearProgressModalOpen(true);
     mainFormAction.handler();
     setIsLinearProgressModalOpen(false);
   };
 
   return (
-    <LinearProgressModal isOpen={isLinearProgressModalOpen}>
-      <div className={classes.container}>
-        <div className={classes.form}>
-          <div className={classes.logoAndTitleContainer}>
-            <img src="/knowzone-logo192.png" alt="knowzone-logo" className={classes.logo} />
-            <h2 className={classes.title}>{title}</h2>
-          </div>
-          {children}
-          <div className={classes.buttonGroup}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleMainFormAction}
-              fullWidth
-            >
-              {mainFormAction.title}
-            </Button>
-            <div className={classes.orText}>or</div>
-            <Button
-              variant="text"
-              color="primary"
-              style={{ textTransform: 'none' }}
-              onClick={otherFormAction.handler}
-            >
-              {otherFormAction.title}
-            </Button>
+    <form onSubmit={handleMainFormAction} noValidate>
+      <LinearProgressModal isOpen={isLinearProgressModalOpen}>
+        <div className={classes.container}>
+          <div className={classes.form}>
+            <div className={classes.logoAndTitleContainer}>
+              <img src="/knowzone-logo192.png" alt="knowzone-logo" className={classes.logo} />
+              <h2 className={classes.title}>{title}</h2>
+            </div>
+            {children}
+            <div className={classes.buttonGroup}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+              >
+                {mainFormAction.title}
+              </Button>
+              <div className={classes.orText}>or</div>
+              <Button
+                variant="text"
+                color="primary"
+                style={{ textTransform: 'none' }}
+                onClick={otherFormAction.handler}
+              >
+                {otherFormAction.title}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </LinearProgressModal>
+      </LinearProgressModal>
+    </form>
   );
 };
 

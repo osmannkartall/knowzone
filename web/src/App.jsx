@@ -15,7 +15,7 @@ import { FE_ROUTES } from './constants/routes';
 import Login from './components/Login';
 import Register from './components/Register';
 import RouteWrapper from './common/RouteWrapper';
-import { isUserLoggedIn } from './contexts/AuthActions';
+import { checkUserSession } from './contexts/AuthActions';
 
 const theme = createTheme({
   palette: {
@@ -35,7 +35,7 @@ const Wrapper = () => {
   useEffect(() => {
     let isMounted = true;
     if (isMounted) {
-      isUserLoggedIn(authDispatch);
+      checkUserSession(authDispatch);
     }
     return function cleanup() {
       isMounted = false;
