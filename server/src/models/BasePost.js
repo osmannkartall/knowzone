@@ -31,7 +31,7 @@ const basePostObject = {
     name: {
       type: String,
       required: true,
-      // TODO: match: /^([a-zA-Z]+\s)[a-zA-Z]+$/,
+      match: /^[A-Za-z ,.'-]{3,50}$/,
     },
   },
   links: {
