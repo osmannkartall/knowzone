@@ -81,6 +81,7 @@ export async function register(dispatch, userCredentials) {
 export async function checkUserSession(dispatch) {
   const uidValue = localStorage.getItem('knowzone:uid');
   if (!uidValue) {
+    dispatch({ type: 'LOGOUT' });
     return { status: 'success', message: 'Not login' };
   }
   const id = Buffer.from(uidValue, 'base64');

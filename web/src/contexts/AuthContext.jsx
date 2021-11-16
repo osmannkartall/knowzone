@@ -1,14 +1,24 @@
 import { useReducer, createContext, useContext } from 'react';
 
-// Define Reducer
-const initalState = {
+const LOGIN_STATES = Object.freeze({
+  SUCCESS: 0,
+  FAIL: 1,
+  WAITING: 2,
+});
+
+const userInfo = {
   username: '',
   email: '',
   name: '',
   bio: '',
   id: '',
   photo: '',
-  isLoggedIn: false,
+};
+
+// Define Reducer
+const initalState = {
+  ...userInfo,
+  isLoggedIn: LOGIN_STATES.WAITING,
 };
 
 const authReducer = (state, action) => {
@@ -16,10 +26,13 @@ const authReducer = (state, action) => {
     case 'LOGIN':
       return {
         ...action.payload,
-        isLoggedIn: true,
+        isLoggedIn: LOGIN_STATES.SUCCESS,
       };
     case 'LOGOUT':
-      return { ...initalState };
+      return {
+        ...userInfo,
+        isLoggedIn: LOGIN_STATES.FAIL,
+      };
     default:
       throw new Error('Invalid action type.');
   }
@@ -59,4 +72,4 @@ const AuthProvider = ({ children }) => {
 };
 // End of context definition
 
-export { AuthProvider, useAuthState, useAuthDispatch };
+export { AuthProvider, useAuthState, useAuthDispatch, LOGIN_STATES };
