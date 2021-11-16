@@ -50,7 +50,7 @@ const AuthRoute = ({ path, children }) => (
           Success={(
             <Redirect
               to={{
-                pathname: `/${FE_ROUTES.TIPS}`,
+                pathname: `/${FE_ROUTES.HOME}`,
                 state: { from: location },
               }}
             />

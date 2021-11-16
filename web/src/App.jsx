@@ -46,7 +46,7 @@ const Wrapper = () => {
       <BrowserRouter>
         <Switch>
           <Route exact path="/">
-            <Redirect to={`/${FE_ROUTES.TIPS}`} />
+            <Redirect to={`/${FE_ROUTES.HOME}`} />
           </Route>
 
           <PrivateRoute path={`/${FE_ROUTES.TIPS}`} redirectPath={`/${FE_ROUTES.LOGIN}`}>
