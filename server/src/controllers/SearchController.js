@@ -25,7 +25,7 @@ const filterSchema = Joi.object({
     .max(15)
     .lowercase()
     .messages({
-      'string.pattern.base': 'Username should start with alphanumeric characters and can include underscore.',
+      'string.pattern.base': 'Author should start with alphanumeric characters and can include underscore.',
     }),
 
   createdStartDate: Joi.date(),
@@ -83,7 +83,6 @@ const getPostsByOwner = async (req, res, next) => {
 const filter = async (req, res, next) => {
   try {
     const info = req.body;
-    await filterSchema.validateAsync(info);
 
     if (isObjectEmpty(info)) {
       const err = createCustomError({
@@ -93,6 +92,7 @@ const filter = async (req, res, next) => {
       });
       next(err);
     } else {
+      await filterSchema.validateAsync(info);
       const result = await SearchService.filter(info);
       res.json(result);
     }
