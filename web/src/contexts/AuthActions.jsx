@@ -104,15 +104,18 @@ export async function checkUserSession(dispatch) {
           });
           return { status: 'success', message: result.message };
         }
+        dispatch({ type: 'LOGOUT' });
         return result;
       },
       (error) => {
         console.log(error);
+        dispatch({ type: 'LOGOUT' });
         return { status: 'fail', message: error.message };
       },
     )
     .catch((error) => {
       console.log(error);
+      dispatch({ type: 'LOGOUT' });
       return { status: 'fail', message: `Exception: ${error.message}.` };
     });
 }
