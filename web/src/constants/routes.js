@@ -1,6 +1,7 @@
 import POST_TYPES from './post-types';
 
 export const FE_ROUTES = Object.freeze({
+  HOME: POST_TYPES.get('tip').route,
   TIPS: POST_TYPES.get('tip').route,
   BUG_FIXES: POST_TYPES.get('bugfix').route,
   YOUR_POSTS: 'posts',

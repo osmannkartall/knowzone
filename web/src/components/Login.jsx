@@ -60,7 +60,7 @@ const Login = () => {
       const response = await login(authDispatch, data);
       console.log(response);
       if (response.status === 'success') {
-        history.push(FE_ROUTES.TIPS);
+        history.push(FE_ROUTES.HOME);
       } else {
         toast.error(response.message);
         console.log('Something bad happened during login!');

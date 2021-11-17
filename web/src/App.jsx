@@ -10,11 +10,11 @@ import YourPosts from './components/YourPosts';
 import SearchResults from './components/SearchResults';
 import NotFound from './components/NotFound';
 import { PRIMARY, WHITE } from './constants/colors';
-import { AuthProvider, useAuthDispatch, useAuthState } from './contexts/AuthContext';
+import { AuthProvider, useAuthDispatch } from './contexts/AuthContext';
 import { FE_ROUTES } from './constants/routes';
 import Login from './components/Login';
 import Register from './components/Register';
-import RouteWrapper from './common/RouteWrapper';
+import { PrivateRoute, AuthRoute } from './common/CustomRoute';
 import { checkUserSession } from './contexts/AuthActions';
 
 const theme = createTheme({
@@ -29,7 +29,6 @@ const theme = createTheme({
 });
 
 const Wrapper = () => {
-  const { isLoggedIn } = useAuthState();
   const authDispatch = useAuthDispatch();
 
   useEffect(() => {
@@ -46,70 +45,41 @@ const Wrapper = () => {
     <>
       <BrowserRouter>
         <Switch>
-          <RouteWrapper
-            path={`/${FE_ROUTES.LOGIN}`}
-            isLoggedIn={!isLoggedIn}
-            redirectPath={`/${FE_ROUTES.TIPS}`}
-          >
-            <Login />
-          </RouteWrapper>
+          <Route exact path="/">
+            <Redirect to={`/${FE_ROUTES.HOME}`} />
+          </Route>
 
-          <RouteWrapper
-            path={`/${FE_ROUTES.REGISTER}`}
-            isLoggedIn={!isLoggedIn}
-            redirectPath={`/${FE_ROUTES.TIPS}`}
-          >
-            <Register />
-          </RouteWrapper>
-
-          <RouteWrapper
-            path={`/${FE_ROUTES.TIPS}`}
-            isLoggedIn={isLoggedIn}
-            redirectPath={`/${FE_ROUTES.LOGIN}`}
-          >
+          <PrivateRoute path={`/${FE_ROUTES.TIPS}`} redirectPath={`/${FE_ROUTES.LOGIN}`}>
             <Dashboard>
               <Tips />
             </Dashboard>
-          </RouteWrapper>
+          </PrivateRoute>
 
-          <RouteWrapper
-            path={`/${FE_ROUTES.BUG_FIXES}`}
-            isLoggedIn={isLoggedIn}
-            redirectPath={`/${FE_ROUTES.LOGIN}`}
-          >
+          <PrivateRoute path={`/${FE_ROUTES.BUG_FIXES}`} redirectPath={`/${FE_ROUTES.LOGIN}`}>
             <Dashboard>
               <Bugfixes />
             </Dashboard>
-          </RouteWrapper>
+          </PrivateRoute>
 
-          <RouteWrapper
-            path={`/${FE_ROUTES.YOUR_POSTS}`}
-            isLoggedIn={isLoggedIn}
-            redirectPath={`/${FE_ROUTES.LOGIN}`}
-          >
+          <PrivateRoute path={`/${FE_ROUTES.YOUR_POSTS}`} redirectPath={`/${FE_ROUTES.LOGIN}`}>
             <Dashboard>
               <YourPosts />
             </Dashboard>
-          </RouteWrapper>
+          </PrivateRoute>
 
-          <RouteWrapper
-            path={`/${FE_ROUTES.SEARCH_RESULTS}`}
-            isLoggedIn={isLoggedIn}
-            redirectPath={`/${FE_ROUTES.LOGIN}`}
-          >
+          <PrivateRoute path={`/${FE_ROUTES.SEARCH_RESULTS}`} redirectPath={`/${FE_ROUTES.LOGIN}`}>
             <Dashboard>
               <SearchResults />
             </Dashboard>
-          </RouteWrapper>
+          </PrivateRoute>
 
-          <RouteWrapper
-            exact
-            path="/"
-            isLoggedIn={!isLoggedIn}
-            redirectPath={`/${FE_ROUTES.TIPS}`}
-          >
+          <AuthRoute path={`/${FE_ROUTES.LOGIN}`}>
             <Login />
-          </RouteWrapper>
+          </AuthRoute>
+
+          <AuthRoute path={`/${FE_ROUTES.REGISTER}`}>
+            <Register />
+          </AuthRoute>
 
           <Route exact path={`/${FE_ROUTES.NOT_FOUND}`}>
             <NotFound />
