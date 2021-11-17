@@ -21,18 +21,12 @@ const upload = multer({
   storage: imageStorage,
   limits: {
     fileSize: 1048576,
+    files: 2,
   },
-  fileFilter(req, file, cb) {
+  fileFilter(_req, file, cb) {
     if (file.mimetype.split('/')[0] !== 'image') {
       return cb(createCustomError({
         description: 'Only images are allowed for uploading',
-        statusCode: 400,
-        type: KNOWZONE_ERROR_TYPES.UPLOAD,
-      }));
-    }
-    if (parseInt(req.headers['content-length'], 10) > 1048576) {
-      return cb(createCustomError({
-        description: 'The maximum allowed size of a single file is 1 MB',
         statusCode: 400,
         type: KNOWZONE_ERROR_TYPES.UPLOAD,
       }));
