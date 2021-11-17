@@ -2,7 +2,7 @@ import { useReducer, createContext, useContext } from 'react';
 
 const LOGIN_STATES = Object.freeze({
   SUCCESS: 0,
-  FAIL: 1,
+  TERMINATED: 1,
   WAITING: 2,
 });
 
@@ -31,7 +31,7 @@ const authReducer = (state, action) => {
     case 'LOGOUT':
       return {
         ...userInfo,
-        isLoggedIn: LOGIN_STATES.FAIL,
+        isLoggedIn: LOGIN_STATES.TERMINATED,
       };
     default:
       throw new Error('Invalid action type.');

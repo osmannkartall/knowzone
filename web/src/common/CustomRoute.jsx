@@ -3,14 +3,14 @@ import { useAuthState, LOGIN_STATES } from '../contexts/AuthContext';
 import LinearProgressModal from './LinearProgressModal';
 import { FE_ROUTES } from '../constants/routes';
 
-const RouteRenderContent = ({ Success, Fail }) => {
+const RouteRenderContent = ({ Success, Terminated }) => {
   const { isLoggedIn } = useAuthState();
   let component;
 
   if (isLoggedIn === LOGIN_STATES.SUCCESS) {
     component = Success;
-  } else if (isLoggedIn === LOGIN_STATES.FAIL) {
-    component = Fail;
+  } else if (isLoggedIn === LOGIN_STATES.TERMINATED) {
+    component = Terminated;
   } else {
     component = <LinearProgressModal isOpen={isLoggedIn === LOGIN_STATES.WAITING} />;
   }
@@ -26,7 +26,7 @@ const PrivateRoute = ({ path, redirectPath, children }) => (
       ({ location }) => (
         <RouteRenderContent
           Success={children}
-          Fail={(
+          Terminated={(
             <Redirect
               to={{
                 pathname: redirectPath,
@@ -55,7 +55,7 @@ const AuthRoute = ({ path, children }) => (
               }}
             />
           )}
-          Fail={children}
+          Terminated={children}
         />
       )
     }
