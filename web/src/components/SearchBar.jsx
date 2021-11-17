@@ -96,7 +96,7 @@ const SearchBar = () => {
 
   const areAllSearchOptionsEmpty = () => {
     const { searchText, ...rest } = searchOptions;
-    return Object.values(rest).every((value) => isEmpty(value));
+    return Object.values(rest).every((value) => isEmpty(value)) && !searchText.trim();
   };
 
   const checkAllSearchOptions = () => !areAllSearchOptionsEmpty() && isTopicsUnique;
@@ -114,25 +114,25 @@ const SearchBar = () => {
   };
 
   const search = () => {
-    if (searchOptions.searchText.trim() || !areAllSearchOptionsEmpty()) {
-      // Copy state object with spread operator to not mutate itself.
-      const tempSearchOptions = { ...searchOptions };
+    // Copy state object with spread operator to not mutate itself.
+    const tempSearchOptions = { ...searchOptions };
 
-      Object.entries(searchOptions).forEach(([key, value]) => {
-        if (!value || (Array.isArray(value) && !value.length)) {
-          delete tempSearchOptions[key];
-        }
-      });
+    Object.entries(searchOptions).forEach(([key, value]) => {
+      if (!value || (Array.isArray(value) && !value.length)) {
+        delete tempSearchOptions[key];
+      }
+    });
 
-      hideSearchOptionsMenu();
-      const data = JSON.parse(JSON.stringify(tempSearchOptions));
-      history.push(FE_ROUTES.SEARCH_RESULTS, data);
-    }
+    hideSearchOptionsMenu();
+    const data = JSON.parse(JSON.stringify(tempSearchOptions));
+    history.push(FE_ROUTES.SEARCH_RESULTS, data);
   };
 
-  const handleSearchOnClick = () => {
-    if (!checkAllSearchOptions()) {
+  const searchOrGiveError = () => {
+    if (areAllSearchOptionsEmpty()) {
       toast.error('Could not search! Type what to search or specify search options correctly.');
+    } else if (!isTopicsUnique) {
+      toast.error('Could not search! Topics should be unique');
     } else if (!checkDates()) {
       toast.error('Invalid dates!');
     } else {
@@ -140,9 +140,13 @@ const SearchBar = () => {
     }
   };
 
+  const handleSearchOnClick = () => {
+    searchOrGiveError();
+  };
+
   const handleOnPressEnter = (event) => {
     if (event.key === 'Enter') {
-      search();
+      searchOrGiveError();
     }
   };
 
