@@ -94,10 +94,12 @@ const SearchBar = () => {
 
   const handleResetOnClick = () => setSearchOptions(emptySearchOptions);
 
-  const checkAllSearchOptions = () => {
-    const isAllSearchOptionsEmpty = Object.values(searchOptions).every((value) => isEmpty(value));
-    return !isAllSearchOptionsEmpty && isTopicsUnique;
+  const areAllSearchOptionsEmpty = () => {
+    const { searchText, ...rest } = searchOptions;
+    return Object.values(rest).every((value) => isEmpty(value));
   };
+
+  const checkAllSearchOptions = () => !areAllSearchOptionsEmpty() && isTopicsUnique;
 
   const checkDates = () => {
     if ((searchOptions.createdStartDate && searchOptions.createdEndDate)
@@ -112,7 +114,7 @@ const SearchBar = () => {
   };
 
   const search = () => {
-    if (searchOptions.searchText.trim()) {
+    if (searchOptions.searchText.trim() || !areAllSearchOptionsEmpty()) {
       // Copy state object with spread operator to not mutate itself.
       const tempSearchOptions = { ...searchOptions };
 
