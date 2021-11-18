@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Post from '../common/Post';
 import ContentWrapper from '../common/ContentWrapper';
 import LinearProgressModal from '../common/LinearProgressModal';
+import { BE_ROUTES } from '../constants/routes';
 
 const SearchResults = () => {
   const location = useLocation();
@@ -11,8 +12,7 @@ const SearchResults = () => {
 
   useEffect(() => {
     let mounted = true;
-    const route = 'search/filter';
-    const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${route}`;
+    const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH_FILTER}`;
     const { from, ...body } = location.state;
 
     setIsLinearProgressModalOpen(true);

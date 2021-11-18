@@ -24,10 +24,17 @@ function createSuccessResponse(message) {
   return { status: 'success', message };
 }
 
+function isObjectEmpty(obj) {
+  return obj === undefined
+    || obj === null
+    || Object.keys(obj).length === 0;
+}
+
 module.exports = {
   isLengthBetween,
   maxLengthMessage,
   transformToJSON,
   isArrayUnique,
   createSuccessResponse,
+  isObjectEmpty,
 };

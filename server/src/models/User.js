@@ -20,14 +20,17 @@ const userSchema = new mongoose.Schema(
       minLength: 3,
       maxLength: 254,
       lowercase: true,
-      match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,7})+$/,
+      match: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,7})+$/,
     },
     name: {
       type: String,
       required: true,
       match: /^[A-Za-z ,.'-]{3,50}$/,
     },
-    bio: { type: String },
+    bio: {
+      type: String,
+      maxLength: 256,
+    },
   },
 );
 
