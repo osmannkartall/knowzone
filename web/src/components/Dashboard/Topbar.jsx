@@ -108,7 +108,7 @@ const Topbar = ({ openSidebar }) => {
       const response = await logout(authDispatch);
 
       if (response.status === 'success') {
-        history.push('/');
+        history.push(`/${FE_ROUTES.LOGIN}`);
       } else {
         console.log(response.message);
       }

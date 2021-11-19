@@ -1,6 +1,7 @@
 import POST_TYPES from './post-types';
 
 export const FE_ROUTES = Object.freeze({
+  HOME: POST_TYPES.get('tip').route,
   TIPS: POST_TYPES.get('tip').route,
   BUG_FIXES: POST_TYPES.get('bugfix').route,
   YOUR_POSTS: 'posts',
@@ -18,5 +19,5 @@ export const BE_ROUTES = Object.freeze({
   LOGIN: 'login',
   LOGOUT: 'logout',
   REGISTER: 'register',
-  IS_USER_LOGGED_IN: 'is-user-logged-in',
+  CHECK_USER_SESSION: 'checkUserSession',
 });
