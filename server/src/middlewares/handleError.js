@@ -2,6 +2,7 @@ const {
   createErrorResponse,
   isApiSchemaError,
   isCustomError,
+  isMulterError,
 } = require('../knowzoneErrorHandler');
 
 function getCustomFieldsByErrorType(err) {
@@ -14,6 +15,8 @@ function getCustomFieldsByErrorType(err) {
   } else if (isCustomError(err)) {
     statusCode = err.statusCode;
     description = err.description;
+  } else if (isMulterError(err)) {
+    description = err.message;
   }
 
   return { statusCode, description };
