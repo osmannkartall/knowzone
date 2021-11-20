@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import TagPicker from '../common/TagPicker/TagPicker';
+import TagPicker from './TagPicker/TagPicker';
 import POST_TYPES from '../constants/post-types';
 import { searchBarHeight } from '../constants/styles';
 import { WHITE } from '../constants/colors';
