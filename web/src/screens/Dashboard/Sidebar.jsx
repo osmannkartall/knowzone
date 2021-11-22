@@ -8,13 +8,15 @@ import {
   Button,
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
+import { FormProvider, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { GRAY3, WHITE } from '../../constants/colors';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
 import POST_TYPES from '../../constants/post-types';
 import { preparePost } from '../../utils';
-import { useAuthState } from '../../contexts/AuthContext';
 import PostForm from '../../common/PostForm';
 import LinearProgressModal from '../../common/LinearProgressModal';
+import postFormSchema from '../../common/postFormSchema';
 
 const useStyles = makeStyles((theme) => ({
   sidebar: {
@@ -78,31 +80,26 @@ const SidebarItemList = () => (
 );
 
 export default function Sidebar({ isSidebarOpen }) {
-  const user = useAuthState();
-  const emptyPost = {
-    description: '',
-    links: [],
-    topics: [],
-    images: [],
-    owner: { id: user.id, username: user.username, name: user.name },
-    error: '',
-    solution: '',
-    type: POST_TYPES.get('tip').value,
-  };
-  const [newPost, setNewPost] = useState(emptyPost);
   const [isPostFormOpen, setIsPostFormOpen] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const classes = useStyles();
 
-  const changeNewPostField = (key, value) => {
-    setNewPost((prevState) => ({ ...prevState, [key]: value }));
-  };
-
   const onClickCreate = () => setIsPostFormOpen(true);
+
+  const { reset, getValues, ...methods } = useForm({
+    resolver: yupResolver(postFormSchema),
+    defaultValues: {
+      type: POST_TYPES.get('tip').value,
+      description: '',
+      topics: [],
+      links: [],
+      images: [],
+    },
+  });
 
   const addPost = () => {
     setIsLinearProgressModalOpen(true);
-    const { post, route } = preparePost(newPost);
+    const { post, route } = preparePost(getValues());
     const fd = new FormData();
 
     Object.entries(post).forEach(([k, v]) => {
@@ -128,7 +125,7 @@ export default function Sidebar({ isSidebarOpen }) {
       .then((result) => {
         console.log(result.status, result.message);
         setIsPostFormOpen(false);
-        setNewPost(emptyPost);
+        reset();
       })
       .catch((error) => console.log(error.message))
       .finally(() => setIsLinearProgressModalOpen(false));
@@ -158,14 +155,14 @@ export default function Sidebar({ isSidebarOpen }) {
             Create
           </Button>
         </div>
-        <PostForm
-          title="Create Post"
-          open={isPostFormOpen}
-          setOpen={setIsPostFormOpen}
-          form={newPost}
-          changeHandler={changeNewPostField}
-          onClickBtn={addPost}
-        />
+        <FormProvider {...methods} getValues={getValues}>
+          <PostForm
+            title="Create Post"
+            open={isPostFormOpen}
+            setOpen={setIsPostFormOpen}
+            onSubmit={addPost}
+          />
+        </FormProvider>
       </div>
     </LinearProgressModal>
   );

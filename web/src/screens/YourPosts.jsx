@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogActions, DialogTitle, Button } from '@material-ui/core';
 import { toast } from 'react-toastify';
+import { FormProvider, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import Post from '../common/Post';
 import { useAuthState } from '../contexts/AuthContext';
 import PostForm from '../common/PostForm';
@@ -14,12 +16,12 @@ import { BE_ROUTES } from '../constants/routes';
 import ContentWrapper from '../common/ContentWrapper';
 import { IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../constants/colors';
 import LinearProgressModal from '../common/LinearProgressModal';
+import postFormSchema from '../common/postFormSchema';
 
 const isNewImage = (image) => image instanceof File;
 
 const YourPosts = () => {
   const [posts, setPosts] = useState([]);
-  const [selectedPost, setSelectedPost] = useState({});
   const [openForm, setOpenForm] = useState(false);
   const [action, setAction] = useState('update');
   const [openDialog, setOpenDialog] = useState(false);
@@ -28,14 +30,27 @@ const YourPosts = () => {
 
   const handleClose = () => setOpenDialog(false);
 
-  const changeSelectedPostField = (key, value) => {
-    setSelectedPost((prevState) => ({ ...prevState, [key]: value }));
+  const { setValue, getValues, ...methods } = useForm({
+    resolver: yupResolver(postFormSchema),
+    defaultValues: {
+      type: POST_TYPES.get('tip').value,
+      description: '',
+      topics: [],
+      links: [],
+      images: [],
+    },
+  });
+
+  const setFormValues = (post) => {
+    Object.entries(post).forEach(([k, v]) => {
+      setValue(k, v);
+    });
   };
 
   const setForUpdate = (post) => {
     setAction('update');
     if (post) {
-      setSelectedPost({ ...post });
+      setFormValues(post);
       setOpenForm(true);
     }
   };
@@ -43,7 +58,7 @@ const YourPosts = () => {
   const setForDelete = (post) => {
     setAction('delete');
     if (post) {
-      setSelectedPost({ ...post });
+      setFormValues(post);
       setOpenDialog(true);
     }
   };
@@ -51,6 +66,8 @@ const YourPosts = () => {
   const updatePost = async () => {
     try {
       setIsLinearProgressModalOpen(true);
+      const selectedPost = getValues();
+
       if (selectedPost && selectedPost.id) {
         const idx = posts.findIndex((p) => p.id === selectedPost.id);
 
@@ -96,6 +113,8 @@ const YourPosts = () => {
   };
 
   const deletePost = () => {
+    const selectedPost = getValues();
+
     if (selectedPost && selectedPost.type && selectedPost.id) {
       setIsLinearProgressModalOpen(true);
       const { route } = POST_TYPES.get(selectedPost.type);
@@ -184,15 +203,15 @@ const YourPosts = () => {
             />
           ))) : null}
       </ContentWrapper>
-      <PostForm
-        title="Update Post"
-        btnTitle="update"
-        open={openForm}
-        setOpen={setOpenForm}
-        form={selectedPost}
-        changeHandler={changeSelectedPostField}
-        onClickBtn={() => setOpenDialog(true)}
-      />
+      <FormProvider {...methods} getValues={getValues}>
+        <PostForm
+          title="Update Post"
+          btnTitle="update"
+          open={openForm}
+          setOpen={setOpenForm}
+          onSubmit={() => setOpenDialog(true)}
+        />
+      </FormProvider>
       <Dialog
         open={openDialog}
         onClose={handleClose}
