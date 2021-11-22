@@ -15,7 +15,6 @@ const userInfo = {
   photo: '',
 };
 
-// Define Reducer
 const initalState = {
   ...userInfo,
   isLoggedIn: LOGIN_STATES.WAITING,
@@ -37,9 +36,7 @@ const authReducer = (state, action) => {
       throw new Error('Invalid action type.');
   }
 };
-// End of reducer definition
 
-// Define Context
 const AuthStateContext = createContext();
 const AuthDispatchContext = createContext();
 
@@ -70,6 +67,5 @@ const AuthProvider = ({ children }) => {
     </AuthStateContext.Provider>
   );
 };
-// End of context definition
 
 export { AuthProvider, useAuthState, useAuthDispatch, LOGIN_STATES };

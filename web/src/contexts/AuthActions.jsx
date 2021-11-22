@@ -1,5 +1,9 @@
 import { BE_ROUTES } from '../constants/routes';
 
+const saveUidForAutoLogin = (uid) => {
+  localStorage.setItem('knowzone:uid', Buffer.from(uid).toString('base64'));
+};
+
 export async function login(dispatch, userCredentials) {
   return fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.LOGIN}`, {
     method: 'POST',
@@ -11,9 +15,7 @@ export async function login(dispatch, userCredentials) {
     .then(
       (result) => {
         if (result.status === 'success') {
-          // Save user id to local storage for login automatically
-          // after browser tab/window is closed.
-          localStorage.setItem('knowzone:uid', Buffer.from(result.id).toString('base64'));
+          saveUidForAutoLogin(result.id);
           dispatch({
             type: 'LOGIN',
             payload: {
@@ -50,9 +52,7 @@ export async function register(dispatch, userCredentials) {
     .then(
       (result) => {
         if (result.status === 'success') {
-          // Save user id to local storage for login automatically
-          // after browser tab/window is closed.
-          localStorage.setItem('knowzone:uid', Buffer.from(result.id).toString('base64'));
+          saveUidForAutoLogin(result.id);
           dispatch({
             type: 'LOGIN',
             payload: {
@@ -130,7 +130,6 @@ export async function logout(dispatch) {
       (result) => {
         if (result.status === 'success') {
           dispatch({ type: 'LOGOUT' });
-          // Remove user id from localStorage.
           localStorage.removeItem('knowzone:uid');
           return { status: 'success', message: result.message };
         }
