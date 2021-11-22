@@ -9,7 +9,7 @@ import {
   FormHelperText,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
-import { Controller, FormProvider, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import { WHITE, GRAY3, PRIMARY, GRAY1 } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
 import FileUploader from './FileUploader';
@@ -99,190 +99,188 @@ const FormData = ({ title, btnTitle, handleClose, onSubmit }) => {
   };
 
   return (
-    <FormProvider>
-      <form className={classes.form} onSubmit={handleSubmit(onSubmit)} noValidate>
-        <div className={classes.topContainer}>
-          <h1>{title}</h1>
-          <IconButton
-            aria-label="close post form"
-            style={{ color: WHITE }}
-            onClick={handleClose}
-          >
-            <Close style={{ color: WHITE, width: 35, height: 35 }} />
-          </IconButton>
-        </div>
-        <div className={classes.middleContainer}>
-          <FormDataRow>
-            <Controller
-              render={
-                ({ field: { onChange, onBlur, value, name } }) => (
-                  <TextField
-                    id="outlined-select-post-type"
-                    select
-                    label="Post Type"
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    value={value}
-                    name={name}
-                    error={errors.type !== undefined}
-                    helperText={errors.type?.message}
-                    variant="outlined"
-                    fullWidth
-                    disabled={getValues('id') !== null && getValues('id') !== undefined}
-                  >
-                    {Array.from(POST_TYPES).map(([, opt]) => (
-                      <MenuItem key={opt.value} value={opt.value}>{opt.name}</MenuItem>
-                    ))}
-                  </TextField>
-                )
-              }
-              control={control}
-              name="type"
-              shouldUnregister
-            />
-          </FormDataRow>
-          <FormDataRow>
-            <Controller
-              render={
-                ({ field: { onChange, onBlur, value, name } }) => (
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    multiline
-                    minRows={4}
-                    maxRows={4}
-                    id="description"
-                    label="Description"
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    value={value}
-                    name={name}
-                    error={errors.description !== undefined}
-                    helperText={errors.description?.message}
-                  />
-                )
-              }
-              control={control}
-              name="description"
-              shouldUnregister
-            />
-          </FormDataRow>
-          {watchPostType === POST_TYPES.get('bugfix').value ? (
-            <>
-              <FormDataRow>
-                <InputLabel
-                  required
-                  className={classes.label}
-                >
-                  Error
-                </InputLabel>
-                <Controller
-                  render={
-                    ({ field: { onChange, value } }) => (
-                      <MarkdownEditor
-                        text={value}
-                        onChangeText={onChange}
-                        containerMaxHeight="50vh"
-                      />
-                    )
-                  }
-                  control={control}
-                  name="error"
-                  shouldUnregister
-                />
-                <FormHelperText error={errors.error !== undefined}>
-                  {errors.error?.message}
-                </FormHelperText>
-              </FormDataRow>
-              <FormDataRow>
-                <InputLabel
-                  required
-                  className={classes.label}
-                >
-                  Solution
-                </InputLabel>
-                <Controller
-                  render={
-                    ({ field: { onChange, value } }) => (
-                      <MarkdownEditor
-                        text={value}
-                        onChangeText={onChange}
-                        containerMaxHeight="50vh"
-                      />
-                    )
-                  }
-                  control={control}
-                  name="solution"
-                  shouldUnregister
-                />
-                <FormHelperText error={errors.solution !== undefined}>
-                  {errors.solution?.message}
-                </FormHelperText>
-              </FormDataRow>
-            </>
-          ) : null}
-          <div className={classes.fileUploaderContainer}>
-            <Controller
-              render={
-                ({ field: { onChange, value } }) => (
-                  <FileUploader files={value} setFiles={onChange} />
-                )
-              }
-              control={control}
-              name="images"
-              shouldUnregister
-            />
-          </div>
+    <form className={classes.form} onSubmit={handleSubmit(onSubmit)} noValidate>
+      <div className={classes.topContainer}>
+        <h1>{title}</h1>
+        <IconButton
+          aria-label="close post form"
+          style={{ color: WHITE }}
+          onClick={handleClose}
+        >
+          <Close style={{ color: WHITE, width: 35, height: 35 }} />
+        </IconButton>
+      </div>
+      <div className={classes.middleContainer}>
+        <FormDataRow>
           <Controller
             render={
-              ({ field: { onChange, value } }) => (
-                <FormDataRow>
-                  <TagPicker
-                    tags={value}
-                    setTags={onChange}
-                    placeholder="Type a topic and press enter to add"
-                    required
-                    unique
-                    border
-                    showError={errors.topics !== undefined}
-                    helperText={getErrorMessageOfArrayForm(errors.topics)}
-                  />
-                </FormDataRow>
+              ({ field: { onChange, onBlur, value, name } }) => (
+                <TextField
+                  id="outlined-select-post-type"
+                  select
+                  label="Post Type"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  name={name}
+                  error={errors.type !== undefined}
+                  helperText={errors.type?.message}
+                  variant="outlined"
+                  fullWidth
+                  disabled={getValues('id') !== null && getValues('id') !== undefined}
+                >
+                  {Array.from(POST_TYPES).map(([, opt]) => (
+                    <MenuItem key={opt.value} value={opt.value}>{opt.name}</MenuItem>
+                  ))}
+                </TextField>
               )
             }
             control={control}
-            name="topics"
+            name="type"
             shouldUnregister
           />
-          <FormDataRow>
-            <Controller
-              render={
-                ({ field: { onChange, value } }) => (
-                  <TagPicker
-                    tags={value}
-                    setTags={onChange}
-                    placeholder="Type a link and press enter to add"
-                    unique
-                    border
-                    showError={errors.links !== undefined}
-                    helperText={errors.links?.message}
-                  />
-                )
-              }
-              control={control}
-              name="links"
-              shouldUnregister
-            />
-          </FormDataRow>
+        </FormDataRow>
+        <FormDataRow>
+          <Controller
+            render={
+              ({ field: { onChange, onBlur, value, name } }) => (
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  multiline
+                  minRows={4}
+                  maxRows={4}
+                  id="description"
+                  label="Description"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  name={name}
+                  error={errors.description !== undefined}
+                  helperText={errors.description?.message}
+                />
+              )
+            }
+            control={control}
+            name="description"
+            shouldUnregister
+          />
+        </FormDataRow>
+        {watchPostType === POST_TYPES.get('bugfix').value ? (
+          <>
+            <FormDataRow>
+              <InputLabel
+                required
+                className={classes.label}
+              >
+                Error
+              </InputLabel>
+              <Controller
+                render={
+                  ({ field: { onChange, value } }) => (
+                    <MarkdownEditor
+                      text={value}
+                      onChangeText={onChange}
+                      containerMaxHeight="50vh"
+                    />
+                  )
+                }
+                control={control}
+                name="error"
+                shouldUnregister
+              />
+              <FormHelperText error={errors.error !== undefined}>
+                {errors.error?.message}
+              </FormHelperText>
+            </FormDataRow>
+            <FormDataRow>
+              <InputLabel
+                required
+                className={classes.label}
+              >
+                Solution
+              </InputLabel>
+              <Controller
+                render={
+                  ({ field: { onChange, value } }) => (
+                    <MarkdownEditor
+                      text={value}
+                      onChangeText={onChange}
+                      containerMaxHeight="50vh"
+                    />
+                  )
+                }
+                control={control}
+                name="solution"
+                shouldUnregister
+              />
+              <FormHelperText error={errors.solution !== undefined}>
+                {errors.solution?.message}
+              </FormHelperText>
+            </FormDataRow>
+          </>
+        ) : null}
+        <div className={classes.fileUploaderContainer}>
+          <Controller
+            render={
+              ({ field: { onChange, value } }) => (
+                <FileUploader files={value} setFiles={onChange} />
+              )
+            }
+            control={control}
+            name="images"
+            shouldUnregister
+          />
         </div>
-        <div className={classes.bottomContainer}>
-          <Button variant="contained" color="primary" type="submit">
-            {btnTitle}
-          </Button>
-        </div>
-      </form>
-    </FormProvider>
+        <Controller
+          render={
+            ({ field: { onChange, value } }) => (
+              <FormDataRow>
+                <TagPicker
+                  tags={value}
+                  setTags={onChange}
+                  placeholder="Type a topic and press enter to add"
+                  required
+                  unique
+                  border
+                  showError={errors.topics !== undefined}
+                  helperText={getErrorMessageOfArrayForm(errors.topics)}
+                />
+              </FormDataRow>
+            )
+          }
+          control={control}
+          name="topics"
+          shouldUnregister
+        />
+        <FormDataRow>
+          <Controller
+            render={
+              ({ field: { onChange, value } }) => (
+                <TagPicker
+                  tags={value}
+                  setTags={onChange}
+                  placeholder="Type a link and press enter to add"
+                  unique
+                  border
+                  showError={errors.links !== undefined}
+                  helperText={errors.links?.message}
+                />
+              )
+            }
+            control={control}
+            name="links"
+            shouldUnregister
+          />
+        </FormDataRow>
+      </div>
+      <div className={classes.bottomContainer}>
+        <Button variant="contained" color="primary" type="submit">
+          {btnTitle}
+        </Button>
+      </div>
+    </form>
   );
 };
 
