@@ -1,35 +1,33 @@
-# **Node.js Project Architecture**
-
-**Version:** 1.1
+# Node.js Project Architecture
 
 This project currently has two different flows:
 
 * `Controller->Repository->Model`
 
-        1. Create a Mongoose model.
-        2. Create a new repository for that model.
-        3. Create controller to expose operations provided by the repository.
+  This flow is used when operations are related to a particular model and those operations are only CRUD operations defined in that model.
 
-    This flow is used when operations are related to a particular model and those operations are only CRUD operations defined in that model.
+  1. Create a Mongoose model.
+  2. Create a new repository for that model.
+  3. Create controller to expose operations provided by the repository.
 
 * `Controller->Service`
 
-        1. Create a service class.
-        2. Create controller to expose operations provided by the service class.
+  Service classes are used for general operations such as search service. This kind of operations are different from basic CRUD operations and do not have to depend on a specific object model. They can use different repositories and models.
 
-    Service classes are used for general operations such as search service. This kind of operations are different from basic CRUD operations and do not have to depend on a specific object model. They can use different repositories and models.
+  1. Create a service class.
+  2. Create controller to expose operations provided by the service class.
 
 ---
 
-### **Config**
+## Config
 
 `dotenv` package reads the values of environment variables in .env file and binds them to the global process.env object. Then, these values are exported from `server/config/index.js` file. Finally, these values are used in different modules by importing `server/config/index.js`
 
-### **Model**
+## Model
 
 Defines an object that corresponds to a collection in the database.
 
-**Creating a new model**
+### Creating a new model
 
 Create `Hello.js` file under `server/models/` folder.
 
@@ -54,11 +52,11 @@ const Hello = mongoose.model('Hello', helloSchema);
 module.exports = Hello;
 ```
 
-### **Repository**
+## Repository
 
 Executes CRUD operations on models by communicating to the MongoDB.
 
-**Creating a new repository**
+### Creating a new repository
 
 Create `HelloRepository.js` file under `server/repositories/` folder.
 
@@ -82,11 +80,11 @@ class HelloRepository extends BaseRepository {
 module.exports = HelloRepository;
 ```
 
-### **Controller**
+## Controller
 
 Validates the HTTP request object and manipulates it before sending the necessary data to the service or repository layer. Controls the access to the provided CRUD operations and other services via routes.
 
-**Creating a new controller**
+### Creating a new controller
 
 Create `HelloController.js` file under `server/controllers/` folder.
 
@@ -143,9 +141,9 @@ module.exports = router;
 
 Note:
 
-Normally, `BaseRepository` provides other methods such as `updateById`, `deleteById` and `deleteAll` in addition to `create`, `findAll` and `findById` but only several of them exposed in HelloController.js module. E.g; if you want all records to be read-only then only allow `create`, `findById` and `findAll` methods and don't add routes for other methods in the controller module.
+Normally, `BaseRepository` provides other methods such as `updateById`, `deleteById` and `deleteAll` in addition to `create`, `findAll` and `findById` but only several of them exposed in HelloController.js module. E.g; if we want all records to be read-only then we only allow `create`, `findById` and `findAll` methods and don't add routes for other methods in the controller module.
 
-### **Usage of New Routes**
+## Usage of New Routes
 
 * Navigate to `addControllers()` function in `server/app.js` file.
 
@@ -165,9 +163,9 @@ function addControllers(app) {
 }
 ```
 
-### **Service**
+## Service
 
-**Creating a new service**
+### Creating a new service
 
 ```javascript
 // in server/services/SearchService.js
@@ -193,8 +191,75 @@ class SearchService {
 module.exports = SearchService;
 ```
 
-**TODO**
+## Error Handling
 
-- Global response handler
-- Global error handler
-- Logger
+1. Add a try/catch block only to the controller layers.
+
+2. In the catch block, send the error object to the global error handler middleware with the `next()` call.
+
+3. Log the error in global error handler middleware and return an error response to the client from there.
+
+### Example
+
+```javascript
+const getPostsByOwner = async (req, res, next) => {
+  try {
+    await postsByOwnerSchema(req.session.userId).validateAsync(req.query);
+    const result = await SearchService.getPostsByOwner(req.query.owner);
+
+    res.json(result);
+  } catch (err) {
+    if (!hasLowerLayerCustomError()) {
+      err.description = 'Error when getting posts by owner';
+      err.statusCode = 500;
+      err.type = KNOWZONE_ERROR_TYPES.SEARCH;
+      err.data = {
+        id: req.params.id,
+      };
+    }
+
+    next(err);
+  }
+};
+```
+
+Errors thrown from the controller or any lower layer are caught in the catch block. We can explicitly throw custom error objects from lower layers, so we don't want to override them. Therefore, we first check for any custom lower layer error. If there is no then we create a new custom error object and send it to the global error handler, otherwise we just pass the existing error object to the global error handler.
+
+### Global error handler middleware
+
+```javascript
+// in handleError.js
+
+function handleError(err, _req, res, next) {
+  const { statusCode, description } = getCustomFieldsByErrorType(err);
+
+  logError(err, statusCode, description);
+
+  res.status(statusCode).json(createErrorResponse(description));
+}
+```
+
+```javascript
+// in app.js
+
+async function startExpress() {
+  const app = express();
+
+  // ...
+
+  // We added the error handler as the last middleware.
+  app.use(handleError);
+
+  app.listen();
+}
+```
+
+### Using Custom Error Objects
+
+* Use the `changeToCustomError` function in `knowzoneErrorHandler.js` to change errors thrown internally by other packages to custom error objects.
+
+* Use the `createCustomError` function in `knowzoneErrorHandler.js` to create custom error objects to throw a custom error.
+
+## TODO
+
+* Logger
