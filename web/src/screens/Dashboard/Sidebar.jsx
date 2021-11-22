@@ -79,7 +79,7 @@ const SidebarItemList = () => (
   </List>
 );
 
-export default function Sidebar({ isSidebarOpen }) {
+const Sidebar = ({ isSidebarOpen }) => {
   const [isPostFormOpen, setIsPostFormOpen] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const classes = useStyles();
@@ -166,4 +166,6 @@ export default function Sidebar({ isSidebarOpen }) {
       </div>
     </LinearProgressModal>
   );
-}
+};
+
+export default Sidebar;
