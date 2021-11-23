@@ -4,36 +4,28 @@ class BaseRepository {
   }
 
   async create(record) {
-    const result = await this.model.create(record);
-
-    return result;
+    return this.model.create(record);
   }
 
   async findAll() {
-    const result = await this.model.find({}, null, { sort: { createdAt: -1 } });
-
-    return result;
+    return this.model.find({}, null, { sort: { createdAt: -1 } });
   }
 
   async findById(id) {
-    const record = await this.model.findById(id);
-
-    return record;
+    return this.model.findById(id);
   }
 
   async updateById(id, update) {
     const filter = { _id: id };
-    const resultAfterUpdate = await this.model.findOneAndUpdate(filter, update, { new: true });
-
-    return resultAfterUpdate;
+    return this.model.findOneAndUpdate(filter, update, { new: true });
   }
 
   async deleteById(id) {
-    await this.model.findByIdAndRemove(id);
+    return this.model.findByIdAndRemove(id);
   }
 
   async deleteAll() {
-    await this.model.deleteMany({});
+    return this.model.deleteMany({});
   }
 }
 
