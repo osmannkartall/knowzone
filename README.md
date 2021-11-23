@@ -39,15 +39,6 @@
 - Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and make sure that you are able to run mongo shell with mongosh command in a terminal after the installation. Otherwise, you may need to install separately. [Details](https://www.mongodb.com/try/download/shell)
 - Install [MongoDB Compass](https://docs.mongodb.com/compass/current/install/). This is a nice desktop application for MongoDB. Note: This, may already come with the MongoDB Community Installer.
 
-### VS Code Extensions
-
-- Path Intellisense by Christian Kohler
-- npm Intellisense by Christian Kohler
-- npm by egamma
-- ESLint by Dirk Baeumer
-- ES7 React/Redux/GraphQL/React-Native snippets by dsznajder
-- react native tools by Microsoft (This is not necessary for the web project)
-
 ## Running
 
 ### Node Express
