@@ -68,16 +68,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const MarkdownEditor = ({ text, onChangeText, containerMaxHeight }) => {
-  const [options, setOptions] = useState({ showEditor: true, showPreview: true });
+  const [showEditor, setShowEditor] = useState(true);
   const classes = useStyles({ containerMaxHeight });
-
-  const changeOptionValue = (key, value) => {
-    setOptions((prevState) => ({ ...prevState, [key]: value }));
-  };
-
-  const editorButtonTitle = `${options.showEditor ? 'Hide' : 'Show'} Editor`;
-  const previewButtonTitle = `${options.showPreview ? 'Hide' : 'Show'} Preview`;
-  const borderRightStyle = options.showEditor && options.showPreview ? `1px solid ${GRAY3}` : 'none';
 
   return (
     <>
@@ -86,29 +78,29 @@ const MarkdownEditor = ({ text, onChangeText, containerMaxHeight }) => {
           type="button"
           variant="outlined"
           className={classes.optionButton}
-          onClick={() => changeOptionValue('showEditor', !options.showEditor)}
-          disabled={!options.showPreview}
+          onClick={() => setShowEditor(!showEditor)}
+          disabled={showEditor}
         >
-          {editorButtonTitle}
+          Show Editor
         </Button>
         <Button
           type="button"
           variant="outlined"
           className={classes.optionButton}
-          onClick={() => changeOptionValue('showPreview', !options.showPreview)}
-          disabled={!options.showEditor}
+          onClick={() => setShowEditor(!showEditor)}
+          disabled={!showEditor}
         >
-          {previewButtonTitle}
+          Show Preview
         </Button>
       </div>
       <div className={classes.container}>
         {
-          options.showEditor && (
+          showEditor ? (
             <div className={classes.editorOuterContainer}>
-              <div className={classes.title} style={{ borderRight: borderRightStyle }}>
+              <div className={classes.title}>
                 Editor
               </div>
-              <div className={classes.editorContainer} style={{ borderRight: borderRightStyle }}>
+              <div className={classes.editorContainer}>
                 <textarea
                   className={classes.editor}
                   value={text}
@@ -116,10 +108,7 @@ const MarkdownEditor = ({ text, onChangeText, containerMaxHeight }) => {
                 />
               </div>
             </div>
-          )
-        }
-        {
-          options.showPreview && (
+          ) : (
             <div className={classes.previewOuterContainer}>
               <div className={classes.title}>
                 Preview
