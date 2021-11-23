@@ -7,7 +7,6 @@ export function preparePost(form) {
     images: form.images,
     topics: form.topics,
     links: form.links,
-    owner: form.owner,
   };
 
   if (form.type === POST_TYPES.get('bugfix').value) {

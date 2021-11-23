@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   TextField,
   makeStyles,
@@ -10,18 +9,11 @@ import {
   FormHelperText,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
+import { Controller, useFormContext } from 'react-hook-form';
 import { WHITE, GRAY3, PRIMARY, GRAY1 } from '../constants/colors';
 import TagPicker from './TagPicker/TagPicker';
 import FileUploader from './FileUploader';
 import POST_TYPES from '../constants/post-types';
-import {
-  DESCRIPTION_CONSTRAINTS,
-  ERROR_CONSTRAINTS,
-  SOLUTION_CONSTRAINTS,
-  LINKS_CONSTRAINTS,
-  TOPICS_CONSTRAINTS,
-  validate,
-} from '../clientSideValidation';
 import MarkdownEditor from './MarkdownEditor';
 
 const useStyles = makeStyles((theme) => ({
@@ -31,6 +23,8 @@ const useStyles = makeStyles((theme) => ({
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: `calc(100% - ${theme.spacing(10)}px)`,
+  },
+  form: {
     display: 'flex',
     flexDirection: 'column',
     maxHeight: '90vh',
@@ -81,37 +75,31 @@ const FormDataRow = ({ children }) => (
   </div>
 );
 
-const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBtn }) => {
+const FormData = ({ title, btnTitle, handleClose, onSubmit }) => {
   const classes = useStyles();
-  const [topicsCheck, setTopicsCheck] = useState({ text: '', isInvalid: false, isUnique: true });
-  const [descriptionCheck, setDescriptionCheck] = useState({ text: '', isInvalid: false });
-  const [errorCheck, setErrorCheck] = useState({ text: '', isInvalid: false });
-  const [solutionCheck, setSolutionCheck] = useState({ text: '', isInvalid: false });
-  const [linksCheck, setLinksCheck] = useState({ text: '', isInvalid: false, isUnique: true });
 
-  const validateForm = () => {
-    const isValidDescription = validate(
-      form.description, descriptionCheck, setDescriptionCheck, DESCRIPTION_CONSTRAINTS,
-    );
-    const isValidLinks = validate(form.links, linksCheck, setLinksCheck, LINKS_CONSTRAINTS);
-    const isValidTopics = validate(form.topics, topicsCheck, setTopicsCheck, TOPICS_CONSTRAINTS);
-    let isValid = isValidDescription && isValidLinks && isValidTopics && topicsCheck.isUnique;
+  const { handleSubmit, control, watch, formState: { errors }, getValues } = useFormContext();
 
-    if (form.type === POST_TYPES.get('bugfix').value) {
-      const isValidError = validate(form.error, errorCheck, setErrorCheck, ERROR_CONSTRAINTS);
-      const isValidSolution = validate(
-        form.solution, solutionCheck, setSolutionCheck, SOLUTION_CONSTRAINTS,
-      );
-      isValid = isValid && isValidError && isValidSolution;
+  const watchPostType = watch('type');
+
+  const getErrorMessageOfArrayForm = (arr) => {
+    if (arr) {
+      if (arr.message) {
+        return arr.message;
+      }
+
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] && arr[i].message) {
+          return arr[i].message;
+        }
+      }
     }
 
-    if (isValid) {
-      onClickBtn();
-    }
+    return null;
   };
 
   return (
-    <>
+    <form className={classes.form} onSubmit={handleSubmit(onSubmit)} noValidate>
       <div className={classes.topContainer}>
         <h1>{title}</h1>
         <IconButton
@@ -124,39 +112,62 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
       </div>
       <div className={classes.middleContainer}>
         <FormDataRow>
-          <TextField
-            id="outlined-select-post-type"
-            select
-            label="Post Type"
-            value={form.type}
-            onChange={(e) => changeHandler('type', e.target.value)}
-            variant="outlined"
-            fullWidth
-            disabled={form.id !== null && form.id !== undefined}
-          >
-            {Array.from(POST_TYPES).map(([, opt]) => (
-              <MenuItem key={opt.value} value={opt.value}>{opt.name}</MenuItem>
-            ))}
-          </TextField>
-        </FormDataRow>
-        <FormDataRow>
-          <TextField
-            name="description"
-            variant="outlined"
-            required
-            fullWidth
-            multiline
-            minRows={4}
-            maxRows={4}
-            id="description"
-            label="Description"
-            error={descriptionCheck.isInvalid}
-            helperText={descriptionCheck.text}
-            value={form.description}
-            onChange={(e) => changeHandler('description', e.target.value)}
+          <Controller
+            render={
+              ({ field: { onChange, onBlur, value, name } }) => (
+                <TextField
+                  id="outlined-select-post-type"
+                  select
+                  label="Post Type"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  name={name}
+                  error={errors.type !== undefined}
+                  helperText={errors.type?.message}
+                  variant="outlined"
+                  fullWidth
+                  disabled={getValues('id') !== null && getValues('id') !== undefined}
+                >
+                  {Array.from(POST_TYPES).map(([, opt]) => (
+                    <MenuItem key={opt.value} value={opt.value}>{opt.name}</MenuItem>
+                  ))}
+                </TextField>
+              )
+            }
+            control={control}
+            name="type"
+            shouldUnregister
           />
         </FormDataRow>
-        {form.type === POST_TYPES.get('bugfix').value ? (
+        <FormDataRow>
+          <Controller
+            render={
+              ({ field: { onChange, onBlur, value, name } }) => (
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  multiline
+                  minRows={4}
+                  maxRows={4}
+                  id="description"
+                  label="Description"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  name={name}
+                  error={errors.description !== undefined}
+                  helperText={errors.description?.message}
+                />
+              )
+            }
+            control={control}
+            name="description"
+            shouldUnregister
+          />
+        </FormDataRow>
+        {watchPostType === POST_TYPES.get('bugfix').value ? (
           <>
             <FormDataRow>
               <InputLabel
@@ -165,12 +176,23 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
               >
                 Error
               </InputLabel>
-              <MarkdownEditor
-                text={form.error}
-                onChangeText={(value) => changeHandler('error', value)}
-                containerMaxHeight="50vh"
+              <Controller
+                render={
+                  ({ field: { onChange, value } }) => (
+                    <MarkdownEditor
+                      text={value}
+                      onChangeText={onChange}
+                      containerMaxHeight="50vh"
+                    />
+                  )
+                }
+                control={control}
+                name="error"
+                shouldUnregister
               />
-              <FormHelperText error={errorCheck.isInvalid}>{errorCheck.text}</FormHelperText>
+              <FormHelperText error={errors.error !== undefined}>
+                {errors.error?.message}
+              </FormHelperText>
             </FormDataRow>
             <FormDataRow>
               <InputLabel
@@ -179,61 +201,90 @@ const FormData = ({ title, btnTitle, handleClose, form, changeHandler, onClickBt
               >
                 Solution
               </InputLabel>
-              <MarkdownEditor
-                text={form.solution}
-                onChangeText={(value) => changeHandler('solution', value)}
-                containerMaxHeight="50vh"
+              <Controller
+                render={
+                  ({ field: { onChange, value } }) => (
+                    <MarkdownEditor
+                      text={value}
+                      onChangeText={onChange}
+                      containerMaxHeight="50vh"
+                    />
+                  )
+                }
+                control={control}
+                name="solution"
+                shouldUnregister
               />
-              <FormHelperText error={solutionCheck.isInvalid}>{solutionCheck.text}</FormHelperText>
+              <FormHelperText error={errors.solution !== undefined}>
+                {errors.solution?.message}
+              </FormHelperText>
             </FormDataRow>
           </>
         ) : null}
         <div className={classes.fileUploaderContainer}>
-          <FileUploader
-            files={form.images}
-            setFiles={(images) => changeHandler('images', images)}
+          <Controller
+            render={
+              ({ field: { onChange, value } }) => (
+                <FileUploader files={value} setFiles={onChange} />
+              )
+            }
+            control={control}
+            name="images"
+            shouldUnregister
           />
         </div>
+        <Controller
+          render={
+            ({ field: { onChange, value } }) => (
+              <FormDataRow>
+                <TagPicker
+                  tags={value}
+                  setTags={onChange}
+                  placeholder="Type a topic and press enter to add"
+                  required
+                  unique
+                  border
+                  showError={errors.topics !== undefined}
+                  helperText={getErrorMessageOfArrayForm(errors.topics)}
+                />
+              </FormDataRow>
+            )
+          }
+          control={control}
+          name="topics"
+          shouldUnregister
+        />
         <FormDataRow>
-          <TagPicker
-            tags={form.topics}
-            setTags={(topics) => changeHandler('topics', topics)}
-            placeholder="Type a topic and press enter to add"
-            required
-            unique
-            border
-            onNotUniqueError={(unique) => setTopicsCheck(
-              { ...topicsCheck, isUnique: unique },
-            )}
-            showError={topicsCheck.isInvalid}
-            helperText={topicsCheck.text}
-          />
-        </FormDataRow>
-        <FormDataRow>
-          <TagPicker
-            tags={form.links}
-            setTags={(links) => changeHandler('links', links)}
-            placeholder="Type a link and press enter to add"
-            unique
-            border
-            onNotUniqueError={(unique) => setLinksCheck(
-              { ...linksCheck, isUnique: unique },
-            )}
-            showError={linksCheck.isInvalid}
-            helperText={linksCheck.text}
+          <Controller
+            render={
+              ({ field: { onChange, value } }) => (
+                <TagPicker
+                  tags={value}
+                  setTags={onChange}
+                  placeholder="Type a link and press enter to add"
+                  unique
+                  border
+                  showError={errors.links !== undefined}
+                  helperText={errors.links?.message}
+                />
+              )
+            }
+            control={control}
+            name="links"
+            shouldUnregister
           />
         </FormDataRow>
       </div>
       <div className={classes.bottomContainer}>
-        <Button variant="contained" color="primary" onClick={validateForm}>
+        <Button variant="contained" color="primary" type="submit">
           {btnTitle}
         </Button>
       </div>
-    </>
+    </form>
   );
 };
 
-const PostForm = ({ title, btnTitle, open, setOpen, form, changeHandler, onClickBtn }) => {
+const PostForm = ({ title, btnTitle, open, setOpen, onSubmit }) => {
   const classes = useStyles();
 
   const handleClose = () => setOpen(false);
@@ -244,9 +295,7 @@ const PostForm = ({ title, btnTitle, open, setOpen, form, changeHandler, onClick
         title={title}
         btnTitle={btnTitle}
         handleClose={handleClose}
-        form={form}
-        changeHandler={changeHandler}
-        onClickBtn={onClickBtn}
+        onSubmit={onSubmit}
       />
     </div>
   );

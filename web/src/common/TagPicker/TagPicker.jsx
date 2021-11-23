@@ -117,7 +117,7 @@ const TagPicker = ({
         )}
       {(showError || (unique && !areCurrentTagsUnique)) && (
         <p className={classes.errorText}>
-          {showError && (helperText.length > 0) && areCurrentTagsUnique
+          {showError && helperText && (helperText.length > 0) && areCurrentTagsUnique
             ? helperText
             : 'Tag list should contain unique items.'}
         </p>
