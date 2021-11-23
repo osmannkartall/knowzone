@@ -22,7 +22,7 @@
 - Install [Node.js, version: 14.17.4](https://nodejs.org/en/download/)
 - Install [npm](https://www.npmjs.com/package/npm)
 
-  Note: You may not have to install npm separetly but make sure that npm version is 7.20.3 if it comes with Node installation.
+  Note: You may not have to install npm separately but make sure that npm version is 7.20.3 if it comes with Node installation.
 
   Check the installed version of npm.
 
@@ -36,7 +36,7 @@
   npm install -g npm@7.20.3
   ```
 
-- Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and make sure that you are able to run mongo shell with mongosh command in a terminal after the installation. Otherwise, you may need to install separetly. [Details](https://www.mongodb.com/try/download/shell)
+- Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and make sure that you are able to run mongo shell with mongosh command in a terminal after the installation. Otherwise, you may need to install separately. [Details](https://www.mongodb.com/try/download/shell)
 - Install [MongoDB Compass](https://docs.mongodb.com/compass/current/install/). This is a nice desktop application for MongoDB. Note: This, may already come with the MongoDB Community Installer.
 
 ### VS Code Extensions
@@ -56,7 +56,7 @@
 cd server
 ```
 
-Note: Install dependecies if you run the application for the first time. Otherwise, you can skip this step.
+Note: Install dependencies if you run the application for the first time. Otherwise, you can skip this step.
 
 ```bash
 npm install

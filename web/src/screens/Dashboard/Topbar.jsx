@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { makeStyles, IconButton, MenuItem, Menu } from '@material-ui/core';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
-import SearchBar from '../SearchBar';
+import SearchBar from '../../common/SearchBar';
 import { GRAY1, GRAY3, PRIMARY } from '../../constants/colors';
 import { FE_ROUTES } from '../../constants/routes';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';

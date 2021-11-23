@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import { makeStyles, IconButton } from '@material-ui/core';
 import { useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
