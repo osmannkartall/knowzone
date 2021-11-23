@@ -14,9 +14,9 @@ import { GRAY3, WHITE } from '../../constants/colors';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
 import POST_TYPES from '../../constants/post-types';
 import { preparePost } from '../../utils';
-import PostForm from '../../common/PostForm';
+import PostForm from '../../common/PostForm/PostForm';
 import LinearProgressModal from '../../common/LinearProgressModal';
-import postFormSchema from '../../common/postFormSchema';
+import postFormSchema from '../../common/PostForm/postFormSchema';
 
 const useStyles = makeStyles((theme) => ({
   sidebar: {

@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Post from '../common/Post';
 import { useAuthState } from '../contexts/AuthContext';
-import PostForm from '../common/PostForm';
+import PostForm from '../common/PostForm/PostForm';
 import POST_TYPES from '../constants/post-types';
 import {
   getChangesInObject,
@@ -16,7 +16,7 @@ import { BE_ROUTES } from '../constants/routes';
 import ContentWrapper from '../common/ContentWrapper';
 import { IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../constants/colors';
 import LinearProgressModal from '../common/LinearProgressModal';
-import postFormSchema from '../common/postFormSchema';
+import postFormSchema from '../common/PostForm/postFormSchema';
 
 const isNewImage = (image) => image instanceof File;
 

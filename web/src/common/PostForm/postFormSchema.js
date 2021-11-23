@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import POST_TYPES from '../constants/post-types';
+import POST_TYPES from '../../constants/post-types';
 
 const postFormSchema = yup.object().shape({
   type: yup
