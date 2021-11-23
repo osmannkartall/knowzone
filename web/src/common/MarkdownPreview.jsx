@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
   },
   preview: {
     width: '100%',
-    padding: theme.spacing(0, 1),
   },
 }));
 
