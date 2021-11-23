@@ -7,7 +7,7 @@ const {
 
 function getCustomFieldsByErrorType(err) {
   let statusCode = 500;
-  let description = 'An error occured';
+  let description = 'An error occurred';
 
   if (isApiSchemaError(err)) {
     statusCode = 400;

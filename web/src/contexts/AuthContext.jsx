@@ -15,7 +15,7 @@ const userInfo = {
   photo: '',
 };
 
-const initalState = {
+const initialState = {
   ...userInfo,
   isLoggedIn: LOGIN_STATES.WAITING,
 };
@@ -57,7 +57,7 @@ const useAuthDispatch = () => {
 };
 
 const AuthProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, initalState);
+  const [state, dispatch] = useReducer(authReducer, initialState);
 
   return (
     <AuthStateContext.Provider value={state}>
