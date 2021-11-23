@@ -106,7 +106,6 @@ const filter = async (req, res, next) => {
   }
 };
 
-// Retrieve all posts by owner
 router.get('/', checkAuthentication, getPostsByOwner);
 router.post('/filter', checkAuthentication, filter);
 

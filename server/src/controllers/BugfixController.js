@@ -109,22 +109,16 @@ const deleteAll = async (_, res, next) => {
   }
 };
 
-// Create a new bugfix post
 router.post('/', checkAuthentication, uploadImages, preparePostForCreate, create);
 
-// Retrieve all bugfix posts
 router.get('/', checkAuthentication, findAll);
 
-// Retrieve a single bugfix post with id
 router.get('/:id', checkAuthentication, findById);
 
-// Update a bugfix post with id
 router.put('/:id', checkAuthentication, uploadImages, preparePostForUpdate, updateById);
 
-// Delete a bugfix post with id
 router.delete('/:id', checkAuthentication, deleteById);
 
-// Delete all bugfix posts
 router.delete('/', checkAuthentication, deleteAll);
 
 module.exports = router;

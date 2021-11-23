@@ -30,7 +30,6 @@ const loginApiSchema = Joi.object({
     .required()
     .min(8)
     .max(128)
-    // Minimum eight characters, at least one letter, one number and one special character.
     .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&_.,][\S]*$/)
     .messages({
       'string.pattern.base': 'Password should be at least 8 characters and contain at least one '
@@ -55,7 +54,6 @@ const registerApiSchema = Joi.object({
     .required()
     .min(8)
     .max(128)
-    // Minimum eight characters, at least one letter, one number and one special character.
     .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&_.,][\S]*$/)
     .messages({
       'string.pattern.base': 'Password should be at least 8 characters and contain at least one '
@@ -159,16 +157,12 @@ const checkUserSession = async (req, res) => {
   });
 };
 
-// Login a user.
 router.post('/login', login);
 
-// Register a user.
 router.post('/register', register);
 
-// Logout user.
 router.post('/logout', checkAuthentication, logout);
 
-// Check if user is logged in. If user is logged in then return user information.
 router.get('/checkUserSession/:id', checkUserSession);
 
 module.exports = router;
