@@ -10,11 +10,11 @@ import {
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
 import { Controller, useFormContext } from 'react-hook-form';
-import { WHITE, GRAY3, PRIMARY, GRAY1 } from '../constants/colors';
-import TagPicker from './TagPicker/TagPicker';
-import FileUploader from './FileUploader';
-import POST_TYPES from '../constants/post-types';
-import MarkdownEditor from './MarkdownEditor';
+import { WHITE, GRAY3, PRIMARY, GRAY1 } from '../../constants/colors';
+import TagPicker from '../TagPicker/TagPicker';
+import FileUploader from '../FileUploader';
+import POST_TYPES from '../../constants/post-types';
+import MarkdownEditor from '../MarkdownEditor';
 
 const useStyles = makeStyles((theme) => ({
   modalData: {
