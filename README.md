@@ -8,7 +8,6 @@
 - [Knowzone](#knowzone)
   - [Table of Contents](#table-of-contents)
   - [Installations](#installations)
-    - [VS Code Extensions](#vs-code-extensions)
   - [Running](#running)
     - [Node Express](#node-express)
     - [React](#react)
