@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
   description: {
+    whiteSpace: 'pre-wrap',
     overflow: 'auto',
   },
   imageContainer: {
