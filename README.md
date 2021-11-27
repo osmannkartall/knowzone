@@ -3,12 +3,21 @@
 [![Build and deploy backend to AKS](https://github.com/osmannkartall/knowzone/actions/workflows/aks-deploy-backend.yml/badge.svg?branch=master)](https://github.com/osmannkartall/knowzone/actions/workflows/aks-deploy-backend.yml)  
 [![Build and deploy frontend to AKS](https://github.com/osmannkartall/knowzone/actions/workflows/aks-deploy-frontend.yml/badge.svg?branch=master)](https://github.com/osmannkartall/knowzone/actions/workflows/aks-deploy-frontend.yml)  
 
+Knowzone is a knowledge sharing application. You can share your recent bugfixes or any new tips with others.
+
+| Create Post                            | Browse & Search Posts                          |
+| -------------------------------------- | ------------------------------------------------ |
+| ![create-post](assets/create-post.gif) | ![posts-and-search](assets/posts-and-search.gif) |
+
+- We started this project to practice MERN stack and k8s. As we move on the project, we came up with new ideas to make the application more useful. If you want to help us you can contribute to the repository.
+
+- Knowzone is not available as a service, but you can find instructions for running it locally or on Azure below.
+
 ## Table of Contents
 
 - [Knowzone](#knowzone)
   - [Table of Contents](#table-of-contents)
   - [Installations](#installations)
-    - [VS Code Extensions](#vs-code-extensions)
   - [Running](#running)
     - [Node Express](#node-express)
     - [React](#react)
@@ -38,15 +47,6 @@
 
 - Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and make sure that you are able to run mongo shell with mongosh command in a terminal after the installation. Otherwise, you may need to install separately. [Details](https://www.mongodb.com/try/download/shell)
 - Install [MongoDB Compass](https://docs.mongodb.com/compass/current/install/). This is a nice desktop application for MongoDB. Note: This, may already come with the MongoDB Community Installer.
-
-### VS Code Extensions
-
-- Path Intellisense by Christian Kohler
-- npm Intellisense by Christian Kohler
-- npm by egamma
-- ESLint by Dirk Baeumer
-- ES7 React/Redux/GraphQL/React-Native snippets by dsznajder
-- react native tools by Microsoft (This is not necessary for the web project)
 
 ## Running
 
