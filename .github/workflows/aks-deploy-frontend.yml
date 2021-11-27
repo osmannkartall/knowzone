@@ -1,12 +1,6 @@
 name: Build and deploy frontend to AKS
 
-on:
-  push:
-    branches:
-    - master
-    paths:
-    - 'web/**'
-    - 'infra/**'
+on: workflow_dispatch
 
 env:
   REGISTRY_NAME: ${{ secrets.REGISTRY_NAME }}
