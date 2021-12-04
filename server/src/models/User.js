@@ -25,7 +25,8 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      match: /^[A-Za-z ,.'-]{3,50}$/,
+      minLength: 3,
+      maxLength: 50,
     },
     bio: {
       type: String,

@@ -23,11 +23,7 @@ const registerSchema = yup.object().shape({
     .string()
     .required()
     .min(3)
-    .max(50)
-    .matches(
-      /^[A-Za-z ,.'-]+$/,
-      'Name includes invalid character.',
-    ),
+    .max(50),
 
   username: yup
     .string()
