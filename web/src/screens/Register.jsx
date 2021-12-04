@@ -22,6 +22,7 @@ const registerSchema = yup.object().shape({
   name: yup
     .string()
     .required()
+    .trim()
     .min(3)
     .max(50),
 

@@ -31,6 +31,7 @@ const basePostObject = {
     name: {
       type: String,
       required: true,
+      trim: true,
       minLength: 3,
       maxLength: 50,
     },

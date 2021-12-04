@@ -63,6 +63,7 @@ const registerApiSchema = Joi.object({
   name: Joi
     .string()
     .required()
+    .trim()
     .min(3)
     .max(50),
 
