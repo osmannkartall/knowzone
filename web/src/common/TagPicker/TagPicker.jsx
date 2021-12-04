@@ -80,8 +80,8 @@ const TagPicker = ({
 
   const handleTagsOnChange = (newTags) => {
     const isError = checkErrors(newTags);
-
-    if (!isError) {
+    const isAnyTagRemoved = newTags.length < tags.length;
+    if (!isError || isAnyTagRemoved) {
       setTags(newTags);
     }
   };
@@ -119,7 +119,7 @@ const TagPicker = ({
         <p className={classes.errorText}>
           {showError && helperText && (helperText.length > 0) && areCurrentTagsUnique
             ? helperText
-            : 'Tag list should contain unique items.'}
+            : `Tag list should contain unique items. '${tags.at(-1)}' exists in the list.`}
         </p>
       )}
     </>

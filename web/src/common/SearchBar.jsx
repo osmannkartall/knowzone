@@ -74,13 +74,13 @@ const SearchBar = () => {
   };
   const [searchOptions, setSearchOptions] = useState(emptySearchOptions);
   const [isSearchOptionsMenuOpen, setIsSearchOptionsMenuOpen] = useState(false);
-  const [isTopicsUnique, setIsTopicsUnique] = useState(true);
+  const [areTopicsUnique, setAreTopicsUnique] = useState(true);
 
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
 
-  const handleTopicsNotUniqueError = (unique) => setIsTopicsUnique(unique);
+  const handleTopicsNotUniqueError = (unique) => setAreTopicsUnique(unique);
 
   const toggleSearchOptionsMenu = () => setIsSearchOptionsMenuOpen(!isSearchOptionsMenuOpen);
 
@@ -99,7 +99,7 @@ const SearchBar = () => {
     return Object.values(rest).every((value) => isEmpty(value)) && !searchText.trim();
   };
 
-  const checkAllSearchOptions = () => !areAllSearchOptionsEmpty() && isTopicsUnique;
+  const checkAllSearchOptions = () => !areAllSearchOptionsEmpty() && areTopicsUnique;
 
   const checkDates = () => {
     if ((searchOptions.createdStartDate && searchOptions.createdEndDate)
@@ -131,7 +131,7 @@ const SearchBar = () => {
   const searchOrGiveError = () => {
     if (areAllSearchOptionsEmpty()) {
       toast.error('Could not search! Type what to search or specify search options correctly.');
-    } else if (!isTopicsUnique) {
+    } else if (!areTopicsUnique) {
       toast.error('Could not search! Topics should be unique');
     } else if (!checkDates()) {
       toast.error('Invalid dates!');
