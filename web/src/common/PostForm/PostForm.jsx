@@ -89,10 +89,6 @@ const FormData = ({ title, btnTitle, handleClose, onSubmit }) => {
 
   const watchPostType = watch('type');
 
-  const handleUniqueTopicsError = (isUnique) => {
-    setAreTopicsUnique(isUnique);
-  };
-
   const getErrorMessageOfArrayForm = (arr) => {
     if (arr) {
       if (arr.message) {
@@ -260,7 +256,7 @@ const FormData = ({ title, btnTitle, handleClose, onSubmit }) => {
                   unique
                   border
                   showError={errors.topics !== undefined}
-                  onNotUniqueError={handleUniqueTopicsError}
+                  onNotUniqueError={(isUnique) => setAreTopicsUnique(isUnique)}
                   helperText={getErrorMessageOfArrayForm(errors.topics)}
                 />
               </FormDataRow>
