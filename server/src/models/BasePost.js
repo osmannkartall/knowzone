@@ -31,7 +31,9 @@ const basePostObject = {
     name: {
       type: String,
       required: true,
-      match: /^[A-Za-z ,.'-]{3,50}$/,
+      trim: true,
+      minLength: 3,
+      maxLength: 50,
     },
   },
   links: {
