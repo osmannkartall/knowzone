@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   TextField,
   makeStyles,
@@ -77,8 +78,14 @@ const FormDataRow = ({ children }) => (
 
 const FormData = ({ title, btnTitle, handleClose, onSubmit }) => {
   const classes = useStyles();
+  const [areTopicsUnique, setAreTopicsUnique] = useState(true);
 
-  const { handleSubmit, control, watch, formState: { errors }, getValues } = useFormContext();
+  const {
+    handleSubmit,
+    control,
+    watch, formState: { errors },
+    getValues,
+  } = useFormContext();
 
   const watchPostType = watch('type');
 
@@ -99,7 +106,11 @@ const FormData = ({ title, btnTitle, handleClose, onSubmit }) => {
   };
 
   return (
-    <form className={classes.form} onSubmit={handleSubmit(onSubmit)} noValidate>
+    <form
+      className={classes.form}
+      onSubmit={handleSubmit((data) => areTopicsUnique && onSubmit(data))}
+      noValidate
+    >
       <div className={classes.topContainer}>
         <h1>{title}</h1>
         <IconButton
@@ -245,6 +256,7 @@ const FormData = ({ title, btnTitle, handleClose, onSubmit }) => {
                   unique
                   border
                   showError={errors.topics !== undefined}
+                  onNotUniqueError={(isUnique) => setAreTopicsUnique(isUnique)}
                   helperText={getErrorMessageOfArrayForm(errors.topics)}
                 />
               </FormDataRow>
