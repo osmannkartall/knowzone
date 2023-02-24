@@ -17,6 +17,7 @@ Knowzone is a knowledge sharing application. You can share your recent bugfixes 
 
 - [Knowzone](#knowzone)
   - [Table of Contents](#table-of-contents)
+  - [Using the App](#using-the-app)
   - [Installations](#installations)
   - [Running](#running)
     - [Node Express](#node-express)
@@ -25,6 +26,10 @@ Knowzone is a knowledge sharing application. You can share your recent bugfixes 
     - [Pre-requisites](#pre-requisites)
     - [Running Startup Script](#running-startup-script)
   - [Running on Azure Kubernetes Service Cluster](#running-on-azure-kubernetes-service-cluster)
+
+## Using the App
+
+Run `docker-compose up -d` command once and it's ready to go. You can access the application from the browser via `http://localhost:3000`.
 
 ## Installations
 
