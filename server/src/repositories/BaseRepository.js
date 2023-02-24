@@ -15,9 +15,12 @@ class BaseRepository {
     return this.model.findById(id);
   }
 
-  async updateById(id, update) {
-    const filter = { _id: id };
-    return this.model.findOneAndUpdate(filter, update, { new: true });
+  async find(fields, projection) {
+    return this.model.find(fields, projection, { sort: { createdAt: -1 } });
+  }
+
+  async updateById(filter, updateQuery, options) {
+    return this.model.findOneAndUpdate(filter, updateQuery, options);
   }
 
   async deleteById(id) {

@@ -3,19 +3,18 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Dashboard from './screens/Dashboard/Dashboard';
-import Tips from './screens/Tips';
-import Bugfixes from './screens/Bugfixes';
-import YourPosts from './screens/YourPosts';
-import SearchResults from './screens/SearchResults';
-import NotFound from './screens/NotFound';
+import Dashboard from './components/dashboard/Dashboard';
+import PostsByOwner from './pages/PostsByOwner';
+import SearchResults from './pages/SearchResults';
+import NotFound from './pages/NotFound';
 import { PRIMARY, WHITE } from './constants/colors';
 import { AuthProvider, useAuthDispatch } from './contexts/AuthContext';
 import { FE_ROUTES } from './constants/routes';
-import Login from './screens/Login';
-import Register from './screens/Register';
-import { PrivateRoute, AuthRoute } from './common/CustomRoute';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import { PrivateRoute, AuthRoute } from './components/common/CustomRoute';
 import { checkUserSession } from './contexts/AuthActions';
+import PostsByType from './pages/PostsByType';
 
 const theme = createTheme({
   palette: {
@@ -46,26 +45,22 @@ const Wrapper = () => {
       <BrowserRouter>
         <Switch>
           <Route exact path="/">
-            <Redirect to={`/${FE_ROUTES.HOME}`} />
+            <Dashboard>
+              <p>Hi. This is your Knowzone</p>
+            </Dashboard>
           </Route>
 
-          <PrivateRoute path={`/${FE_ROUTES.TIPS}`} redirectPath={`/${FE_ROUTES.LOGIN}`}>
+          <Route path="/posts/:type">
             <Dashboard>
-              <Tips />
+              <PostsByType />
             </Dashboard>
-          </PrivateRoute>
+          </Route>
 
-          <PrivateRoute path={`/${FE_ROUTES.BUG_FIXES}`} redirectPath={`/${FE_ROUTES.LOGIN}`}>
+          <Route path={`/${FE_ROUTES.POSTS}`}>
             <Dashboard>
-              <Bugfixes />
+              <PostsByOwner />
             </Dashboard>
-          </PrivateRoute>
-
-          <PrivateRoute path={`/${FE_ROUTES.YOUR_POSTS}`} redirectPath={`/${FE_ROUTES.LOGIN}`}>
-            <Dashboard>
-              <YourPosts />
-            </Dashboard>
-          </PrivateRoute>
+          </Route>
 
           <PrivateRoute path={`/${FE_ROUTES.SEARCH_RESULTS}`} redirectPath={`/${FE_ROUTES.LOGIN}`}>
             <Dashboard>
@@ -88,10 +83,12 @@ const Wrapper = () => {
         </Switch>
       </BrowserRouter>
       <ToastContainer
-        position="bottom-right"
+        position="top-center"
         autoClose={4000}
         draggable={false}
         progressStyle={undefined}
+        limit={3}
+        style={{ width: '600px' }}
       />
     </>
   );
