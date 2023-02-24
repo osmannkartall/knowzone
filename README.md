@@ -50,15 +50,44 @@ Run `docker-compose up -d` command once and it's ready to go. You can access the
   npm install -g npm@7.20.3
   ```
 
-- Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and make sure that you are able to run mongo shell with mongosh command in a terminal after the installation. Otherwise, you may need to install separately. [Details](https://www.mongodb.com/try/download/shell)
-- Install [MongoDB Compass](https://docs.mongodb.com/compass/current/install/). This is a nice desktop application for MongoDB. Note: This, may already come with the MongoDB Community Installer.
+- **Optional**: Install [MongoDB Compass](https://docs.mongodb.com/compass/current/install/). This is a nice desktop application for MongoDB.
 
 ## Running
+
+### MongoDB
+
+Run a mongo db in a docker container with a persistent volume called `dev-mongo-data`.
+
+```bash
+docker run -d \
+    -p 27017:27017 \
+    --name dev-mongo \
+    -v dev-mongo-data:/data/db \
+    -e MONGODB_INITDB_ROOT_USERNAME=user \
+    -e MONGODB_INITDB_ROOT_PASSWORD=pass \
+    mongo:latest
+```
+
+**Optional**: Create a connection from MongoDB Compass. Set URI to `mongodb://localhost:27017` and press the connect button.
 
 ### Node Express
 
 ```bash
 cd server
+```
+
+Create `.env` file with the values below. **Note**: Ideally, this file should not be checked in.
+
+```bash
+PORT=8000
+MONGODB_URI=mongodb://localhost:27017/knowzone
+REACT_URL=http://localhost:3000
+SESSION_SECRET=knowzone-auth-secret
+SESSION_NAME=sid
+SESSION_LIFETIME=3600000
+SESSION_SECURE=false
+PUBLIC_UPLOAD_PATH=./uploads
+IMAGE_UPLOAD_SUBPATH=images
 ```
 
 Note: Install dependencies if you run the application for the first time. Otherwise, you can skip this step.
@@ -81,6 +110,14 @@ npm run dev
 
 ```bash
 cd web
+```
+
+Create `.env` file with the values below.
+
+```bash
+ESLINT_NO_DEV_ERRORS=true
+REACT_APP_KNOWZONE_BE_URI=http://localhost:8000
+REACT_APP_KNOWZONE_FE_URI=http://localhost:3000
 ```
 
 Install dependencies.
