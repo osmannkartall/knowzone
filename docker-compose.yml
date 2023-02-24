@@ -6,10 +6,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    environment:
-      - REACT_APP_KNOWZONE_BE_URI=http://localhost:8000
-      - REACT_APP_KNOWZONE_FE_URI=http://localhost:3000
-      - ESLINT_NO_DEV_ERRORS=true
     restart: always
   server:
     build:
