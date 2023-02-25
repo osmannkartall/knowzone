@@ -1,0 +1,42 @@
+version: '3'
+services:
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: always
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URI=mongodb://user:pass@db:27017/knowzone?authSource=admin&w=1
+      - REACT_URL=http://localhost:3000
+      - SESSION_SECRET=knowzone-auth-secret
+      - SESSION_NAME=sid
+      - SESSION_LIFETIME=3600000
+      - SESSION_SECURE=false
+      - PUBLIC_UPLOAD_PATH=/opt/node_app/uploads
+      - IMAGE_UPLOAD_SUBPATH=images
+    volumes:
+      - uploads:/opt/node_app/uploads
+    depends_on:
+      - db
+    restart: always
+  db:
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - type: bind
+        source: ./db/data
+        target: /data/db
+
+volumes:
+  uploads:
