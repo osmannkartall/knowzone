@@ -12,5 +12,5 @@ yarn-debug.log*
 yarn-error.log*
 
 .DS_Store
-db/data/
+# db/data/
 server/uploads/
