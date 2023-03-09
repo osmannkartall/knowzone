@@ -4,77 +4,118 @@ import FormBuilder from '../../../components/form/FormBuilder';
 // eslint-disable-next-line jest/no-mocks-import
 import api from '../../../__mocks__/api';
 
+function getComponentTypeDropdowns() {
+  return screen.getAllByTestId('outlined-select-component-type');
+}
+
+function getComponentTypePreviews() {
+  return screen.getAllByTestId('component-type-preview');
+}
+
+async function getNameTextField(index) {
+  const names = await screen.findAllByTestId('outlined-basic-name');
+  return names[index].querySelector('input');
+}
+
+function getDropdownOptions(dropdown) {
+  fireEvent.mouseDown(within(dropdown).getByRole('button'));
+  const listbox = within(screen.getByRole('presentation')).getByRole('listbox');
+  return within(listbox).getAllByRole('option');
+}
+
+function getComponentTypeOption(dropdown, componentType) {
+  return getDropdownOptions(dropdown).find((li) => li.getAttribute('data-value') === componentType);
+}
+
+function onClickComponentTypeOption(dropdown, componentType) {
+  fireEvent.click(getComponentTypeOption(dropdown, componentType));
+}
+
 const server = setupServer(...api);
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-test('FormBuilder', async () => {
-  const setOpenMock = jest.fn();
-  const setSidebarItemsMock = jest.fn();
+test('render the create form header', () => {
+  render(<FormBuilder open />);
 
-  render(<FormBuilder open setOpen={setOpenMock} setSidebarItems={setSidebarItemsMock} />);
-
-  // Create Form Header
   expect(screen.getByText(/create form/i)).toBeInTheDocument();
+});
 
-  // Form Type Name Input
+test('change the form type name', () => {
+  render(<FormBuilder open />);
+
   const formTypeNameInput = screen.getByRole('textbox', { name: /form type name/i });
   fireEvent.change(formTypeNameInput, { target: { value: 'test form' } });
 
   expect(formTypeNameInput).toHaveValue('test form');
+});
 
-  // Component Type Dropdowns and Names
-  const componentTypeDropdowns = screen.getAllByTestId('outlined-select-component-type');
-  let current = 2;
-  let button = within(componentTypeDropdowns[current]).getByRole('button');
-  fireEvent.mouseDown(button);
-  const listbox = within(screen.getByRole('presentation')).getByRole('listbox');
-  const options = within(listbox).getAllByRole('option');
+test('render 10 component type dropdowns with valid options', () => {
+  render(<FormBuilder open />);
+
+  const componentTypeDropdowns = getComponentTypeDropdowns();
+  const options = getDropdownOptions(componentTypeDropdowns[2]);
   const optionValues = options.map((li) => li.getAttribute('data-value'));
 
-  // 10 dropdowns with valid component type options
   expect(componentTypeDropdowns.length).toBe(10);
   expect(optionValues).toEqual(['', 'editor', 'list', 'text', 'image']);
+});
 
-  // name with value images as disabled when image component type option is selected
-  const imageOption = options.find((li) => li.getAttribute('data-value') === 'image');
-  fireEvent.click(imageOption);
-  const names = await screen.findAllByTestId('outlined-basic-name');
-  let currentNameInput = names[current].querySelector('input');
+test('value of the name is images and name is disabled when component type is image', async () => {
+  render(<FormBuilder open />);
 
-  expect(currentNameInput).toHaveValue('images');
-  expect(currentNameInput).toHaveAttribute('disabled');
+  onClickComponentTypeOption(getComponentTypeDropdowns()[2], 'image');
 
-  // image option as disabled in other dropdowns when it is selected in any dropdown
-  current = 4;
-  button = within(componentTypeDropdowns[current]).getByRole('button');
-  fireEvent.mouseDown(button);
+  expect(await getNameTextField(2)).toHaveValue('images');
+  expect(await getNameTextField(2)).toHaveAttribute('disabled');
+});
+
+test('other name fields can be changeable when value of a name textfield is images', async () => {
+  render(<FormBuilder open />);
+
+  onClickComponentTypeOption(getComponentTypeDropdowns()[2], 'image');
+  fireEvent.change(await getNameTextField(4), { target: { value: 'description' } });
+
+  expect(await getNameTextField(4)).toHaveValue('description');
+});
+
+test('image options in other dropdowns are disabled when it is selected in any dropdown', () => {
+  render(<FormBuilder open />);
+
+  const componentTypeDropdowns = getComponentTypeDropdowns();
+  onClickComponentTypeOption(componentTypeDropdowns[2], 'image');
+  const imageOption = getComponentTypeOption(componentTypeDropdowns[4], 'image');
 
   expect(imageOption).toHaveClass('Mui-disabled');
+});
 
-  // change value of name field when component type is not image
-  currentNameInput = names[current].querySelector('input');
-  fireEvent.change(currentNameInput, { target: { value: 'description' } });
+test('submit form with only (images: image) field and form type name', async () => {
+  const setOpenMock = jest.fn();
+  const setSidebarItemsMock = jest.fn();
+  render(<FormBuilder open setOpen={setOpenMock} setSidebarItems={setSidebarItemsMock} />);
 
-  expect(currentNameInput).toHaveValue('description');
-
-  // FormBuilder - submit form with only images field and form type name
+  const formTypeNameInput = screen.getByRole('textbox', { name: /form type name/i });
+  fireEvent.change(formTypeNameInput, { target: { value: 'test form' } });
+  const componentTypeDropdowns = getComponentTypeDropdowns();
+  onClickComponentTypeOption(componentTypeDropdowns[2], 'image');
   const buttonCreateForm = screen.getByText('Create');
   fireEvent.click(buttonCreateForm);
+
   await waitFor(() => {
     expect(setOpenMock).toHaveBeenCalledWith(false);
     expect(setSidebarItemsMock).toHaveBeenCalled();
   });
 });
 
-test('should throw error when trying to create form without form type name', async () => {
+test('throw error when trying to create form without the form type name', async () => {
   render(<FormBuilder open />);
 
   const logSpy = jest.spyOn(console, 'log');
   const buttonCreateForm = screen.getByText('Create');
   fireEvent.click(buttonCreateForm);
+
   await waitFor(() => {
     expect(logSpy.mock.calls[0][0].message).toBe('Form type name is required');
   });
@@ -82,30 +123,21 @@ test('should throw error when trying to create form without form type name', asy
   logSpy.mockReset();
 });
 
-test('should throw error when trying to create form with same form field name', async () => {
+test('throw error when trying to create form with the same form field name', async () => {
   render(<FormBuilder open />);
+
   const formTypeNameInput = screen.getByRole('textbox', { name: /form type name/i });
   fireEvent.change(formTypeNameInput, { target: { value: 'test form' } });
-
-  const componentTypeDropdowns = screen.getAllByTestId('outlined-select-component-type');
-
-  fireEvent.mouseDown(within(componentTypeDropdowns[0]).getByRole('button'));
-  let listbox = within(screen.getByRole('presentation')).getByRole('listbox');
-  let options = within(listbox).getAllByRole('option');
-  fireEvent.click(options.find((li) => li.getAttribute('data-value') === 'editor'));
-
-  fireEvent.mouseDown(within(componentTypeDropdowns[1]).getByRole('button'));
-  listbox = within(screen.getByRole('presentation')).getByRole('listbox');
-  options = within(listbox).getAllByRole('option');
-  fireEvent.click(options.find((li) => li.getAttribute('data-value') === 'text'));
-
+  const componentTypeDropdowns = getComponentTypeDropdowns();
+  onClickComponentTypeOption(componentTypeDropdowns[0], 'editor');
+  onClickComponentTypeOption(componentTypeDropdowns[1], 'text');
   const names = await screen.findAllByTestId('outlined-basic-name');
   fireEvent.change(names[0].querySelector('input'), { target: { value: 'description' } });
   fireEvent.change(names[1].querySelector('input'), { target: { value: 'description' } });
-
   const logSpy = jest.spyOn(console, 'log');
   const buttonCreateForm = screen.getByText('Create');
   fireEvent.click(buttonCreateForm);
+
   await waitFor(() => {
     expect(logSpy.mock.calls[0][0].message).toBe('Each name of form field must be unique');
   });
@@ -113,36 +145,23 @@ test('should throw error when trying to create form with same form field name', 
   logSpy.mockReset();
 });
 
-test('should display preview of selected component types by preserving order', async () => {
+test('display preview of the selected component types by preserving order', async () => {
   render(<FormBuilder open />);
 
-  const componentTypeDropdowns = screen.getAllByTestId('outlined-select-component-type');
+  const componentTypeDropdowns = getComponentTypeDropdowns();
+  onClickComponentTypeOption(componentTypeDropdowns[0], 'editor');
+  onClickComponentTypeOption(componentTypeDropdowns[3], 'text');
+  const componentTypePreviews = getComponentTypePreviews();
 
-  fireEvent.mouseDown(within(componentTypeDropdowns[0]).getByRole('button'));
-  let listbox = within(screen.getByRole('presentation')).getByRole('listbox');
-  let options = within(listbox).getAllByRole('option');
-  fireEvent.click(options.find((li) => li.getAttribute('data-value') === 'editor'));
-
-  fireEvent.mouseDown(within(componentTypeDropdowns[3]).getByRole('button'));
-  listbox = within(screen.getByRole('presentation')).getByRole('listbox');
-  options = within(listbox).getAllByRole('option');
-  fireEvent.click(options.find((li) => li.getAttribute('data-value') === 'text'));
-
-  let componentTypePreviews = screen.getAllByTestId('component-type-preview');
   expect(componentTypePreviews.length).toBe(2);
+  await within(componentTypePreviews[0]).findByText(/this is a markdown editor/i);
+  await within(componentTypePreviews[1]).findByText(/this is a text/i);
 
-  await within(componentTypePreviews[0]).findByText(/This is a markdown editor/i);
-  await within(componentTypePreviews[1]).findByText(/This is a text/i);
+  onClickComponentTypeOption(componentTypeDropdowns[1], 'list');
+  const newComponentTypePreviews = getComponentTypePreviews();
 
-  fireEvent.mouseDown(within(componentTypeDropdowns[1]).getByRole('button'));
-  listbox = within(screen.getByRole('presentation')).getByRole('listbox');
-  options = within(listbox).getAllByRole('option');
-  fireEvent.click(options.find((li) => li.getAttribute('data-value') === 'list'));
-
-  componentTypePreviews = screen.getAllByTestId('component-type-preview');
-  expect(componentTypePreviews.length).toBe(3);
-
-  await within(componentTypePreviews[0]).findByText(/This is a markdown editor/i);
-  await within(componentTypePreviews[1]).findByText(/example1/i);
-  await within(componentTypePreviews[2]).findByText(/This is a text/i);
+  expect(newComponentTypePreviews.length).toBe(3);
+  await within(newComponentTypePreviews[0]).findByText(/this is a markdown editor/i);
+  await within(newComponentTypePreviews[1]).findByText(/example1/i);
+  await within(newComponentTypePreviews[2]).findByText(/this is a text/i);
 });

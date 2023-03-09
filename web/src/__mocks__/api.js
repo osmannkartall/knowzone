@@ -1,4 +1,3 @@
-// src/mocks/handlers.js
 import { rest } from 'msw';
 import { BE_ROUTES } from '../constants/routes';
 
