@@ -44,7 +44,7 @@ const filterSchema = Joi.object({
 
   searchText: Joi.string().max(128),
 
-  postType: Joi.string().valid('bugfix', 'tip'),
+  type: Joi.string(),
 
   topics: Joi
     .array()
@@ -106,7 +106,7 @@ const filter = async (req, res, next) => {
   }
 };
 
-router.get('/', checkAuthentication, getPostsByOwner);
-router.post('/filter', checkAuthentication, filter);
+router.get('/', getPostsByOwner);
+router.post('/filter', filter);
 
 module.exports = router;
