@@ -3,6 +3,7 @@ const FormRepository = require('../repositories/FormRepository');
 const { createSuccessResponse } = require('../utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../knowzoneErrorHandler');
 const { checkAuthentication } = require('../middlewares/checkAuthentication');
+const addSessionInfo = require('../middlewares/addSessionInfo');
 
 const formRepository = new FormRepository();
 
@@ -109,7 +110,7 @@ const deleteAll = async (_, res, next) => {
   }
 };
 
-router.post('/', checkAuthentication, create);
+router.post('/', checkAuthentication, addSessionInfo, create);
 
 router.get('/', checkAuthentication, findAll);
 

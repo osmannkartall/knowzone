@@ -10,7 +10,7 @@ const createForm = async (newForm) => {
     credentials: 'include',
   });
 
-  return await response.json();
+  return response.json();
 };
 
 export default createForm;
