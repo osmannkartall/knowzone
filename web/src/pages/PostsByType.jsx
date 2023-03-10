@@ -34,7 +34,7 @@ const PostsByType = () => {
 
     if (mounted) {
       const initializePosts = async () => {
-        const data = await getPostsByType(user.id, type);
+        const data = await getPostsByType(type);
         setPosts(data);
       };
       initializePosts();

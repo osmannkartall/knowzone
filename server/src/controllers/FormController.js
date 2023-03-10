@@ -3,13 +3,18 @@ const FormRepository = require('../repositories/FormRepository');
 const { createSuccessResponse } = require('../utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../knowzoneErrorHandler');
 const { checkAuthentication } = require('../middlewares/checkAuthentication');
-const addSessionInfo = require('../middlewares/addSessionInfo');
 
 const formRepository = new FormRepository();
 
 const create = async (req, res, next) => {
   try {
     const form = req.body;
+    form.owner = {
+      id: req.session.userId,
+      username: req.session.username,
+      name: req.session.name,
+    };
+
     await formRepository.create(form);
     res.json(createSuccessResponse('Created the record successfully'));
   } catch (err) {
@@ -23,9 +28,9 @@ const create = async (req, res, next) => {
   }
 };
 
-const findAll = async (_, res, next) => {
+const findAll = async (req, res, next) => {
   try {
-    res.send(await formRepository.findAll());
+    res.send(await formRepository.find({ 'owner.id': req.session.userId }));
   } catch (err) {
     changeToCustomError(err, {
       description: 'Error when reading record list',
@@ -39,7 +44,7 @@ const findAll = async (_, res, next) => {
 
 const findById = async (req, res, next) => {
   try {
-    res.send(await formRepository.findById(req.params.id));
+    res.send(await formRepository.findOne({ _id: req.params.id, 'owner.id': req.session.userId }));
   } catch (err) {
     changeToCustomError(err, {
       description: 'Error when finding record with the given ID',
@@ -56,10 +61,15 @@ const findById = async (req, res, next) => {
 
 const filter = async (req, res, next) => {
   try {
-    const { fields, projection, single } = req.body ?? {};
-    const result = await formRepository.find(fields, projection);
+    let fields = { 'owner.id': req.session.userId };
 
-    if (single && result.length > 0) {
+    if (req.body?.fields) {
+      fields = { ...fields, ...req.body.fields };
+    }
+
+    const result = await formRepository.find(fields, req.body.projection);
+
+    if (req.body?.single && result.length > 0) {
       res.send(result[0]);
     } else {
       res.send(result);
@@ -77,9 +87,15 @@ const filter = async (req, res, next) => {
 
 const deleteById = async (req, res, next) => {
   try {
-    await formRepository.deleteById(req.params.id);
+    const queryResult = await formRepository.deleteOne(
+      { _id: req.params.id, 'owner.id': req.session.userId },
+    );
 
-    res.json(createSuccessResponse('Deleted the record successfully'));
+    if (queryResult.deletedCount > 0) {
+      res.json(createSuccessResponse('Deleted the record successfully'));
+    } else {
+      res.json(createSuccessResponse('No record for the given ID'));
+    }
   } catch (err) {
     changeToCustomError(err, {
       description: 'Error when deleting record with the given ID',
@@ -94,9 +110,9 @@ const deleteById = async (req, res, next) => {
   }
 };
 
-const deleteAll = async (_, res, next) => {
+const deleteAll = async (req, res, next) => {
   try {
-    await formRepository.deleteAll();
+    await formRepository.deleteMany({ 'owner.id': req.session.userId });
 
     res.json(createSuccessResponse('Deleted record list successfully'));
   } catch (err) {
@@ -110,7 +126,7 @@ const deleteAll = async (_, res, next) => {
   }
 };
 
-router.post('/', checkAuthentication, addSessionInfo, create);
+router.post('/', checkAuthentication, create);
 
 router.get('/', checkAuthentication, findAll);
 

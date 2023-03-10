@@ -32,7 +32,7 @@ const PostsByOwner = () => {
 
     if (mounted) {
       const initializePosts = async () => {
-        const data = await getPosts(user.id);
+        const data = await getPosts();
         setPosts(data);
       };
       initializePosts();

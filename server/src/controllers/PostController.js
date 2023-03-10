@@ -26,9 +26,13 @@ const create = async (_, res, next) => {
 const findAll = async (req, res, next) => {
   try {
     const { type } = req.query;
+    const { userId } = req.session;
 
-    if (type) res.send(await postRepository.find({ type }));
-    else res.send(await postRepository.findAll());
+    if (type) {
+      res.send(await postRepository.find({ type, 'owner.id': userId }));
+    } else {
+      res.send(await postRepository.find({ 'owner.id': userId }));
+    }
   } catch (err) {
     changeToCustomError(err, {
       description: 'Error when reading record list',
@@ -42,7 +46,7 @@ const findAll = async (req, res, next) => {
 
 const findById = async (req, res, next) => {
   try {
-    res.send(await postRepository.findById(req.params.id));
+    res.send(await postRepository.findOne({ _id: req.params.id, 'owner.id': req.session.userId }));
   } catch (err) {
     changeToCustomError(err, {
       description: 'Error when finding record with the given ID',
@@ -60,7 +64,9 @@ const findById = async (req, res, next) => {
 const updateById = async (req, res, next) => {
   try {
     const { content, ...rest } = res.locals.data;
-    const post = await postRepository.findById(req.params.id);
+    const post = await postRepository.findOne(
+      { _id: req.params.id, 'owner.id': req.session.userId },
+    );
 
     if (!post) {
       throw Error('Error when updating record with the given ID');
@@ -89,9 +95,15 @@ const updateById = async (req, res, next) => {
 
 const deleteById = async (req, res, next) => {
   try {
-    await postRepository.deleteById(req.params.id);
+    const queryResult = await postRepository.deleteOne(
+      { _id: req.params.id, 'owner.id': req.session.userId },
+    );
 
-    res.json(createSuccessResponse('Deleted the record successfully'));
+    if (queryResult.deletedCount > 0) {
+      res.json(createSuccessResponse('Deleted the record successfully'));
+    } else {
+      res.json(createSuccessResponse('No record for the given ID'));
+    }
   } catch (err) {
     changeToCustomError(err, {
       description: 'Error when deleting record with the given ID',
@@ -106,9 +118,9 @@ const deleteById = async (req, res, next) => {
   }
 };
 
-const deleteAll = async (_, res, next) => {
+const deleteAll = async (req, res, next) => {
   try {
-    await postRepository.deleteAll();
+    await postRepository.deleteMany({ 'owner.id': req.session.userId });
 
     res.json(createSuccessResponse('Deleted record list successfully'));
   } catch (err) {

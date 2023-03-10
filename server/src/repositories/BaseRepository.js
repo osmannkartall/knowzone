@@ -19,16 +19,20 @@ class BaseRepository {
     return this.model.find(fields, projection, { sort: { createdAt: -1 } });
   }
 
+  async findOne(conditions, projection) {
+    return this.model.findOne(conditions, projection);
+  }
+
   async updateById(filter, updateQuery, options) {
     return this.model.findOneAndUpdate(filter, updateQuery, options);
   }
 
-  async deleteById(id) {
-    return this.model.findByIdAndRemove(id);
+  async deleteOne(conditions) {
+    return this.model.deleteOne(conditions);
   }
 
-  async deleteAll() {
-    return this.model.deleteMany({});
+  async deleteMany(conditions) {
+    return this.model.deleteMany(conditions);
   }
 }
 
