@@ -45,22 +45,20 @@ const Wrapper = () => {
       <BrowserRouter>
         <Switch>
           <Route exact path="/">
-            <Dashboard>
-              <p>Hi. This is your Knowzone</p>
-            </Dashboard>
+            <Redirect to={`/${FE_ROUTES.HOME}`} />
           </Route>
 
-          <Route path="/posts/:type">
+          <PrivateRoute path={`/${FE_ROUTES.POSTS}/:type`} redirectPath={`/${FE_ROUTES.LOGIN}`}>
             <Dashboard>
               <PostsByType />
             </Dashboard>
-          </Route>
+          </PrivateRoute>
 
-          <Route path={`/${FE_ROUTES.POSTS}`}>
+          <PrivateRoute path={`/${FE_ROUTES.POSTS}`} redirectPath={`/${FE_ROUTES.LOGIN}`}>
             <Dashboard>
               <PostsByOwner />
             </Dashboard>
-          </Route>
+          </PrivateRoute>
 
           <PrivateRoute path={`/${FE_ROUTES.SEARCH_RESULTS}`} redirectPath={`/${FE_ROUTES.LOGIN}`}>
             <Dashboard>

@@ -1,11 +1,13 @@
 const { Schema, model } = require('mongoose');
 const { transformToJSON } = require('../utils');
+const owner = require('./Owner');
 const SCHEMA_CONFIGS = require('./schemaConfigs');
 
 const COMPONENT_TYPES = ['text', 'list', 'editor', 'image'];
 
 const FormSchema = Schema(
   {
+    owner,
     type: {
       type: String,
       required: true,

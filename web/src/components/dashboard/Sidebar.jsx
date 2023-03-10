@@ -81,7 +81,7 @@ const SidebarItem = ({ text }) => {
 
 const SidebarItemList = ({ sidebarItems }) => (
   <List>
-    {sidebarItems.map((sidebarItem) => (
+    {(sidebarItems ?? []).map((sidebarItem) => (
       <SidebarItem
         key={sidebarItem.id}
         text={sidebarItem.type}

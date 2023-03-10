@@ -1,6 +1,7 @@
 const { Schema, model, Error } = require('mongoose');
 const { isLengthBetween, isArrayUnique, transformToJSON } = require('../utils');
 const Form = require('./Form');
+const owner = require('./Owner');
 const SCHEMA_CONFIGS = require('./schemaConfigs');
 
 const MAX_NUM_TOPICS = 5;
@@ -24,6 +25,7 @@ const validateArrayUniqueness = () => ({
 
 const PostSchema = new Schema(
   {
+    owner,
     type: {
       type: String,
       required: true,
