@@ -72,8 +72,7 @@ const PostSchema = new Schema(
         {
           async validator(v) {
             const formRecord = await Form.findOne(
-              { type: this.type },
-              // TODO: add this.owner.id check
+              { type: this.type, 'owner.id': this.owner.id },
               { type: 0, createdAt: 0, updatedAt: 0 },
             );
 
