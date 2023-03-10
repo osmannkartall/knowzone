@@ -3,6 +3,7 @@ const PostRepository = require('../repositories/PostRepository');
 const { uploadImages, preparePostForCreate, preparePostForUpdate } = require('../middlewares/uploader');
 const { createSuccessResponse } = require('../utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../knowzoneErrorHandler');
+const { checkAuthentication } = require('../middlewares/checkAuthentication');
 
 const postRepository = new PostRepository();
 
@@ -121,16 +122,16 @@ const deleteAll = async (_, res, next) => {
   }
 };
 
-router.post('/', uploadImages, preparePostForCreate, create);
+router.post('/', checkAuthentication, uploadImages, preparePostForCreate, create);
 
-router.get('/', findAll);
+router.get('/', checkAuthentication, findAll);
 
-router.get('/:id', findById);
+router.get('/:id', checkAuthentication, findById);
 
-router.put('/:id', uploadImages, preparePostForUpdate, updateById);
+router.put('/:id', checkAuthentication, uploadImages, preparePostForUpdate, updateById);
 
-router.delete('/:id', deleteById);
+router.delete('/:id', checkAuthentication, deleteById);
 
-router.delete('/', deleteAll);
+router.delete('/', checkAuthentication, deleteAll);
 
 module.exports = router;

@@ -106,7 +106,7 @@ const filter = async (req, res, next) => {
   }
 };
 
-router.get('/', getPostsByOwner);
-router.post('/filter', filter);
+router.get('/', checkAuthentication, getPostsByOwner);
+router.post('/filter', checkAuthentication, filter);
 
 module.exports = router;

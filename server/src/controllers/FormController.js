@@ -2,6 +2,7 @@ const router = require('express').Router();
 const FormRepository = require('../repositories/FormRepository');
 const { createSuccessResponse } = require('../utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../knowzoneErrorHandler');
+const { checkAuthentication } = require('../middlewares/checkAuthentication');
 
 const formRepository = new FormRepository();
 
@@ -108,16 +109,16 @@ const deleteAll = async (_, res, next) => {
   }
 };
 
-router.post('/', create);
+router.post('/', checkAuthentication, create);
 
-router.get('/', findAll);
+router.get('/', checkAuthentication, findAll);
 
-router.post('/filter', filter);
+router.post('/filter', checkAuthentication, filter);
 
-router.get('/:id', findById);
+router.get('/:id', checkAuthentication, findById);
 
-router.delete('/:id', deleteById);
+router.delete('/:id', checkAuthentication, deleteById);
 
-router.delete('/', deleteAll);
+router.delete('/', checkAuthentication, deleteAll);
 
 module.exports = router;
