@@ -1,33 +1,9 @@
 /* eslint-env jest */
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const FormRepository = require('../../src/repositories/FormRepository');
 const SCHEMA_CONFIGS = require('../../src/models/schemaConfigs');
 
 const formRepository = new FormRepository();
-
-let mongoServer;
-
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-
-  const mongooseOpts = {
-    useNewUrlParser: true,
-    autoReconnect: true,
-    reconnectTries: Number.MAX_VALUE,
-    reconnectInterval: 1000,
-  };
-
-  await mongoose.connect(mongoServer.getUri(), mongooseOpts);
-});
-
-afterAll(async () => {
-  if (mongoServer) {
-    await mongoose.connection.dropDatabase();
-    await mongoose.connection.close();
-    await mongoServer.stop();
-  }
-});
 
 function create(form) {
   return async () => { await formRepository.create(form); };
@@ -294,7 +270,7 @@ describe('Form Repository - create', () => {
 
   it('should get the form after creating', async () => {
     const form = {
-      type: 'abc',
+      type: 'abc2',
       owner: {
         id: '222222222222222222222222',
         username: 'john_doe',
@@ -307,7 +283,7 @@ describe('Form Repository - create', () => {
     };
 
     await formRepository.create(form);
-    const newForm = await formRepository.findOne({ type: 'abc' });
+    const newForm = await formRepository.findOne({ type: 'abc2' });
     expect(form.fields.description).toBe(newForm.fields.description);
   });
 
