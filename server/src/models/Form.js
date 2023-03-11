@@ -40,15 +40,15 @@ const FormSchema = Schema(
         {
           validator(v) {
             const isAnyInvalidKeyOrValue = Object.entries(v).some(([key, value]) => (
-              (typeof key !== 'string' || key.length === 0)
+              (typeof key !== 'string' || key.length === 0) // This might be redundant
                 || (typeof value !== 'string' || value.length === 0)
                 || (!COMPONENT_TYPES.includes(value)
-                || (key.length > 100))
+                || (key.length > SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS))
             ));
 
             return !isAnyInvalidKeyOrValue;
           },
-          message: `name and component type must be non-empty string. Valid component types are: ${COMPONENT_TYPES.join(', ')}. name cannot be longer than 100.`,
+          message: `name and component type must be non-empty string. Valid component types are: ${COMPONENT_TYPES.join(', ')}. name cannot be longer than ${SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS}.`,
         },
       ],
     },
