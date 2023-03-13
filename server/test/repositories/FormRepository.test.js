@@ -1,7 +1,7 @@
 /* eslint-env jest */
 const mongoose = require('mongoose');
 const FormRepository = require('../../src/repositories/FormRepository');
-const SCHEMA_CONFIGS = require('../../src/models/schemaConfigs');
+const { SCHEMA_CONFIGS } = require('../../src/models/schemaConfigs');
 
 const formRepository = new FormRepository();
 
@@ -17,7 +17,6 @@ describe('Form Repository - create', () => {
   it('should throw error when there is no owner', () => {
     const formWithoutOwner = {
       type: 'abc',
-      topics: ['topic1'],
       fields: {
         description: 'text',
         solution: 'editor',
@@ -34,7 +33,6 @@ describe('Form Repository - create', () => {
         name: 'john',
       },
       type: 'abc',
-      topics: ['topic1'],
       fields: {
         description: 'text',
         solution: 'editor',
@@ -51,7 +49,6 @@ describe('Form Repository - create', () => {
         username: 'john_doe',
         name: 'John Doe',
       },
-      topics: ['topic1'],
       fields: {
         description: 'text',
         solution: 'editor',
@@ -69,7 +66,6 @@ describe('Form Repository - create', () => {
         name: 'John Doe',
       },
       type: 'a form',
-      topics: ['topic1'],
       fields: {
         1: 'text',
         2: 'text',
@@ -96,14 +92,13 @@ describe('Form Repository - create', () => {
         name: 'John Doe',
       },
       type: 'a form',
-      topics: ['topic1'],
       fields: {},
     };
 
     expect(create(formWithoutAField)).rejects.toThrow(mongoose.Error.ValidationError);
   });
 
-  it('should throw error when fields undefined', () => {
+  it('should throw error when fields is undefined', () => {
     const formWithUndefinedFields = {
       owner: {
         id: '222222222222222222222222',
@@ -111,7 +106,6 @@ describe('Form Repository - create', () => {
         name: 'John Doe',
       },
       type: 'a form',
-      topics: ['topic1'],
     };
 
     expect(create(formWithUndefinedFields)).rejects.toThrow(mongoose.Error.ValidationError);
@@ -125,7 +119,6 @@ describe('Form Repository - create', () => {
         name: 'John Doe',
       },
       type: (new Array(SCHEMA_CONFIGS.MAX_LEN_TYPE + 10)).join('-'),
-      topics: ['topic1'],
       fields: {
         1: 'text',
       },
@@ -142,7 +135,6 @@ describe('Form Repository - create', () => {
         name: 'John Doe',
       },
       type: (new Array(SCHEMA_CONFIGS.MIN_LEN_TYPE - 1)).join('-'),
-      topics: ['topic1'],
       fields: {
         1: 'text',
       },
@@ -158,7 +150,6 @@ describe('Form Repository - create', () => {
         username: 'john_doe',
         name: 'John Doe',
       },
-      topics: ['topic1'],
       fields: {
         1: 'text',
       },
@@ -179,7 +170,6 @@ describe('Form Repository - create', () => {
         username: 'john_doe',
         name: 'John Doe',
       },
-      topics: ['topic1'],
     };
 
     formWithInvalidTypeOfFields.fields = [1, 2];
@@ -205,7 +195,6 @@ describe('Form Repository - create', () => {
         username: 'john_doe',
         name: 'John Doe',
       },
-      topics: ['topic1'],
       fields: {
         1: 'text',
         [invalidKey]: 'editor',
@@ -223,7 +212,6 @@ describe('Form Repository - create', () => {
         username: 'john_doe',
         name: 'John Doe',
       },
-      topics: ['topic1'],
       fields: {
         1: 'text',
         2: 'non existing component type',
@@ -241,7 +229,6 @@ describe('Form Repository - create', () => {
         username: 'john_doe',
         name: 'John Doe',
       },
-      topics: ['topic1'],
       fields: {
         1: 'text',
         2: null,
@@ -259,13 +246,30 @@ describe('Form Repository - create', () => {
         username: 'john_doe',
         name: 'John Doe',
       },
-      topics: ['topic1'],
       fields: {
         description: 'text',
       },
     };
 
     expect(create(form)).not.toThrow();
+  });
+
+  it('should throw error when there are more than one image component in fields', () => {
+    const formWithMultipleImage = {
+      type: 'abc5',
+      owner: {
+        id: '222222222222222222222222',
+        username: 'john_doe',
+        name: 'John Doe',
+      },
+      fields: {
+        description: 'text',
+        testImages1: 'image',
+        testImages2: 'image',
+      },
+    };
+
+    expect(create(formWithMultipleImage)).rejects.toThrow('fields must have at most one image component');
   });
 
   it('should get the form after creating', async () => {
@@ -276,7 +280,6 @@ describe('Form Repository - create', () => {
         username: 'john_doe',
         name: 'John Doe',
       },
-      topics: ['topic1'],
       fields: {
         description: 'text',
       },
@@ -295,7 +298,6 @@ describe('Form Repository - create', () => {
         username: 'john_doe',
         name: 'John Doe',
       },
-      topics: ['topic1'],
       fields: {
         description: 'text',
       },

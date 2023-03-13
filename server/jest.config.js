@@ -6,4 +6,7 @@ module.exports = {
   setupFilesAfterEnv: [
     '<rootDir>/test/setupFile.js',
   ],
+  maxWorkers: 4,
+  verbose: true,
+  detectOpenHandles: true,
 };

@@ -1,9 +1,11 @@
 const { Schema, model } = require('mongoose');
 const { transformToJSON } = require('../utils');
 const owner = require('./Owner');
-const SCHEMA_CONFIGS = require('./schemaConfigs');
+const { SCHEMA_CONFIGS } = require('./schemaConfigs');
 
 const COMPONENT_TYPES = ['text', 'list', 'editor', 'image'];
+
+let numImageComponent = 0;
 
 const FormSchema = Schema(
   {
@@ -39,16 +41,28 @@ const FormSchema = Schema(
         },
         {
           validator(v) {
-            const isAnyInvalidKeyOrValue = Object.entries(v).some(([key, value]) => (
-              (typeof key !== 'string' || key.length === 0) // This might be redundant
-                || (typeof value !== 'string' || value.length === 0)
+            numImageComponent = 0;
+            const isAnyInvalidKeyOrValue = Object.entries(v).some(([key, value]) => {
+              if (value === 'image') {
+                numImageComponent += 1;
+              }
+
+              return (
+                (typeof value !== 'string' || value.length === 0)
                 || (!COMPONENT_TYPES.includes(value)
                 || (key.length > SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS))
-            ));
+              );
+            });
 
             return !isAnyInvalidKeyOrValue;
           },
           message: `name and component type must be non-empty string. Valid component types are: ${COMPONENT_TYPES.join(', ')}. name cannot be longer than ${SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS}.`,
+        },
+        {
+          validator() {
+            return numImageComponent <= 1;
+          },
+          message: 'fields must have at most one image component',
         },
       ],
     },

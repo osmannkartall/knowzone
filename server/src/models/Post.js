@@ -2,16 +2,7 @@ const { Schema, model, Error } = require('mongoose');
 const { isLengthBetween, isArrayUnique, transformToJSON } = require('../utils');
 const Form = require('./Form');
 const owner = require('./Owner');
-const SCHEMA_CONFIGS = require('./schemaConfigs');
-
-const MAX_NUM_TOPICS = 5;
-const MIN_NUM_TOPICS = 1;
-const MAX_NUM_IMAGES = 2;
-const MAX_LEN_TEXT = 100;
-const MIN_LEN_TEXT = 1;
-const MAX_LEN_EDITOR = 100;
-const MIN_LEN_EDITOR = 1;
-const MAX_SIZE_LIST = 5;
+const { SCHEMA_CONFIGS, POST_SCHEMA_CONFIGS } = require('./schemaConfigs');
 
 const validateArrayLength = (name, max, min = 0) => ({
   validator: (items) => isLengthBetween(items, max, min),
@@ -37,13 +28,13 @@ const PostSchema = new Schema(
         {
           type: String,
           // TODO: it should not be only ascii.
-          match: /^@?([a-z0-9-]){1,30}$/,
+          match: new RegExp(`^@?([a-z0-9-]){1,${POST_SCHEMA_CONFIGS.MAX_LEN_TOPIC}}$`),
           lowercase: true,
         },
       ],
       required: true,
       validate: [
-        validateArrayLength('topics', MAX_NUM_TOPICS, MIN_NUM_TOPICS),
+        validateArrayLength('topics', POST_SCHEMA_CONFIGS.MAX_NUM_TOPICS, POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS),
         validateArrayUniqueness(),
       ],
     },
@@ -102,13 +93,13 @@ const PostSchema = new Schema(
                   isAnyInvalidValue = true;
                 }
 
-                if (value?.length > MAX_LEN_TEXT) {
-                  messages.push(`length of value of a text type field can't be longer than ${MAX_LEN_TEXT}`);
+                if (value?.length > POST_SCHEMA_CONFIGS.MAX_LEN_TEXT) {
+                  messages.push(`length of value of a text type field can't be longer than ${POST_SCHEMA_CONFIGS.MAX_LEN_TEXT}`);
                   isAnyInvalidValue = true;
                 }
 
-                if (value?.length < MIN_LEN_TEXT) {
-                  messages.push(`length of a value of a text type field can't be smaller than ${MIN_LEN_TEXT}`);
+                if (value?.length < POST_SCHEMA_CONFIGS.MIN_LEN_TEXT) {
+                  messages.push(`length of a value of a text type field can't be smaller than ${POST_SCHEMA_CONFIGS.MIN_LEN_TEXT}`);
                   isAnyInvalidValue = true;
                 }
               } else if (formRecord.fields[key] === 'list') {
@@ -117,8 +108,8 @@ const PostSchema = new Schema(
                   isAnyInvalidValue = true;
                 }
 
-                if (value?.length > MAX_SIZE_LIST) {
-                  messages.push(`number of elements in a list type field can't be greater than ${MAX_SIZE_LIST}`);
+                if (value?.length > POST_SCHEMA_CONFIGS.MAX_NUM_LIST) {
+                  messages.push(`number of elements in a list type field can't be greater than ${POST_SCHEMA_CONFIGS.MAX_NUM_LIST}`);
                   isAnyInvalidValue = true;
                 }
               } else if (formRecord.fields[key] === 'editor') {
@@ -127,13 +118,13 @@ const PostSchema = new Schema(
                   isAnyInvalidValue = true;
                 }
 
-                if (value?.length > MAX_LEN_EDITOR) {
-                  messages.push(`length of value of a editor type field can't be longer than ${MAX_LEN_EDITOR}`);
+                if (value?.length > POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR) {
+                  messages.push(`length of value of a editor type field can't be longer than ${POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR}`);
                   isAnyInvalidValue = true;
                 }
 
-                if (value?.length < MIN_LEN_EDITOR) {
-                  messages.push(`length of a value of a editor type field can't be smaller than ${MIN_LEN_EDITOR}`);
+                if (value?.length < POST_SCHEMA_CONFIGS.MIN_LEN_EDITOR) {
+                  messages.push(`length of a value of a editor type field can't be smaller than ${POST_SCHEMA_CONFIGS.MIN_LEN_EDITOR}`);
                   isAnyInvalidValue = true;
                 }
               }
@@ -157,7 +148,7 @@ const PostSchema = new Schema(
             },
           },
         ],
-        validate: validateArrayLength('images', MAX_NUM_IMAGES),
+        validate: validateArrayLength('images', POST_SCHEMA_CONFIGS.MAX_NUM_IMAGES),
       },
     },
   },
