@@ -106,6 +106,7 @@ const TypeFormPart = ({ formTypes }) => {
           ({ field: { onChange, onBlur, value, name } }) => (
             <TextField
               id="outlined-select-post-type"
+              data-testid="outlined-select-post-type"
               select
               label="Post Type"
               onChange={onChange}
@@ -145,6 +146,7 @@ const TextFormPart = ({ field }) => {
           ({ field: { onChange, onBlur, value, name } }) => (
             <TextField
               variant="outlined"
+              title={field}
               fullWidth
               multiline
               minRows={4}
@@ -176,15 +178,18 @@ const ListFormPart = ({ field }) => {
       <Controller
         render={
           ({ field: { onChange, value } }) => (
-            <TagPicker
-              tags={Array.isArray(value) ? value : []}
-              setTags={onChange}
-              placeholder="Type an item and press enter to add"
-              unique
-              border
-              showError={errors[field] !== undefined}
-              helperText={errors[field]?.message}
-            />
+            <div title={field}>
+              <TagPicker
+                id={field}
+                tags={Array.isArray(value) ? value : []}
+                setTags={onChange}
+                placeholder="Type an item and press enter to add"
+                unique
+                border
+                showError={errors[field] !== undefined}
+                helperText={errors[field]?.message}
+              />
+            </div>
           )
         }
         control={control}
@@ -203,7 +208,6 @@ const EditorFormPart = ({ field }) => {
   return (
     <FormDataRow>
       <InputLabel
-        required
         className={classes.label}
       >
         {field}
@@ -235,7 +239,7 @@ const ImageFormPart = ({ field }) => {
   const { control } = useFormContext();
 
   return (
-    <div className={classes.fileUploaderContainer}>
+    <div className={classes.fileUploaderContainer} title={field}>
       <Controller
         render={
           ({ field: { onChange, value } }) => (
