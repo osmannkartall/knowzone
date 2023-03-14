@@ -1,22 +1,3 @@
-import POST_TYPES from './constants/post-types';
-
-export function preparePost(form) {
-  const { route } = POST_TYPES.get(form.type);
-  const post = {
-    description: form.description,
-    images: form.images,
-    topics: form.topics,
-    links: form.links,
-  };
-
-  if (form.type === POST_TYPES.get('bugfix').value) {
-    post.error = form.error;
-    post.solution = form.solution;
-  }
-
-  return { post, route };
-}
-
 export function convertDate(dateStr) {
   return new Date(dateStr).toLocaleString('en-GB');
 }
@@ -61,11 +42,11 @@ export function getChangesInObject(oldObject, newObject) {
   return diffObject;
 }
 
-export function isObjectEmptyOrNotValid(object) {
+export function isObjectNotEmptyAndValid(object) {
   const isValid = isValidObject(object);
   const isEmpty = isValid && Object.keys(object).length < 1;
 
-  return isEmpty || !isValid;
+  return !isEmpty && isValid;
 }
 
 export function areObjectsEqual(object1, object2) {

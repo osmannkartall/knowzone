@@ -6,6 +6,10 @@ function maxLengthMessage(len) {
   return `Received value longer than maximum allowed length(${len}).`;
 }
 
+function minLengthMessage(len) {
+  return `Received value longer than maximum allowed length(${len}).`;
+}
+
 function transformToJSON(schema) {
   schema.set('toJSON', {
     transform(_, ret) {

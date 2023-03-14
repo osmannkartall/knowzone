@@ -11,7 +11,7 @@
     "@pathofdev/react-tag-input": "^1.0.7",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
+    "@testing-library/user-event": "^14.4.3",
     "date-fns": "^2.23.0",
     "eslint-config-airbnb": "^18.2.1",
     "lodash": "^4.17.21",
@@ -31,7 +31,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --verbose",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -77,5 +77,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "msw": "^1.1.0"
   }
 }

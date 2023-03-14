@@ -1,10 +1,6 @@
-import POST_TYPES from './post-types';
-
 export const FE_ROUTES = Object.freeze({
-  HOME: POST_TYPES.get('tip').route,
-  TIPS: POST_TYPES.get('tip').route,
-  BUG_FIXES: POST_TYPES.get('bugfix').route,
-  YOUR_POSTS: 'posts',
+  HOME: 'posts',
+  POSTS: 'posts',
   SEARCH_RESULTS: 'results',
   NOT_FOUND: '404',
   LOGIN: 'login',
@@ -12,12 +8,12 @@ export const FE_ROUTES = Object.freeze({
 });
 
 export const BE_ROUTES = Object.freeze({
-  TIPS: POST_TYPES.get('tip').route,
-  BUG_FIXES: POST_TYPES.get('bugfix').route,
   SEARCH: 'search',
   SEARCH_FILTER: 'search/filter',
+  FORMS: 'forms',
   LOGIN: 'login',
   LOGOUT: 'logout',
   REGISTER: 'register',
   CHECK_USER_SESSION: 'checkUserSession',
+  POSTS: 'posts',
 });

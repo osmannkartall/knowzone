@@ -1,26 +1,12 @@
-const { ObjectId } = require('mongoose').Types;
-const TipModel = require('../models/Tip');
-const BugfixModel = require('../models/Bugfix');
+const PostModel = require('../models/Post');
 
 class SearchService {
   static async getPostsByOwner(ownerId) {
-    const posts = await TipModel.aggregate([
-      { $match: { 'owner.id': ObjectId(ownerId) } },
-      { $addFields: { type: 'tip', id: '$_id' } },
-      {
-        $unionWith: {
-          coll: 'bugfixes',
-          pipeline: [
-            { $match: { 'owner.id': ObjectId(ownerId) } },
-            { $addFields: { type: 'bugfix', id: '$_id' } },
-          ],
-        },
-      },
-      { $sort: { createdAt: -1, updatedAt: -1 } },
-      { $project: { _id: 0, __v: 0 } },
-    ]);
-
-    return posts;
+    return PostModel(
+      { owner: { id: ownerId } },
+      { _id: 0, __v: 0 },
+      { createdAt: -1, updatedAt: -1 },
+    );
   }
 
   static async filter(info) {
@@ -30,12 +16,6 @@ class SearchService {
     if ('searchText' in filterInfo) {
       searchQuery = { $regex: `\\b${filterInfo.searchText.trim()}\\b`, $options: 'i' };
       delete filterInfo.searchText;
-    }
-
-    let postType = null;
-    if ('postType' in filterInfo) {
-      postType = filterInfo.postType;
-      delete filterInfo.postType;
     }
 
     let query = {};
@@ -61,7 +41,7 @@ class SearchService {
         const date = new Date(filterInfo.modifiedEndDate);
         date.setUTCHours(23, 59, 59, 999);
         filterQuery.updatedAt.$lte = date;
-      } else {
+      } else if (k === 'type') {
         filterQuery[k] = { $regex: `\\b${v.trim()}\\b`, $options: 'i' };
       }
     });
@@ -77,33 +57,22 @@ class SearchService {
     if (searchQuery) {
       searchQueryFilter.$or = [
         { 'owner.username': searchQuery },
-        { description: searchQuery },
       ];
-      if (postType !== 'tip') {
-        searchQueryFilter.$or.push({ error: searchQuery });
-        searchQueryFilter.$or.push({ solution: searchQuery });
-      }
+      // TODO: Add fields of content object except content.images to the searchQuery
     }
 
-    if (Object.keys(searchQueryFilter).length && Object.keys(filterQuery).length) {
+    const isSearchText = Object.keys(searchQueryFilter).length;
+    const isFilteredUsed = Object.keys(filterQuery).length;
+
+    if (isSearchText && isFilteredUsed) {
       query.$and = [searchQueryFilter, filterQuery];
-    } else if (Object.keys(searchQueryFilter).length) {
+    } else if (isSearchText) {
       query = searchQueryFilter;
     } else {
       query = filterQuery;
     }
 
-    if (postType === 'bugfix') {
-      return BugfixModel.find(query).sort({ createdAt: -1 });
-    }
-    if (postType === 'tip') {
-      return TipModel.find(query).sort({ createdAt: -1 });
-    }
-    const bugfixPosts = await BugfixModel.find(query);
-    const tipPosts = await TipModel.find(query);
-    const posts = Array.from(new Set(bugfixPosts.concat(tipPosts)));
-    posts.sort((a, b) => (new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1));
-    return posts;
+    return PostModel.find(query).sort({ createdAt: -1 });
   }
 }
 

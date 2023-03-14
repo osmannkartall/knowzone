@@ -44,7 +44,7 @@ const filterSchema = Joi.object({
 
   searchText: Joi.string().max(128),
 
-  postType: Joi.string().valid('bugfix', 'tip'),
+  type: Joi.string(),
 
   topics: Joi
     .array()

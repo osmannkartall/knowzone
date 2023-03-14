@@ -3,6 +3,7 @@ const multer = require('multer');
 const KNOWZONE_ERROR_TYPES = Object.freeze({
   AUTH: 'AUTH',
   POST: 'POST',
+  FORM: 'FORM',
   SEARCH: 'SEARCH',
   NOT_FOUND: 'NOT FOUND',
   UPLOAD: 'UPLOAD',
@@ -14,6 +15,10 @@ function isApiSchemaError(err) {
 
 function isMulterError(err) {
   return err instanceof multer.MulterError;
+}
+
+function isSchemaError(err) {
+  return err.name === 'ValidationError';
 }
 
 function isCustomError(err) {
@@ -59,6 +64,7 @@ module.exports = {
   KNOWZONE_ERROR_TYPES,
   isApiSchemaError,
   isMulterError,
+  isSchemaError,
   isCustomError,
   hasLowerLayerCustomError,
   changeToCustomError,
