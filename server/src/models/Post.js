@@ -50,12 +50,6 @@ const PostSchema = new Schema(
         },
         {
           validator(v) {
-            return Object.keys(v).length;
-          },
-          message: 'content must have at least 1 key',
-        },
-        {
-          validator(v) {
             return Object.keys(v).length <= SCHEMA_CONFIGS.MAX_NUM_FIELD;
           },
           message: `content must have at most ${SCHEMA_CONFIGS.MAX_NUM_FIELD} keys`,
@@ -73,6 +67,10 @@ const PostSchema = new Schema(
 
             if (!formRecord.fields.images) {
               delete v.images;
+            }
+
+            if (!Object.keys(v).length) {
+              throw new Error('content must have at least 1 key');
             }
 
             const formFields = Object.keys(formRecord.fields);
