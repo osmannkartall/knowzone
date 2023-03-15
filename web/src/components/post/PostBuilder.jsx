@@ -137,7 +137,7 @@ const TypeFormPart = ({ formTypes }) => {
 };
 
 const TextFormPart = ({ field }) => {
-  const { control, formState: { errors } } = useFormContext();
+  const { control } = useFormContext();
 
   return field && (
     <FormDataRow>
@@ -157,13 +157,11 @@ const TextFormPart = ({ field }) => {
               onBlur={onBlur}
               value={value}
               name={name}
-              error={errors[field] !== undefined}
-              helperText={errors[field]?.message}
             />
           )
         }
         control={control}
-        name={field}
+        name={`content.${field}`}
         shouldUnregister
       />
     </FormDataRow>
@@ -171,7 +169,7 @@ const TextFormPart = ({ field }) => {
 };
 
 const ListFormPart = ({ field }) => {
-  const { control, formState: { errors } } = useFormContext();
+  const { control } = useFormContext();
 
   return (
     <FormDataRow>
@@ -186,14 +184,12 @@ const ListFormPart = ({ field }) => {
                 placeholder="Type an item and press enter to add"
                 unique
                 border
-                showError={errors[field] !== undefined}
-                helperText={errors[field]?.message}
               />
             </div>
           )
         }
         control={control}
-        name={field}
+        name={`content.${field}`}
         shouldUnregister
       />
     </FormDataRow>
@@ -203,7 +199,7 @@ const ListFormPart = ({ field }) => {
 const EditorFormPart = ({ field }) => {
   const classes = useStyles();
 
-  const { control, formState: { errors } } = useFormContext();
+  const { control } = useFormContext();
 
   return (
     <FormDataRow>
@@ -223,12 +219,9 @@ const EditorFormPart = ({ field }) => {
           )
         }
         control={control}
-        name={field}
+        name={`content.${field}`}
         shouldUnregister
       />
-      <FormHelperText error={errors[field] !== undefined}>
-        {errors[field]?.message}
-      </FormHelperText>
     </FormDataRow>
   );
 };
@@ -247,14 +240,14 @@ const ImageFormPart = ({ field }) => {
           )
         }
         control={control}
-        name={field}
+        name={`content.${field}`}
         shouldUnregister
       />
     </div>
   );
 };
 
-const TagFormPart = ({ setAreTopicsUnique }) => {
+const TopicsFormPart = ({ setAreTopicsUnique }) => {
   const { control, formState: { errors } } = useFormContext();
 
   return (
@@ -312,11 +305,20 @@ const TopContainer = ({ title, handleClose }) => {
 const MiddleContainer = ({ form, setAreTopicsUnique, formTypes }) => {
   const classes = useStyles();
 
+  const { formState: { errors } } = useFormContext();
+
   return (
     <div className={classes.middleContainer}>
       <TypeFormPart formTypes={formTypes} />
+      {form?.type && <FormDataRow>Content</FormDataRow> }
+      <FormDataRow>
+        <FormHelperText error={errors.content !== undefined}>
+          {errors.content?.message}
+        </FormHelperText>
+      </FormDataRow>
       <DynamicFormParts fields={form?.fields} />
-      {form?.type && <TagFormPart setAreTopicsUnique={setAreTopicsUnique} /> }
+      {form?.type && <FormDataRow>Topics</FormDataRow>}
+      {form?.type && <TopicsFormPart setAreTopicsUnique={setAreTopicsUnique} /> }
     </div>
   );
 };
@@ -350,8 +352,7 @@ const PostBuilder = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, 
         const selectedForm = await getFormByType(watchedPostType);
         setForm(selectedForm);
 
-        const defaultValues = { topics: [], type: watchedPostType };
-        Object.keys(selectedForm.fields).forEach((formField) => { defaultValues[formField] = ''; });
+        const defaultValues = { topics: [], type: watchedPostType, content: {} };
         reset(defaultValues);
       };
       initializeForm();
@@ -370,8 +371,12 @@ const PostBuilder = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, 
         noValidate
       >
         <TopContainer title={title} handleClose={handleClose} />
-        <MiddleContainer form={form} setAreTopicsUnique={setAreTopicsUnique} formTypes={formTypes} />
-        <BottomContainer btnTitle={btnTitle} />
+        <MiddleContainer
+          form={form}
+          setAreTopicsUnique={setAreTopicsUnique}
+          formTypes={formTypes}
+        />
+        <BottomContainer btnTitle={btnTitle} onSubmit={onSubmit} />
       </form>
     </div>
   );

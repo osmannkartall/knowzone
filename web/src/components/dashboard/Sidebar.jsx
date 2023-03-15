@@ -12,14 +12,15 @@ import { FormProvider, useForm } from 'react-hook-form';
 import BookmarkBorder from '@material-ui/icons/BookmarkBorder';
 import Bookmark from '@material-ui/icons/Bookmark';
 import { toast } from 'react-toastify';
+import { joiResolver } from '@hookform/resolvers/joi';
 import { GRAY2, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
 import PostBuilder from '../post/PostBuilder';
 import LinearProgressModal from '../common/LinearProgressModal';
-import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
 import { BE_ROUTES } from '../../constants/routes';
 import getFormTypes from '../../api/getFormTypes';
 import FormBuilder from '../form/FormBuilder';
+import postBuilderSchema from '../../schemas/postBuilderSchema';
 
 const useStyles = makeStyles((theme) => ({
   sidebar: {
@@ -98,7 +99,10 @@ const Sidebar = ({ isSidebarOpen }) => {
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const [form, setForm] = useState({});
 
-  const { reset, getValues, watch, ...methods } = useForm({ defaultValues: { type: '' } });
+  const { reset, getValues, watch, ...methods } = useForm({
+    resolver: joiResolver(postBuilderSchema),
+    defaultValues: { type: '' },
+  });
   const watchedType = watch('type');
 
   const onClickCreatePost = () => setIsPostBuilderOpen(true);
@@ -125,24 +129,22 @@ const Sidebar = ({ isSidebarOpen }) => {
     try {
       setIsLinearProgressModalOpen(true);
       const fd = new FormData();
-      const { type, topics, ...dynamicFields } = getValues();
-      const content = {};
+      const { type, topics, content } = getValues();
+      const { images, ...rest } = content ?? {};
+      const filledContentFields = {};
 
-      Object.entries(dynamicFields).forEach(([k, v]) => {
-        if (form?.fields?.[k] === FORM_COMPONENT_TYPES.IMAGE) {
-          (Array.isArray(v) ? v : []).forEach((image) => {
-            if (image.preview) {
-              // Revoke the data uri to avoid memory leaks
-              URL.revokeObjectURL(image.preview);
-            }
-            fd.append('image', image);
-          });
-        } else {
-          content[k] = v;
-        }
-      });
+      Object.entries(rest).forEach(([k, v]) => { if (v) filledContentFields[k] = v; });
 
-      fd.append('content', JSON.stringify(content));
+      if (images) {
+        (Array.isArray(images) ? images : []).forEach((image) => {
+          if (image.preview) {
+            URL.revokeObjectURL(image.preview);
+          }
+          fd.append('image', image);
+        });
+      }
+
+      fd.append('content', JSON.stringify(filledContentFields));
       fd.append('type', JSON.stringify(type));
       fd.append('topics', JSON.stringify(topics));
 
@@ -152,7 +154,6 @@ const Sidebar = ({ isSidebarOpen }) => {
         credentials: 'include',
       });
       const result = await response.json();
-      console.log(result.status, result.message);
 
       if (result?.status === 'fail') {
         toast.error(result.message);

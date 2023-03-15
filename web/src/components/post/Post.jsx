@@ -161,7 +161,7 @@ const ImagePart = ({ images }) => {
   );
 };
 
-const TagPart = ({ topics }) => {
+const TopicsPart = ({ topics }) => {
   const classes = useStyles();
 
   return (
@@ -281,7 +281,7 @@ const Post = ({ showType, editable, fields, post, onClickUpdate, onClickDelete }
       />
       <PostBody owner={post.owner} fields={fields} post={post} />
       <Divider />
-      <TagPart topics={post.topics ?? []} />
+      <TopicsPart topics={post.topics ?? []} />
     </div>
   );
 };

@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { Dialog, DialogActions, DialogTitle, Button } from '@material-ui/core';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { joiResolver } from '@hookform/resolvers/joi';
 import Post from './Post';
 import PostBuilder from './PostBuilder';
-import { getChangesInObject, isObjectNotEmptyAndValid, areObjectsEqual } from '../../utils';
 import ContentWrapper from '../common/ContentWrapper';
 import { IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../../constants/colors';
 import LinearProgressModal from '../common/LinearProgressModal';
-import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
 import { BE_ROUTES } from '../../constants/routes';
+import postBuilderSchema from '../../schemas/postBuilderSchema';
 
 const isNewImage = (image) => image instanceof File;
 
@@ -21,17 +21,14 @@ const Posts = ({ title, forms, form, setForm, posts, setPosts }) => {
 
   const handleClose = () => setOpenDialog(false);
 
-  const { setValue, getValues, ...methods } = useForm({ defaultValues: { type: '' } });
+  const { setValue, getValues, ...methods } = useForm({
+    resolver: joiResolver(postBuilderSchema),
+    defaultValues: { type: '' },
+  });
 
   const setFormValues = (post) => {
     Object.entries(post).forEach(([k, v]) => {
-      if (k === 'content') {
-        Object.entries(post.content).forEach(([k2, v2]) => {
-          setValue(k2, v2);
-        });
-      } else {
-        setValue(k, v);
-      }
+      setValue(k, v);
     });
   };
 
@@ -51,11 +48,6 @@ const Posts = ({ title, forms, form, setForm, posts, setPosts }) => {
     }
   };
 
-  const flattenOldPost = (oldPost) => {
-    const { content, ...flattenedOldPost } = { ...oldPost, ...oldPost.content };
-    return flattenedOldPost;
-  };
-
   const updatePost = async () => {
     try {
       setIsLinearProgressModalOpen(true);
@@ -64,57 +56,42 @@ const Posts = ({ title, forms, form, setForm, posts, setPosts }) => {
       if (updatedPost && updatedPost.id) {
         const idx = posts.findIndex((p) => p.id === updatedPost.id);
 
-        if (idx !== -1 && !areObjectsEqual(updatedPost, posts[idx])) {
-          const flattenedOldPost = flattenOldPost(posts[idx]);
-          const {
-            updatedAt,
-            type,
-            createdAt,
-            ...changes
-          } = getChangesInObject(flattenedOldPost, updatedPost);
-          const content = {};
+        if (idx !== -1) {
+          const fd = new FormData();
+          const { images, ...rest } = updatedPost.content;
+          const filledContentFields = {};
 
-          if (isObjectNotEmptyAndValid(changes)) {
-            const fd = new FormData();
+          Object.entries(rest).forEach(([k, v]) => { if (v) filledContentFields[k] = v; });
 
-            Object.entries(changes).forEach(([k, v]) => {
-              if (form?.fields?.[k] === FORM_COMPONENT_TYPES.IMAGE) {
-                const oldImages = [];
-                (v ?? []).forEach((image) => {
-                  if (isNewImage(image)) {
-                    if (image.preview) {
-                      // Revoke the data uri to avoid memory leaks
-                      URL.revokeObjectURL(image.preview);
-                    }
-                    fd.append('image', image);
-                  } else {
-                    oldImages.push(image);
-                  }
-                });
-                fd.append('oldImages', JSON.stringify(oldImages));
-              } else if (k === 'topics') {
-                fd.append('topics', JSON.stringify(v));
+          if (images) {
+            const oldImages = [];
+            (images ?? []).forEach((image) => {
+              if (isNewImage(image)) {
+                if (image.preview) {
+                  URL.revokeObjectURL(image.preview);
+                }
+                fd.append('image', image);
               } else {
-                content[k] = v;
+                oldImages.push(image);
               }
             });
+            fd.append('oldImages', JSON.stringify(oldImages));
+          }
 
-            if (isObjectNotEmptyAndValid(content)) {
-              fd.append('content', JSON.stringify(content));
-            }
+          fd.append('content', JSON.stringify(filledContentFields));
+          fd.append('topics', JSON.stringify(updatedPost.topics));
 
-            const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}/${updatedPost.id}`;
-            const response = await fetch(url, { method: 'PUT', body: fd, credentials: 'include' });
-            const result = await response.json();
+          const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}/${updatedPost.id}`;
+          const response = await fetch(url, { method: 'PUT', body: fd, credentials: 'include' });
+          const result = await response.json();
 
-            if (result?.status === 'fail') {
-              toast.error(result.message);
-            } else {
-              const newPosts = [...posts];
-              newPosts[idx] = { ...result, type: updatedPost.type };
-              setPosts(newPosts);
-              setOpenForm(false);
-            }
+          if (result?.status === 'fail') {
+            toast.error(result.message);
+          } else {
+            const newPosts = [...posts];
+            newPosts[idx] = { ...result, type: updatedPost.type };
+            setPosts(newPosts);
+            setOpenForm(false);
           }
         }
       }

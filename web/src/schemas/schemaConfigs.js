@@ -1,0 +1,18 @@
+export const SCHEMA_CONFIGS = Object.freeze({
+  MAX_NUM_FIELD: 10,
+  MAX_LEN_TYPE: 100,
+  MIN_LEN_TYPE: 1,
+  MAX_LEN_KEY_OF_FIELDS: 100,
+});
+
+export const POST_SCHEMA_CONFIGS = Object.freeze({
+  MAX_LEN_TEXT: 100,
+  MIN_LEN_TEXT: 1,
+  MAX_NUM_LIST: 5,
+  MAX_LEN_EDITOR: 100,
+  MIN_LEN_EDITOR: 1,
+  MAX_NUM_IMAGES: 2,
+  MAX_NUM_TOPICS: 5,
+  MIN_NUM_TOPICS: 1,
+  MAX_LEN_TOPIC: 30,
+});
