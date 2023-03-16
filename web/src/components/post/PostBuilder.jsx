@@ -310,34 +310,34 @@ const TopContainer = ({ title, handleClose }) => {
 const MiddleContainer = ({ form, setAreTopicsUnique, formTypes }) => {
   const classes = useStyles();
 
-  const { formState: { errors } } = useFormContext();
+  const { formState: { errors }, getValues } = useFormContext();
 
   return (
     <div className={classes.middleContainer}>
       <TypeFormPart formTypes={formTypes} />
-      {form?.type && (
-        <FormDataRow>
-          <span style={{ fontWeight: 'bold' }}>
-            Content
-          </span>
-        </FormDataRow>
-      ) }
-      {errors.content && (
-        <FormDataRow>
-          <FormHelperText role="alert" error={errors.content !== undefined}>
-            {errors.content?.message}
-          </FormHelperText>
-        </FormDataRow>
+      {getValues('type') && (
+        <>
+          <FormDataRow>
+            <span style={{ fontWeight: 'bold' }}>
+              Content
+            </span>
+          </FormDataRow>
+          {errors.content && (
+          <FormDataRow>
+            <FormHelperText role="alert" error={errors.content !== undefined}>
+              {errors.content?.message}
+            </FormHelperText>
+          </FormDataRow>
+          )}
+          <DynamicFormParts fields={form?.fields} />
+          <FormDataRow>
+            <span style={{ fontWeight: 'bold' }}>
+              Topics
+            </span>
+          </FormDataRow>
+          <TopicsFormPart setAreTopicsUnique={setAreTopicsUnique} />
+        </>
       )}
-      <DynamicFormParts fields={form?.fields} />
-      {form?.type && (
-        <FormDataRow>
-          <span style={{ fontWeight: 'bold' }}>
-            Topics
-          </span>
-        </FormDataRow>
-      )}
-      {form?.type && <TopicsFormPart setAreTopicsUnique={setAreTopicsUnique} /> }
     </div>
   );
 };

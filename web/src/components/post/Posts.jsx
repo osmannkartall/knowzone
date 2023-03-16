@@ -21,7 +21,7 @@ const Posts = ({ title, forms, form, setForm, posts, setPosts }) => {
 
   const handleClose = () => setOpenDialog(false);
 
-  const { setValue, getValues, ...methods } = useForm({
+  const { setValue, getValues, reset, ...methods } = useForm({
     resolver: joiResolver(postBuilderSchema),
     defaultValues: { type: '' },
   });
@@ -92,6 +92,7 @@ const Posts = ({ title, forms, form, setForm, posts, setPosts }) => {
             newPosts[idx] = { ...result, type: updatedPost.type };
             setPosts(newPosts);
             setOpenForm(false);
+            reset();
           }
         }
       }

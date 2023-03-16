@@ -110,6 +110,65 @@ describe('PostBuilder', () => {
     window.URL.createObjectURL.mockReset();
   });
 
+  it('should set submit button to disabled when form type is not selected', () => {
+    const Component = () => {
+      const methods = useForm({
+        resolver: joiResolver(postBuilderSchema),
+        defaultValues: { type: '' },
+      });
+
+      return (
+        <FormProvider {...methods}>
+          <PostBuilder
+            open
+            form={forms.tip}
+            setForm={mockSetForm}
+            formTypes={formTypes}
+            onSubmit={mockOnSubmit}
+          />
+        </FormProvider>
+      );
+    };
+
+    render(<Component />);
+
+    expect(screen.getByRole('button', { name: /share/i })).toHaveClass('Mui-disabled');
+  });
+
+  it('should display error when all the content fields are empty', async () => {
+    const type = 'tip';
+
+    const Component = () => {
+      const methods = useForm({
+        resolver: joiResolver(postBuilderSchema),
+        defaultValues: { type },
+      });
+
+      return (
+        <FormProvider {...methods}>
+          <PostBuilder
+            open
+            form={forms.tip}
+            setForm={mockSetForm}
+            formTypes={formTypes}
+            onSubmit={mockOnSubmit}
+          />
+        </FormProvider>
+      );
+    };
+
+    render(<Component />);
+
+    onClickMuiDropdownOption(screen.getByTestId('select-post-type'), type);
+    await expectMuiDropdownHasSelectedValue(/post type/i, type);
+
+    fireEvent.submit(screen.getByText(/share/i));
+
+    await waitFor(() => expect(screen.getAllByRole('alert')).toHaveLength(2));
+
+    expect(mockOnSubmit).not.toBeCalled();
+  });
+
   it('should render the header with the given title', () => {
     const Component = () => {
       const methods = useForm({
@@ -156,23 +215,23 @@ describe('PostBuilder', () => {
   });
 
   it('should change component types according to selected form type', () => {
-    const Component = ({ form }) => {
+    const Component = ({ type }) => {
       const methods = useForm({
         resolver: joiResolver(postBuilderSchema),
-        defaultValues: { type: '' },
+        defaultValues: { type },
       });
       return (
         <FormProvider {...methods}>
-          <PostBuilder open form={form} setForm={mockSetForm} formTypes={formTypes} />
+          <PostBuilder open form={forms[type]} setForm={mockSetForm} formTypes={formTypes} />
         </FormProvider>
       );
     };
 
-    const { rerender } = render(<Component form={forms.tip} />);
+    const { rerender } = render(<Component type="tip" />);
 
     expectFormInputsAreInDocument(Object.keys(forms.tip.fields));
 
-    rerender(<Component form={forms.todo} />);
+    rerender(<Component type="todo" />);
 
     expectFormInputsAreInDocument(Object.keys(forms.todo.fields));
     expectFormInputsAreNotInDocument(Object.keys(forms.tip.fields));
@@ -200,34 +259,6 @@ describe('PostBuilder', () => {
     onClickMuiDropdownOption(screen.getByTestId('select-post-type'), selectedFormType.type);
 
     await waitFor(() => expect(mockSetForm).toHaveBeenCalledWith(selectedForm));
-  });
-
-  it('should display error when all the content fields are empty', async () => {
-    const Component = () => {
-      const methods = useForm({
-        resolver: joiResolver(postBuilderSchema),
-        defaultValues: { type: '' },
-      });
-      return (
-        <FormProvider {...methods}>
-          <PostBuilder
-            open
-            form={forms.tip}
-            setForm={mockSetForm}
-            formTypes={formTypes}
-            onSubmit={mockOnSubmit}
-          />
-        </FormProvider>
-      );
-    };
-
-    render(<Component />);
-
-    fireEvent.submit(screen.getByText(/share/i));
-
-    await waitFor(() => expect(screen.getAllByRole('alert')).toHaveLength(3));
-
-    expect(mockOnSubmit).not.toBeCalled();
   });
 
   it('should display error when only content.images is filled', async () => {

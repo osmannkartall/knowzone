@@ -160,6 +160,7 @@ const Sidebar = ({ isSidebarOpen }) => {
       } else {
         toast.success(result.message);
         setIsPostBuilderOpen(false);
+        reset();
       }
     } catch (error) {
       console.log(error);
