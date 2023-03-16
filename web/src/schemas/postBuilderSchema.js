@@ -19,16 +19,23 @@ const postBuilderSchema = Joi.object({
       )
       .required()
       .min(POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS)
+      .message('at least one topic must be added')
       .max(POST_SCHEMA_CONFIGS.MAX_NUM_TOPICS),
   content:
     Joi.object()
       .unknown()
-      .custom(({ images, ...content }, helper) => {
-        const isAnyFieldFilled = Object.values(content).some(
+      .custom((content, helper) => {
+        const { images, ...rest } = content;
+
+        const isAnyFieldFilled = Object.values(rest).some(
           (field) => (Array.isArray(field) ? field.length : field || false),
         );
 
-        return !isAnyFieldFilled ? helper.message('at least one content field must be filled') : true;
+        if (!isAnyFieldFilled) {
+          return helper.message('at least one content field must be filled');
+        }
+
+        return content;
       })
       .required(),
 }).required();

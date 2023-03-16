@@ -6,8 +6,8 @@ import {
   MenuItem,
   Button,
   Modal,
-  InputLabel,
   FormHelperText,
+  FormControl,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -105,16 +105,14 @@ const TypeFormPart = ({ formTypes }) => {
         render={
           ({ field: { onChange, onBlur, value, name } }) => (
             <TextField
-              id="outlined-select-post-type"
-              data-testid="outlined-select-post-type"
+              id="select-post-type"
+              data-testid="select-post-type"
               select
               label="Post Type"
               onChange={onChange}
               onBlur={onBlur}
               value={value}
               name={name}
-              error={errors.type !== undefined}
-              helperText={errors.type?.message}
               variant="outlined"
               fullWidth
             >
@@ -131,6 +129,11 @@ const TypeFormPart = ({ formTypes }) => {
         name="type"
         shouldUnregister
       />
+      {errors.type && (
+        <FormHelperText role="alert" error={errors.type !== undefined}>
+          {errors.type?.message}
+        </FormHelperText>
+      )}
     </FormDataRow>
     )
   );
@@ -203,19 +206,18 @@ const EditorFormPart = ({ field }) => {
 
   return (
     <FormDataRow>
-      <InputLabel
-        className={classes.label}
-      >
-        {field}
-      </InputLabel>
       <Controller
         render={
           ({ field: { onChange, value } }) => (
-            <MarkdownEditor
-              text={value}
-              onChangeText={onChange}
-              containerMaxHeight="50vh"
-            />
+            <FormControl style={{ display: 'flex', flexDirection: 'column' }}>
+              <label htmlFor={field} className={classes.label}>{field}</label>
+              <MarkdownEditor
+                id={field}
+                text={value}
+                onChangeText={onChange}
+                containerMaxHeight="50vh"
+              />
+            </FormControl>
           )
         }
         control={control}
@@ -236,7 +238,10 @@ const ImageFormPart = ({ field }) => {
       <Controller
         render={
           ({ field: { onChange, value } }) => (
-            <FileUploader files={Array.isArray(value) ? value : []} setFiles={onChange} />
+            <FormControl style={{ display: 'flex', flexDirection: 'column' }}>
+              <label htmlFor="images" className={classes.label}>{field}</label>
+              <FileUploader files={Array.isArray(value) ? value : []} setFiles={onChange} />
+            </FormControl>
           )
         }
         control={control}
@@ -310,14 +315,28 @@ const MiddleContainer = ({ form, setAreTopicsUnique, formTypes }) => {
   return (
     <div className={classes.middleContainer}>
       <TypeFormPart formTypes={formTypes} />
-      {form?.type && <FormDataRow>Content</FormDataRow> }
-      <FormDataRow>
-        <FormHelperText error={errors.content !== undefined}>
-          {errors.content?.message}
-        </FormHelperText>
-      </FormDataRow>
+      {form?.type && (
+        <FormDataRow>
+          <span style={{ fontWeight: 'bold' }}>
+            Content
+          </span>
+        </FormDataRow>
+      ) }
+      {errors.content && (
+        <FormDataRow>
+          <FormHelperText role="alert" error={errors.content !== undefined}>
+            {errors.content?.message}
+          </FormHelperText>
+        </FormDataRow>
+      )}
       <DynamicFormParts fields={form?.fields} />
-      {form?.type && <FormDataRow>Topics</FormDataRow>}
+      {form?.type && (
+        <FormDataRow>
+          <span style={{ fontWeight: 'bold' }}>
+            Topics
+          </span>
+        </FormDataRow>
+      )}
       {form?.type && <TopicsFormPart setAreTopicsUnique={setAreTopicsUnique} /> }
     </div>
   );
@@ -326,9 +345,11 @@ const MiddleContainer = ({ form, setAreTopicsUnique, formTypes }) => {
 const BottomContainer = ({ btnTitle }) => {
   const classes = useStyles();
 
+  const { getValues } = useFormContext();
+
   return (
     <div className={classes.bottomContainer}>
-      <Button variant="contained" color="primary" type="submit">
+      <Button variant="contained" color="primary" type="submit" disabled={!getValues('type')}>
         {btnTitle}
       </Button>
     </div>
@@ -368,7 +389,6 @@ const PostBuilder = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, 
       <form
         className={classes.form}
         onSubmit={handleSubmit((data) => areTopicsUnique && onSubmit(data))}
-        noValidate
       >
         <TopContainer title={title} handleClose={handleClose} />
         <MiddleContainer

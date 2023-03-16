@@ -34,3 +34,7 @@ export function expectFormInputsAreNotInDocument(keys) {
     expect(screen.queryByTitle(new RegExp(`${key}`, 'i'))).not.toBeInTheDocument();
   });
 }
+
+export async function expectMuiDropdownHasSelectedValue(buttonName, content) {
+  expect(await screen.findByRole('button', { name: buttonName })).toHaveTextContent(content);
+}
