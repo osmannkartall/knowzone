@@ -1,7 +1,12 @@
 /* eslint-env jest */
 const PostRepository = require('../../src/repositories/PostRepository');
-const { POST_SCHEMA_CONFIGS, SCHEMA_CONFIGS } = require('../../src/models/schemaConfigs');
+const { POST_SCHEMA_CONFIGS, FORM_SCHEMA_CONFIGS } = require('../../src/models/schemaConfigs');
 const FormRepository = require('../../src/repositories/FormRepository');
+const {
+  POST_VALIDATION_MESSAGES,
+  VALIDATION_MESSAGES,
+  MONGOOSE_DEFAULT_MESSAGES,
+} = require('../../src/models/validationMessages');
 
 const postRepository = new PostRepository();
 const formRepository = new FormRepository();
@@ -106,12 +111,12 @@ describe('PostRepository.create() with invalid records', () => {
 
   const postWithInvalidMaxLenType = {
     ...postMock,
-    type: (new Array(SCHEMA_CONFIGS.MAX_LEN_TYPE + 10)).join('-'),
+    type: (new Array(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE + 10)).join('-'),
   };
 
   const postWithInvalidMinLenType = {
     ...postMock,
-    type: (new Array(SCHEMA_CONFIGS.MIN_LEN_TYPE - 1)).join('-'),
+    type: (new Array(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE - 1)).join('-'),
   };
 
   const postWithInvalidTypeOfType = { ...postMock, type: [1, 2] };
@@ -130,6 +135,11 @@ describe('PostRepository.create() with invalid records', () => {
   const postWithInvalidMaxLenTopic = {
     ...postMock,
     topics: [(new Array(POST_SCHEMA_CONFIGS.MAX_LEN_TOPIC + 2)).join('a')],
+  };
+
+  const postWithInvalidTopic = {
+    ...postMock,
+    topics: ['...'],
   };
 
   const postWithDuplicatedTopics = {
@@ -204,143 +214,218 @@ describe('PostRepository.create() with invalid records', () => {
   const postOfNotMyForm = { ...postMock, type: notMyType };
 
   it('should throw error when model is empty', async () => {
-    await expect(createInvalid({})).rejects.toThrow(/Post validation failed/i);
+    await expect(createInvalid({})).rejects.toThrow(MONGOOSE_DEFAULT_MESSAGES.INVALID('Post'));
   });
 
   it('should throw error when there is no owner', async () => {
-    await expect(createInvalid(postWithoutOwner)).rejects.toThrow(/owner.id: Path `owner.id` is required/i);
+    await expect(createInvalid(postWithoutOwner)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('owner.id'),
+    );
   });
 
   it('should throw error when there is no owner.id', async () => {
-    await expect(createInvalid(postWithoutOwnerId)).rejects.toThrow(/owner.id: Path `owner.id` is required./i);
+    await expect(createInvalid(postWithoutOwnerId)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('owner.id'),
+    );
   });
 
   it('should throw error when there is no type', async () => {
-    await expect(createInvalid(postWithoutType)).rejects.toThrow(/path `type` is required/i);
+    await expect(createInvalid(postWithoutType)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('type'),
+    );
   });
 
   it('should throw error when there are more than max fields in content', async () => {
-    await expect(createInvalid(postWithMoreThanMaxContentField)).rejects.toThrow(new RegExp(`content must have at most ${SCHEMA_CONFIGS.MAX_NUM_FIELD} keys`, 'i'));
+    await expect(createInvalid(postWithMoreThanMaxContentField)).rejects.toThrow(
+      VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_FIELD),
+    );
   });
 
   it('should throw error when there is less than 1 field in content', async () => {
-    await expect(createInvalid(postWithoutContentField)).rejects.toThrow(/content must have at least 1 key/i);
+    await expect(createInvalid(postWithoutContentField)).rejects.toThrow(
+      VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_FIELD),
+    );
   });
 
   it('should throw error when content is undefined', async () => {
-    await expect(createInvalid(postWithUndefinedContent)).rejects.toThrow(/Path `content` is required./i);
+    await expect(createInvalid(postWithUndefinedContent)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('content'),
+    );
   });
 
   it('should throw error when len of type is longer than max len', async () => {
-    await expect(createInvalid(postWithInvalidMaxLenType)).rejects.toThrow(new RegExp(`length of type can not be longer than ${SCHEMA_CONFIGS.MAX_LEN_TYPE}`, 'i'));
+    await expect(createInvalid(postWithInvalidMaxLenType)).rejects.toThrow(
+      VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE),
+    );
   });
 
   it('should throw error when len of type is shorter than min len', async () => {
-    await expect(createInvalid(postWithInvalidMinLenType)).rejects.toThrow(/Path `type` is required/i);
+    await expect(createInvalid(postWithInvalidMinLenType)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('type'),
+    );
   });
 
   it('should throw error when type is not string', async () => {
-    await expect(createInvalid(postWithInvalidTypeOfType)).rejects.toThrow(/Cast to string failed for value/i);
+    const castMessage = MONGOOSE_DEFAULT_MESSAGES.CAST('string');
+
+    await expect(createInvalid(postWithInvalidTypeOfType)).rejects.toThrow(castMessage);
 
     postWithInvalidTypeOfType.type = {};
-    await expect(createInvalid(postWithInvalidTypeOfType)).rejects.toThrow(/Cast to string failed for value/i);
+    await expect(createInvalid(postWithInvalidTypeOfType)).rejects.toThrow(castMessage);
   });
 
   it('should throw error when content is not object', async () => {
-    await expect(createInvalid(postWithInvalidTypeOfContentFields)).rejects.toThrow(/content must be object/i);
+    const typeMessage = VALIDATION_MESSAGES.TYPE('content', 'object');
+
+    await expect(createInvalid(postWithInvalidTypeOfContentFields)).rejects.toThrow(typeMessage);
 
     postWithInvalidTypeOfContentFields.content = 'test';
-    await expect(createInvalid(postWithInvalidTypeOfContentFields)).rejects.toThrow(/content must be object/i);
+    await expect(createInvalid(postWithInvalidTypeOfContentFields)).rejects.toThrow(typeMessage);
 
     postWithInvalidTypeOfContentFields.content = 5.1;
-    await expect(createInvalid(postWithInvalidTypeOfContentFields)).rejects.toThrow(/content must be object/i);
+    await expect(createInvalid(postWithInvalidTypeOfContentFields)).rejects.toThrow(typeMessage);
 
     postWithInvalidTypeOfContentFields.content = null;
-    await expect(createInvalid(postWithInvalidTypeOfContentFields)).rejects.toThrow(/Path `content` is required./i);
+    await expect(createInvalid(postWithInvalidTypeOfContentFields)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('content'),
+    );
   });
 
   it('should throw error when there is 0 topic', async () => {
-    await expect(createInvalid(postWithZeroTopic)).rejects.toThrow(/Number of topics should be in/i);
+    await expect(createInvalid(postWithZeroTopic)).rejects.toThrow(
+      VALIDATION_MESSAGES.MIN_NUM('topics', POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS),
+    );
   });
 
   it('should throw error when there is no topic', async () => {
-    await expect(createInvalid(postWithoutTopic)).rejects.toThrow(/Number of topics should be in/i);
+    await expect(createInvalid(postWithoutTopic)).rejects.toThrow(
+      VALIDATION_MESSAGES.MIN_NUM('topics', POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS),
+    );
   });
 
   it('should throw error when len of topics is longer than max', async () => {
-    await expect(createInvalid(postWithInvalidMaxTopic)).rejects.toThrow(/Number of topics should be in/i);
+    await expect(createInvalid(postWithInvalidMaxTopic)).rejects.toThrow(
+      VALIDATION_MESSAGES.MAX_NUM('topics', POST_SCHEMA_CONFIGS.MAX_NUM_TOPICS),
+    );
+  });
+
+  it('should throw error when len of topic is invalid', async () => {
+    await expect(createInvalid(postWithInvalidMaxLenTopic)).rejects.toThrow(
+      POST_VALIDATION_MESSAGES.INVALID_TOPIC,
+    );
   });
 
   it('should throw error when there is invalid value in topics', async () => {
-    await expect(createInvalid(postWithInvalidMaxLenTopic)).rejects.toThrow(/Post validation failed: topics./i);
+    await expect(createInvalid(postWithInvalidTopic)).rejects.toThrow(
+      POST_VALIDATION_MESSAGES.INVALID_TOPIC,
+    );
   });
 
   it('should throw error when there are duplicated items in topics', async () => {
-    await expect(createInvalid(postWithDuplicatedTopics)).rejects.toThrow(/Array cannot have duplicated items/i);
+    await expect(createInvalid(postWithDuplicatedTopics)).rejects.toThrow(
+      VALIDATION_MESSAGES.DUPLICATED_ITEMS,
+    );
   });
 
   it('should throw error when there is no form for the type in post', async () => {
-    await expect(createInvalid(postOfNonExistingForm)).rejects.toThrow('Post validation failed: content: form record not found for the given type: no type');
+    await expect(createInvalid(postOfNonExistingForm)).rejects.toThrow(
+      VALIDATION_MESSAGES.NO_RECORD('form'),
+    );
   });
 
   it('should throw error when value of text component is shorter than min len', async () => {
-    await expect(createInvalid(postWithInvalidMinLenTextValue)).rejects.toThrow(`length of a value of a text type field can't be smaller than ${POST_SCHEMA_CONFIGS.MIN_LEN_TEXT}`);
+    await expect(createInvalid(postWithInvalidMinLenTextValue)).rejects.toThrow(
+      VALIDATION_MESSAGES.MIN_LEN('textInput', POST_SCHEMA_CONFIGS.MIN_LEN_TEXT),
+    );
   });
 
   it('should throw error when value of text component is longer than max len', async () => {
-    await expect(createInvalid(postWithInvalidMaxLenTextValue)).rejects.toThrow(`length of value of a text type field can't be longer than ${POST_SCHEMA_CONFIGS.MAX_LEN_TEXT}`);
+    await expect(createInvalid(postWithInvalidMaxLenTextValue)).rejects.toThrow(
+      VALIDATION_MESSAGES.MAX_LEN('textInput', POST_SCHEMA_CONFIGS.MAX_LEN_TEXT),
+    );
   });
 
-  it('should throw error when value of text component is not string, number or boolean', async () => {
-    await expect(createInvalid(postWithInvalidTextValue)).rejects.toThrow(/Value can be string, number or boolean/i);
+  it('should throw error when value of text component is invalid', async () => {
+    const message = POST_VALIDATION_MESSAGES.VALUE(
+      'textInput',
+      'text',
+      'string, number or boolean',
+    );
+
+    await expect(createInvalid(postWithInvalidTextValue)).rejects.toThrow(message);
     postWithInvalidTextValue.content.textInput = { a: 'test' };
-    await expect(createInvalid(postWithInvalidTextValue)).rejects.toThrow(/Value can be string, number or boolean/i);
+    await expect(createInvalid(postWithInvalidTextValue)).rejects.toThrow(message);
     postWithInvalidTextValue.content.textInput = [1, 2, 3, 4];
-    await expect(createInvalid(postWithInvalidTextValue)).rejects.toThrow(/Value can be string, number or boolean/i);
+    await expect(createInvalid(postWithInvalidTextValue)).rejects.toThrow(message);
   });
 
   it('should throw error when value of list component is not array', async () => {
-    await expect(createInvalid(postWithInvalidList)).rejects.toThrow('value of a list type field must be array');
+    const message = POST_VALIDATION_MESSAGES.VALUE('listInput', 'list', 'array');
+
+    await expect(createInvalid(postWithInvalidList)).rejects.toThrow(message);
     postWithInvalidList.content.listInput = { 1: 2 };
-    await expect(createInvalid(postWithInvalidList)).rejects.toThrow('value of a list type field must be array');
+    await expect(createInvalid(postWithInvalidList)).rejects.toThrow(message);
     postWithInvalidList.content.listInput = 1234;
-    await expect(createInvalid(postWithInvalidList)).rejects.toThrow('value of a list type field must be array');
+    await expect(createInvalid(postWithInvalidList)).rejects.toThrow(message);
     postWithInvalidList.content.listInput = false;
-    await expect(createInvalid(postWithInvalidList)).rejects.toThrow('value of a list type field must be array');
+    await expect(createInvalid(postWithInvalidList)).rejects.toThrow(message);
     postWithInvalidList.content.listInput = 'asd';
-    await expect(createInvalid(postWithInvalidList)).rejects.toThrow('value of a list type field must be array');
+    await expect(createInvalid(postWithInvalidList)).rejects.toThrow(message);
   });
 
   it('should throw error when len of list component is longer than max', async () => {
-    await expect(createInvalid(postWithInvalidListLen)).rejects.toThrow(`number of elements in a list type field can't be greater than ${POST_SCHEMA_CONFIGS.MAX_NUM_LIST}`);
+    await expect(createInvalid(postWithInvalidListLen)).rejects.toThrow(
+      VALIDATION_MESSAGES.MAX_NUM('listInput', POST_SCHEMA_CONFIGS.MAX_NUM_LIST),
+    );
   });
 
-  it('should throw error when value of editor component is not string, number or boolean', async () => {
-    await expect(createInvalid(postWithInvalidEditorValue)).rejects.toThrow('Value can be string, number or boolean');
+  it('should throw error when value of editor component is invalid', async () => {
+    const message = POST_VALIDATION_MESSAGES.VALUE(
+      'editorInput',
+      'editor',
+      'string, number or boolean',
+    );
+
+    await expect(createInvalid(postWithInvalidEditorValue)).rejects.toThrow(message);
     postWithInvalidEditorValue.content.editorInput = {};
-    await expect(createInvalid(postWithInvalidEditorValue)).rejects.toThrow(/Value can be string, number or boolean/i);
+    await expect(createInvalid(postWithInvalidEditorValue)).rejects.toThrow(message);
     postWithInvalidEditorValue.content.editorInput = [1, 2, 3];
-    await expect(createInvalid(postWithInvalidEditorValue)).rejects.toThrow(/Value can be string, number or boolean/i);
+    await expect(createInvalid(postWithInvalidEditorValue)).rejects.toThrow(message);
   });
 
   it('should throw error when len of editor component is longer than max', async () => {
-    await expect(createInvalid(postWithInvalidMaxLenEditorValue)).rejects.toThrow(`length of value of a editor type field can't be longer than ${POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR}`);
+    await expect(createInvalid(postWithInvalidMaxLenEditorValue)).rejects.toThrow(
+      VALIDATION_MESSAGES.MAX_LEN('editorInput', POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR),
+    );
   });
 
   it('should throw error when len of editor component is shorter than min', async () => {
-    await expect(createInvalid(postWithInvalidMinLenEditorValue)).rejects.toThrow(`length of a value of a editor type field can't be smaller than ${POST_SCHEMA_CONFIGS.MIN_LEN_EDITOR}`);
+    await expect(createInvalid(postWithInvalidMinLenEditorValue)).rejects.toThrow(
+      VALIDATION_MESSAGES.MIN_LEN('editorInput', POST_SCHEMA_CONFIGS.MIN_LEN_EDITOR),
+    );
   });
 
   it('should throw error when values of multiple components are invalid', async () => {
-    await expect(createInvalid(postWithInvalidMultipleComponentValue)).rejects.toThrow('invalid value for editor type field editorInput. Value can be string, number or boolean, value of a list type field must be array');
+    const messages = [
+      `${POST_VALIDATION_MESSAGES.VALUE('editorInput', 'editor', 'string, number or boolean')}`,
+      `${POST_VALIDATION_MESSAGES.VALUE('listInput', 'list', 'array')}`,
+    ];
+
+    await expect(createInvalid(postWithInvalidMultipleComponentValue)).rejects.toThrow(
+      messages.join(', '),
+    );
   });
 
   it('should throw error when field of post is not exist in associated form ', async () => {
-    await expect(createInvalid(postWithNonExistingFormField)).rejects.toThrow(/invalid fields for form type/i);
+    await expect(createInvalid(postWithNonExistingFormField)).rejects.toThrow(
+      POST_VALIDATION_MESSAGES.INVALID_FIELD,
+    );
   });
 
   it('should throw error when trying to create post with not owned form', async () => {
-    await expect(createInvalid(postOfNotMyForm)).rejects.toThrow(`Post validation failed: content: form record not found for the given type: ${notMyType}`);
+    await expect(createInvalid(postOfNotMyForm)).rejects.toThrow(
+      VALIDATION_MESSAGES.NO_RECORD('form'),
+    );
   });
 });
 

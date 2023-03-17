@@ -1,9 +1,9 @@
 const { Schema, model } = require('mongoose');
+const COMPONENT_TYPES = require('../constants/componentTypes');
 const { transformToJSON } = require('../utils');
 const owner = require('./Owner');
-const { SCHEMA_CONFIGS } = require('./schemaConfigs');
-
-const COMPONENT_TYPES = ['text', 'list', 'editor', 'image'];
+const { FORM_SCHEMA_CONFIGS } = require('./schemaConfigs');
+const { VALIDATION_MESSAGES, FORM_VALIDATION_MESSAGES } = require('./validationMessages');
 
 let numImageComponent = 0;
 
@@ -14,8 +14,14 @@ const FormSchema = Schema(
       type: String,
       required: true,
       unique: true,
-      maxLength: [SCHEMA_CONFIGS.MAX_LEN_TYPE, `length of type can not be longer than ${SCHEMA_CONFIGS.MAX_LEN_TYPE}`],
-      minLength: [SCHEMA_CONFIGS.MIN_LEN_TYPE, `length of type can not be smaller than ${SCHEMA_CONFIGS.MIN_LEN_TYPE}`],
+      maxLength: [
+        FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE,
+        VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE),
+      ],
+      minLength: [
+        FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE,
+        VALIDATION_MESSAGES.MIN_LEN('type', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE),
+      ],
     },
     fields: {
       type: Schema.Types.Mixed,
@@ -25,19 +31,19 @@ const FormSchema = Schema(
           validator(v) {
             return v !== null && typeof v === 'object' && !Array.isArray(v);
           },
-          message: 'fields must be object',
+          message: VALIDATION_MESSAGES.TYPE('fields', 'object'),
         },
         {
           validator(v) {
             return Object.keys(v).length;
           },
-          message: 'fields must have at least 1 key',
+          message: VALIDATION_MESSAGES.MIN_KEY('fields', FORM_SCHEMA_CONFIGS.MIN_NUM_FIELD),
         },
         {
           validator(v) {
-            return Object.keys(v).length <= SCHEMA_CONFIGS.MAX_NUM_FIELD;
+            return Object.keys(v).length <= FORM_SCHEMA_CONFIGS.MAX_NUM_FIELD;
           },
-          message: `fields must have at most ${SCHEMA_CONFIGS.MAX_NUM_FIELD} keys`,
+          message: VALIDATION_MESSAGES.MAX_KEY('fields', FORM_SCHEMA_CONFIGS.MAX_NUM_FIELD),
         },
         {
           validator(v) {
@@ -49,20 +55,25 @@ const FormSchema = Schema(
 
               return (
                 (typeof value !== 'string' || value.length === 0)
-                || (!COMPONENT_TYPES.includes(value)
-                || (key.length > SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS))
+                || (!Object.values(COMPONENT_TYPES).includes(value)
+                || (key.length > FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS))
               );
             });
 
             return !isAnyInvalidKeyOrValue;
           },
-          message: `name and component type must be non-empty string. Valid component types are: ${COMPONENT_TYPES.join(', ')}. name cannot be longer than ${SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS}.`,
+          message: [
+            VALIDATION_MESSAGES.MIN_LEN('name'),
+            VALIDATION_MESSAGES.MAX_LEN('name', FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS),
+            VALIDATION_MESSAGES.MIN_LEN('component type'),
+            FORM_VALIDATION_MESSAGES.INVALID_COMPONENT,
+          ].join('. '),
         },
         {
           validator() {
-            return numImageComponent <= 1;
+            return numImageComponent <= FORM_SCHEMA_CONFIGS.MAX_IMAGE_COMP;
           },
-          message: 'fields must have at most one image component',
+          message: FORM_VALIDATION_MESSAGES.MAX_IMAGE_COMPONENT,
         },
       ],
     },

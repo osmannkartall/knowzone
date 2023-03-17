@@ -1,5 +1,7 @@
-const SCHEMA_CONFIGS = Object.freeze({
+const FORM_SCHEMA_CONFIGS = Object.freeze({
+  MAX_IMAGE_COMP: 1,
   MAX_NUM_FIELD: 10,
+  MIN_NUM_FIELD: 1,
   MAX_LEN_TYPE: 100,
   MIN_LEN_TYPE: 1,
   MAX_LEN_KEY_OF_FIELDS: 100,
@@ -18,6 +20,6 @@ const POST_SCHEMA_CONFIGS = Object.freeze({
 });
 
 module.exports = {
-  SCHEMA_CONFIGS,
+  FORM_SCHEMA_CONFIGS,
   POST_SCHEMA_CONFIGS,
 };

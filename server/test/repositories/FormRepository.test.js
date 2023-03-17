@@ -1,7 +1,12 @@
 /* eslint-env jest */
 const mongoose = require('mongoose');
 const FormRepository = require('../../src/repositories/FormRepository');
-const { SCHEMA_CONFIGS } = require('../../src/models/schemaConfigs');
+const { FORM_SCHEMA_CONFIGS } = require('../../src/models/schemaConfigs');
+const {
+  VALIDATION_MESSAGES,
+  MONGOOSE_DEFAULT_MESSAGES,
+  FORM_VALIDATION_MESSAGES,
+} = require('../../src/models/validationMessages');
 
 const formRepository = new FormRepository();
 
@@ -39,7 +44,11 @@ beforeEach(async () => {
 describe('FormRepository.create() with invalid records', () => {
   const formWithoutOwner = { type, fields: fieldsMock };
 
-  const formWithoutOwnerId = { type, owner: { username: 'john', name: 'john' }, fields: fieldsMock };
+  const formWithoutOwnerId = {
+    type,
+    owner: { username: 'john', name: 'john' },
+    fields: fieldsMock,
+  };
 
   const formWithoutType = { owner: ownerMock, fields: fieldsMock };
 
@@ -66,12 +75,12 @@ describe('FormRepository.create() with invalid records', () => {
 
   const formWithInvalidMaxLenType = {
     ...formMock,
-    type: (new Array(SCHEMA_CONFIGS.MAX_LEN_TYPE + 10)).join('-'),
+    type: (new Array(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE + 10)).join('-'),
   };
 
   const formWithInvalidMinLenType = {
     ...formMock,
-    type: (new Array(SCHEMA_CONFIGS.MIN_LEN_TYPE - 1)).join('-'),
+    type: (new Array(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE - 1)).join('-'),
   };
 
   const formWithInvalidTypeOfType = { ...formMock };
@@ -82,7 +91,7 @@ describe('FormRepository.create() with invalid records', () => {
     ...formMock,
     fields: {
       1: 'text',
-      [(new Array(SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS + 2)).join('-')]: 'editor',
+      [(new Array(FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS + 2)).join('-')]: 'editor',
     },
   };
 
@@ -98,75 +107,108 @@ describe('FormRepository.create() with invalid records', () => {
   };
 
   it('should throw error when model is empty', async () => {
-    await expect(createInvalid({})).rejects.toThrow(/Form validation failed/i);
+    await expect(createInvalid({})).rejects.toThrow(MONGOOSE_DEFAULT_MESSAGES.INVALID('Form'));
   });
 
   it('should throw error when there is no owner', async () => {
-    await expect(createInvalid(formWithoutOwner)).rejects.toThrow(/owner.id: Path `owner.id` is required/i);
+    await expect(createInvalid(formWithoutOwner)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('owner.id'),
+    );
   });
 
   it('should throw error when there is no owner.id', async () => {
-    await expect(createInvalid(formWithoutOwnerId)).rejects.toThrow(/owner.id: Path `owner.id` is required./i);
+    await expect(createInvalid(formWithoutOwnerId)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('owner.id'),
+    );
   });
 
   it('should throw error when there is no type', async () => {
-    await expect(createInvalid(formWithoutType)).rejects.toThrow(/path `type` is required/i);
+    await expect(createInvalid(formWithoutType)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('type'),
+    );
   });
 
   it('should throw error when there are more than max fields', async () => {
-    await expect(createInvalid(formWithMoreThanMaximumFields)).rejects.toThrow(new RegExp(`fields must have at most ${SCHEMA_CONFIGS.MAX_NUM_FIELD} keys`, 'i'));
+    await expect(createInvalid(formWithMoreThanMaximumFields)).rejects.toThrow(
+      VALIDATION_MESSAGES.MAX_KEY('fields', FORM_SCHEMA_CONFIGS.MAX_NUM_FIELD),
+    );
   });
 
   it('should throw error when there is less than 1 field', async () => {
-    await expect(createInvalid(formWithoutAField)).rejects.toThrow(/fields must have at least 1 key/i);
+    await expect(createInvalid(formWithoutAField)).rejects.toThrow(
+      VALIDATION_MESSAGES.MIN_KEY('fields', FORM_SCHEMA_CONFIGS.MIN_NUM_FIELD),
+    );
   });
 
   it('should throw error when fields is undefined', async () => {
-    await expect(createInvalid(formWithUndefinedFields)).rejects.toThrow(/Path `fields` is required./i);
+    await expect(createInvalid(formWithUndefinedFields)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('fields'),
+    );
   });
 
   it('should throw error when len of type is longer than max len', async () => {
-    await expect(createInvalid(formWithInvalidMaxLenType)).rejects.toThrow(new RegExp(`length of type can not be longer than ${SCHEMA_CONFIGS.MAX_LEN_TYPE}`, 'i'));
+    await expect(createInvalid(formWithInvalidMaxLenType)).rejects.toThrow(
+      VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE),
+    );
   });
 
   it('should throw error when len of type is smaller than min len', async () => {
-    await expect(createInvalid(formWithInvalidMinLenType)).rejects.toThrow(/Path `type` is required/i);
+    await expect(createInvalid(formWithInvalidMinLenType)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('type'),
+    );
   });
 
   it('should throw error when type is not string', async () => {
+    const castMessage = MONGOOSE_DEFAULT_MESSAGES.CAST('string');
+
     formWithInvalidTypeOfType.type = [1, 2];
-    await expect(createInvalid(formWithInvalidTypeOfType)).rejects.toThrow(/Cast to string failed for value/i);
+    await expect(createInvalid(formWithInvalidTypeOfType)).rejects.toThrow(castMessage);
 
     formWithInvalidTypeOfType.type = {};
-    await expect(createInvalid(formWithInvalidTypeOfType)).rejects.toThrow(/Cast to string failed for value/i);
+    await expect(createInvalid(formWithInvalidTypeOfType)).rejects.toThrow(castMessage);
   });
 
   it('should throw error when fields is not object', async () => {
+    const typeMessage = VALIDATION_MESSAGES.TYPE('fields', 'object');
+
     formWithInvalidTypeOfFields.fields = [1, 2];
-    await expect(createInvalid(formWithInvalidTypeOfFields)).rejects.toThrow(/fields must be object/i);
+    await expect(createInvalid(formWithInvalidTypeOfFields)).rejects.toThrow(typeMessage);
 
     formWithInvalidTypeOfFields.fields = 'test';
-    await expect(createInvalid(formWithInvalidTypeOfFields)).rejects.toThrow(/fields must be object/i);
+    await expect(createInvalid(formWithInvalidTypeOfFields)).rejects.toThrow(typeMessage);
 
     formWithInvalidTypeOfFields.fields = 5.1;
-    await expect(createInvalid(formWithInvalidTypeOfFields)).rejects.toThrow(/fields must be object/i);
+    await expect(createInvalid(formWithInvalidTypeOfFields)).rejects.toThrow(typeMessage);
 
     formWithInvalidTypeOfFields.fields = null;
-    await expect(createInvalid(formWithInvalidTypeOfFields)).rejects.toThrow(/Path `fields` is required/i);
+    await expect(createInvalid(formWithInvalidTypeOfFields)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('fields'),
+    );
   });
 
   it('should throw error when one the key of fields is longer then max len', async () => {
-    await expect(createInvalid(formWithInvalidKeyLength)).rejects.toThrow(new RegExp(`name cannot be longer than ${SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS}`, 'i'));
+    await expect(createInvalid(formWithInvalidKeyLength)).rejects.toThrow(
+      VALIDATION_MESSAGES.MAX_LEN('name', FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS),
+    );
   });
 
   it('should throw error when one the value of fields is invalid component type', async () => {
-    await expect(createInvalid(formWithInvalidComponentType)).rejects.toThrow(/name and component type must be non-empty string. Valid component types/i);
+    const messages = [
+      VALIDATION_MESSAGES.MIN_LEN('name'),
+      VALIDATION_MESSAGES.MAX_LEN('name', FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS),
+      VALIDATION_MESSAGES.MIN_LEN('component type'),
+      FORM_VALIDATION_MESSAGES.INVALID_COMPONENT,
+    ].join('. ');
+
+    await expect(createInvalid(formWithInvalidComponentType)).rejects.toThrow(messages);
     formWithInvalidComponentType.fields[2] = null;
-    await expect(createInvalid(formWithInvalidComponentType)).rejects.toThrow(/name and component type must be non-empty string. Valid component types/i);
+    await expect(createInvalid(formWithInvalidComponentType)).rejects.toThrow(messages);
   });
 
   it('should throw error when there are more than one image component in fields', async () => {
-    await expect(createInvalid(formWithMultipleImage)).rejects.toThrow('fields must have at most one image component');
+    await expect(createInvalid(formWithMultipleImage)).rejects.toThrow(
+      FORM_VALIDATION_MESSAGES.MAX_IMAGE_COMPONENT,
+    );
   });
 });
 

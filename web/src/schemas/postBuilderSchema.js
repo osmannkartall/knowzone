@@ -15,7 +15,12 @@ const postBuilderSchema = Joi.object({
       .items(
         Joi.string()
           .regex(new RegExp(`^@?([a-z0-9-]){1,${POST_SCHEMA_CONFIGS.MAX_LEN_TOPIC}}$`))
-          .message(`Invalid topic(s). A topic should be at most ${POST_SCHEMA_CONFIGS.MAX_LEN_TOPIC} alphanumeric characters and it may also contain hyphen.`),
+          .message(
+            [
+              `A topic should be at most ${POST_SCHEMA_CONFIGS.MAX_LEN_TOPIC}`,
+              'alphanumeric characters and it may also contain hyphen.',
+            ].join(' '),
+          ),
       )
       .required()
       .min(POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS)
