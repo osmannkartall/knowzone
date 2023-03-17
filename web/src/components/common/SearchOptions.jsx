@@ -169,15 +169,15 @@ const SearchOptions = ({
                 <KeyboardDatePicker
                   disableToolbar
                   disableFuture
-                  id="search-option-created-start-date"
-                  name="createdStartDate"
+                  id="search-option-createdAt-start-date"
+                  name="createdAtStartDate"
                   variant="inline"
                   format="dd/MM/yyyy"
                   margin="normal"
-                  value={options.createdStartDate}
+                  value={options.createdAtStartDate}
                   placeholder="Enter Start Date"
-                  onChange={handleDateChange('createdStartDate')}
-                  maxDate={options.createdEndDate}
+                  onChange={handleDateChange('createdAtStartDate')}
+                  maxDate={options.createdAtEndDate}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
@@ -189,15 +189,15 @@ const SearchOptions = ({
                 <KeyboardDatePicker
                   disableToolbar
                   disableFuture
-                  id="search-option-created-end-date"
-                  name="createdEndDate"
+                  id="search-option-createdAt-end-date"
+                  name="createdAtEndDate"
                   variant="inline"
                   format="dd/MM/yyyy"
                   margin="normal"
-                  value={options.createdEndDate}
+                  value={options.createdAtEndDate}
                   placeholder="Enter End Date"
-                  onChange={handleDateChange('createdEndDate')}
-                  minDate={options.createdStartDate}
+                  onChange={handleDateChange('createdAtEndDate')}
+                  minDate={options.createdAtStartDate}
                   maxDate={Date.now()}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
@@ -214,16 +214,16 @@ const SearchOptions = ({
                 <KeyboardDatePicker
                   disableToolbar
                   disableFuture
-                  id="search-option-modified-start-date"
-                  name="modifiedStartDate"
+                  id="search-option-updatedAt-start-date"
+                  name="updatedAtStartDate"
                   variant="inline"
                   format="dd/MM/yyyy"
                   margin="normal"
-                  value={options.modifiedStartDate}
+                  value={options.updatedAtStartDate}
                   placeholder="Enter Start Date"
-                  onChange={handleDateChange('modifiedStartDate')}
-                  minDate={options.createdStartDate}
-                  maxDate={options.modifiedEndDate}
+                  onChange={handleDateChange('updatedAtStartDate')}
+                  minDate={options.createdAtStartDate}
+                  maxDate={options.updatedAtEndDate}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',
                   }}
@@ -235,15 +235,15 @@ const SearchOptions = ({
                 <KeyboardDatePicker
                   disableToolbar
                   disableFuture
-                  id="search-option-modified-end-date"
-                  name="modifiedEndDate"
+                  id="search-option-updatedAt-end-date"
+                  name="updatedAtEndDate"
                   variant="inline"
                   format="dd/MM/yyyy"
                   margin="normal"
-                  value={options.modifiedEndDate}
+                  value={options.updatedAtEndDate}
                   placeholder="Enter End Date"
-                  onChange={handleDateChange('modifiedEndDate')}
-                  minDate={options.modifiedStartDate}
+                  onChange={handleDateChange('updatedAtEndDate')}
+                  minDate={options.updatedAtStartDate}
                   maxDate={Date.now()}
                   KeyboardButtonProps={{
                     'aria-label': 'change date',

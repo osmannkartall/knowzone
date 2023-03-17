@@ -4,7 +4,6 @@ import { POST_SCHEMA_CONFIGS } from './schemaConfigs';
 const postBuilderSchema = Joi.object({
   id: Joi.string(),
   createdAt: Joi.string(),
-  modifiedAt: Joi.string(),
   updatedAt: Joi.string(),
   owner: Joi.object(),
   type:
