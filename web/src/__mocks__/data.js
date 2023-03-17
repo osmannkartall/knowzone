@@ -1,3 +1,5 @@
+import FORM_COMPONENT_TYPES from '../constants/form-components-types';
+
 export const formTypes = [
   {
     type: 'tip',
@@ -22,9 +24,9 @@ export const forms = {
     },
     type: 'tip',
     fields: {
-      description: 'text',
-      links: 'list',
-      images: 'image',
+      description: FORM_COMPONENT_TYPES.TEXT,
+      links: FORM_COMPONENT_TYPES.LIST,
+      images: FORM_COMPONENT_TYPES.IMAGE,
     },
     createdAt: '2023-03-13T08:13:33.055Z',
     updatedAt: '2023-03-13T08:13:33.055Z',
@@ -38,11 +40,11 @@ export const forms = {
     },
     type: 'bugfix',
     fields: {
-      description: 'text',
-      links: 'list',
-      error: 'editor',
-      solution: 'editor',
-      images: 'image',
+      description: FORM_COMPONENT_TYPES.TEXT,
+      links: FORM_COMPONENT_TYPES.LIST,
+      error: FORM_COMPONENT_TYPES.EDITOR,
+      solution: FORM_COMPONENT_TYPES.EDITOR,
+      images: FORM_COMPONENT_TYPES.IMAGE,
     },
     createdAt: '2023-03-13T08:13:33.055Z',
     updatedAt: '2023-03-13T08:13:33.055Z',
@@ -56,7 +58,7 @@ export const forms = {
     },
     type: 'todo',
     fields: {
-      todo: 'text',
+      todo: FORM_COMPONENT_TYPES.TEXT,
     },
     createdAt: '2023-03-13T08:13:33.055Z',
     updatedAt: '2023-03-13T08:13:33.055Z',

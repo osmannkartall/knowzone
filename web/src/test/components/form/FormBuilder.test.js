@@ -2,6 +2,7 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { setupServer } from 'msw/node';
 import FormBuilder from '../../../components/form/FormBuilder';
+import FORM_COMPONENT_TYPES from '../../../constants/form-components-types';
 import api from '../../../__mocks__/api';
 import {
   getMuiDropdownByTestId,
@@ -56,13 +57,14 @@ test('render 10 component type dropdowns with valid options', () => {
   const optionValues = options.map((li) => li.getAttribute('data-value'));
 
   expect(componentTypeDropdowns.length).toBe(10);
-  expect(optionValues).toEqual(['', 'editor', 'list', 'text', 'image']);
+
+  expect(optionValues.sort()).toEqual(['', ...Object.values(FORM_COMPONENT_TYPES)].sort());
 });
 
 test('value of the name is images and name is disabled when component type is image', async () => {
   render(<FormBuilder open />);
 
-  onClickMuiDropdownOption(getComponentTypeDropdowns()[2], 'image');
+  onClickMuiDropdownOption(getComponentTypeDropdowns()[2], FORM_COMPONENT_TYPES.IMAGE);
 
   expect(await getNameTextField(2)).toHaveValue('images');
   expect(await getNameTextField(2)).toHaveAttribute('disabled');
@@ -71,7 +73,7 @@ test('value of the name is images and name is disabled when component type is im
 test('other name fields can be changeable when value of a name textfield is images', async () => {
   render(<FormBuilder open />);
 
-  onClickMuiDropdownOption(getComponentTypeDropdowns()[2], 'image');
+  onClickMuiDropdownOption(getComponentTypeDropdowns()[2], FORM_COMPONENT_TYPES.IMAGE);
   fireEvent.change(await getNameTextField(4), { target: { value: 'description' } });
 
   expect(await getNameTextField(4)).toHaveValue('description');
@@ -81,8 +83,8 @@ test('image options in other dropdowns are disabled when it is selected in any d
   render(<FormBuilder open />);
 
   const componentTypeDropdowns = getComponentTypeDropdowns();
-  onClickMuiDropdownOption(componentTypeDropdowns[2], 'image');
-  const imageOption = getComponentTypeOption(componentTypeDropdowns[4], 'image');
+  onClickMuiDropdownOption(componentTypeDropdowns[2], FORM_COMPONENT_TYPES.IMAGE);
+  const imageOption = getComponentTypeOption(componentTypeDropdowns[4], FORM_COMPONENT_TYPES.IMAGE);
 
   expect(imageOption).toHaveClass('Mui-disabled');
 });
@@ -95,7 +97,7 @@ test('submit form with only (images: image) field and form type name', async () 
   const formTypeNameInput = screen.getByRole('textbox', { name: /form type name/i });
   fireEvent.change(formTypeNameInput, { target: { value: 'test form' } });
   const componentTypeDropdowns = getComponentTypeDropdowns();
-  onClickMuiDropdownOption(componentTypeDropdowns[2], 'image');
+  onClickMuiDropdownOption(componentTypeDropdowns[2], FORM_COMPONENT_TYPES.IMAGE);
   const buttonCreateForm = screen.getByText('Create');
   fireEvent.click(buttonCreateForm);
 
@@ -125,8 +127,8 @@ test('throw error when trying to create form with the same form field name', asy
   const formTypeNameInput = screen.getByRole('textbox', { name: /form type name/i });
   fireEvent.change(formTypeNameInput, { target: { value: 'test form' } });
   const componentTypeDropdowns = getComponentTypeDropdowns();
-  onClickMuiDropdownOption(componentTypeDropdowns[0], 'editor');
-  onClickMuiDropdownOption(componentTypeDropdowns[1], 'text');
+  onClickMuiDropdownOption(componentTypeDropdowns[0], FORM_COMPONENT_TYPES.EDITOR);
+  onClickMuiDropdownOption(componentTypeDropdowns[1], FORM_COMPONENT_TYPES.TEXT);
   const names = await screen.findAllByTestId('outlined-basic-name');
   fireEvent.change(names[0].querySelector('input'), { target: { value: 'description' } });
   fireEvent.change(names[1].querySelector('input'), { target: { value: 'description' } });
@@ -145,15 +147,15 @@ test('display preview of the selected component types by preserving order', asyn
   render(<FormBuilder open />);
 
   const componentTypeDropdowns = getComponentTypeDropdowns();
-  onClickMuiDropdownOption(componentTypeDropdowns[0], 'editor');
-  onClickMuiDropdownOption(componentTypeDropdowns[3], 'text');
+  onClickMuiDropdownOption(componentTypeDropdowns[0], FORM_COMPONENT_TYPES.EDITOR);
+  onClickMuiDropdownOption(componentTypeDropdowns[3], FORM_COMPONENT_TYPES.TEXT);
   const componentTypePreviews = getComponentTypePreviews();
 
   expect(componentTypePreviews.length).toBe(2);
   await within(componentTypePreviews[0]).findByText(/this is a markdown editor/i);
   await within(componentTypePreviews[1]).findByText(/this is a text/i);
 
-  onClickMuiDropdownOption(componentTypeDropdowns[1], 'list');
+  onClickMuiDropdownOption(componentTypeDropdowns[1], FORM_COMPONENT_TYPES.LIST);
   const newComponentTypePreviews = getComponentTypePreviews();
 
   expect(newComponentTypePreviews.length).toBe(3);

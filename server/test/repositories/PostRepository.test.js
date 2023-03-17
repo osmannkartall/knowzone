@@ -7,6 +7,7 @@ const {
   VALIDATION_MESSAGES,
   MONGOOSE_DEFAULT_MESSAGES,
 } = require('../../src/models/validationMessages');
+const COMPONENT_TYPES = require('../../src/constants/componentTypes');
 
 const postRepository = new PostRepository();
 const formRepository = new FormRepository();
@@ -33,10 +34,10 @@ const myForm = {
     name: 'John Doe',
   },
   fields: {
-    textInput: 'text',
-    editorInput: 'editor',
-    listInput: 'list',
-    images: 'image',
+    textInput: COMPONENT_TYPES.TEXT,
+    editorInput: COMPONENT_TYPES.EDITOR,
+    listInput: COMPONENT_TYPES.LIST,
+    images: COMPONENT_TYPES.IMAGE,
   },
 };
 
@@ -48,10 +49,10 @@ const notMyForm = {
     name: 'John Doe',
   },
   fields: {
-    textInput: 'text',
-    editorInput: 'editor',
-    listInput: 'list',
-    images: 'image',
+    textInput: COMPONENT_TYPES.TEXT,
+    editorInput: COMPONENT_TYPES.EDITOR,
+    listInput: COMPONENT_TYPES.LIST,
+    images: COMPONENT_TYPES.IMAGE,
   },
 };
 
@@ -348,7 +349,7 @@ describe('PostRepository.create() with invalid records', () => {
   it('should throw error when value of text component is invalid', async () => {
     const message = POST_VALIDATION_MESSAGES.VALUE(
       'textInput',
-      'text',
+      COMPONENT_TYPES.TEXT,
       'string, number or boolean',
     );
 
@@ -360,7 +361,7 @@ describe('PostRepository.create() with invalid records', () => {
   });
 
   it('should throw error when value of list component is not array', async () => {
-    const message = POST_VALIDATION_MESSAGES.VALUE('listInput', 'list', 'array');
+    const message = POST_VALIDATION_MESSAGES.VALUE('listInput', COMPONENT_TYPES.LIST, 'array');
 
     await expect(createInvalid(postWithInvalidList)).rejects.toThrow(message);
     postWithInvalidList.content.listInput = { 1: 2 };
@@ -382,7 +383,7 @@ describe('PostRepository.create() with invalid records', () => {
   it('should throw error when value of editor component is invalid', async () => {
     const message = POST_VALIDATION_MESSAGES.VALUE(
       'editorInput',
-      'editor',
+      COMPONENT_TYPES.EDITOR,
       'string, number or boolean',
     );
 
@@ -407,8 +408,12 @@ describe('PostRepository.create() with invalid records', () => {
 
   it('should throw error when values of multiple components are invalid', async () => {
     const messages = [
-      `${POST_VALIDATION_MESSAGES.VALUE('editorInput', 'editor', 'string, number or boolean')}`,
-      `${POST_VALIDATION_MESSAGES.VALUE('listInput', 'list', 'array')}`,
+      `${POST_VALIDATION_MESSAGES.VALUE(
+        'editorInput',
+        COMPONENT_TYPES.EDITOR,
+        'string, number or boolean',
+      )}`,
+      `${POST_VALIDATION_MESSAGES.VALUE('listInput', COMPONENT_TYPES.LIST, 'array')}`,
     ];
 
     await expect(createInvalid(postWithInvalidMultipleComponentValue)).rejects.toThrow(

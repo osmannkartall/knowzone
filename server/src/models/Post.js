@@ -1,4 +1,5 @@
 const { Schema, model, Error } = require('mongoose');
+const COMPONENT_TYPES = require('../constants/componentTypes');
 const { isArrayUnique, transformToJSON } = require('../utils');
 const Form = require('./Form');
 const owner = require('./Owner');
@@ -35,9 +36,13 @@ const validateValueOfContentFields = (content, formRecord) => {
   let isAnyInvalidValue = false;
 
   Object.entries(content).forEach(([key, value]) => {
-    if (formRecord.fields[key] === 'text') {
+    if (formRecord.fields[key] === COMPONENT_TYPES.TEXT) {
       if (value === null || typeof value === 'object' || Array.isArray(value)) {
-        messages.push(POST_VALIDATION_MESSAGES.VALUE(key, 'text', 'string, number or boolean'));
+        messages.push(POST_VALIDATION_MESSAGES.VALUE(
+          key,
+          COMPONENT_TYPES.TEXT,
+          'string, number or boolean',
+        ));
         isAnyInvalidValue = true;
       }
 
@@ -50,9 +55,9 @@ const validateValueOfContentFields = (content, formRecord) => {
         messages.push(VALIDATION_MESSAGES.MIN_LEN(key, POST_SCHEMA_CONFIGS.MIN_LEN_TEXT));
         isAnyInvalidValue = true;
       }
-    } else if (formRecord.fields[key] === 'list') {
+    } else if (formRecord.fields[key] === COMPONENT_TYPES.LIST) {
       if (!Array.isArray(value)) {
-        messages.push(POST_VALIDATION_MESSAGES.VALUE(key, 'list', 'array'));
+        messages.push(POST_VALIDATION_MESSAGES.VALUE(key, COMPONENT_TYPES.LIST, 'array'));
         isAnyInvalidValue = true;
       }
 
@@ -60,9 +65,13 @@ const validateValueOfContentFields = (content, formRecord) => {
         messages.push(VALIDATION_MESSAGES.MAX_NUM(key, POST_SCHEMA_CONFIGS.MAX_NUM_LIST));
         isAnyInvalidValue = true;
       }
-    } else if (formRecord.fields[key] === 'editor') {
+    } else if (formRecord.fields[key] === COMPONENT_TYPES.EDITOR) {
       if (value === null || typeof value === 'object' || Array.isArray(value)) {
-        messages.push(POST_VALIDATION_MESSAGES.VALUE(key, 'editor', 'string, number or boolean'));
+        messages.push(POST_VALIDATION_MESSAGES.VALUE(
+          key,
+          COMPONENT_TYPES.EDITOR,
+          'string, number or boolean',
+        ));
         isAnyInvalidValue = true;
       }
 

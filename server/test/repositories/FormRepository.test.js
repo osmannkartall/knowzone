@@ -7,6 +7,7 @@ const {
   MONGOOSE_DEFAULT_MESSAGES,
   FORM_VALIDATION_MESSAGES,
 } = require('../../src/models/validationMessages');
+const COMPONENT_TYPES = require('../../src/constants/componentTypes');
 
 const formRepository = new FormRepository();
 
@@ -23,8 +24,8 @@ const ownerMock = {
 };
 
 const fieldsMock = {
-  description: 'text',
-  solution: 'editor',
+  description: COMPONENT_TYPES.TEXT,
+  solution: COMPONENT_TYPES.EDITOR,
 };
 
 const formMock = {
@@ -55,17 +56,17 @@ describe('FormRepository.create() with invalid records', () => {
   const formWithMoreThanMaximumFields = {
     ...formMock,
     fields: {
-      1: 'text',
-      2: 'text',
-      3: 'text',
-      4: 'text',
-      5: 'text',
-      6: 'text',
-      7: 'text',
-      8: 'text',
-      9: 'text',
-      10: 'text',
-      11: 'text',
+      1: COMPONENT_TYPES.TEXT,
+      2: COMPONENT_TYPES.TEXT,
+      3: COMPONENT_TYPES.TEXT,
+      4: COMPONENT_TYPES.TEXT,
+      5: COMPONENT_TYPES.TEXT,
+      6: COMPONENT_TYPES.TEXT,
+      7: COMPONENT_TYPES.TEXT,
+      8: COMPONENT_TYPES.TEXT,
+      9: COMPONENT_TYPES.TEXT,
+      10: COMPONENT_TYPES.TEXT,
+      11: COMPONENT_TYPES.TEXT,
     },
   };
 
@@ -90,19 +91,25 @@ describe('FormRepository.create() with invalid records', () => {
   const formWithInvalidKeyLength = {
     ...formMock,
     fields: {
-      1: 'text',
-      [(new Array(FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS + 2)).join('-')]: 'editor',
+      1: COMPONENT_TYPES.TEXT,
+      [(new Array(FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS + 2)).join('-')]: COMPONENT_TYPES.EDITOR,
     },
   };
 
-  const formWithInvalidComponentType = { ...formMock, fields: { 1: 'text', 2: 'non existing' } };
+  const formWithInvalidComponentType = {
+    ...formMock,
+    fields: {
+      1: COMPONENT_TYPES.TEXT,
+      2: 'non existing',
+    },
+  };
 
   const formWithMultipleImage = {
     ...formMock,
     fields: {
-      description: 'text',
-      testImages1: 'image',
-      testImages2: 'image',
+      description: COMPONENT_TYPES.TEXT,
+      testImages1: COMPONENT_TYPES.IMAGE,
+      testImages2: COMPONENT_TYPES.IMAGE,
     },
   };
 
@@ -221,7 +228,7 @@ describe('FormRepository.create() with valid records', () => {
       name: 'John Doe',
     },
     fields: {
-      description: 'text',
+      description: COMPONENT_TYPES.TEXT,
     },
   };
 
