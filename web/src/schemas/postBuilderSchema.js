@@ -30,9 +30,7 @@ const postBuilderSchema = Joi.object({
     Joi.object()
       .unknown()
       .custom((content, helper) => {
-        const { images, ...rest } = content;
-
-        const isAnyFieldFilled = Object.values(rest).some(
+        const isAnyFieldFilled = Object.values(content).some(
           (field) => (Array.isArray(field) ? field.length : field || false),
         );
 
