@@ -1,5 +1,5 @@
 const { Schema, model } = require('mongoose');
-const COMPONENT_TYPES = require('../constants/componentTypes');
+const FORM_COMPONENT_TYPES = require('../constants/formComponentTypes');
 const { transformToJSON } = require('../utils');
 const owner = require('./Owner');
 const { FORM_SCHEMA_CONFIGS } = require('./schemaConfigs');
@@ -55,7 +55,7 @@ const FormSchema = Schema(
 
               return (
                 (typeof value !== 'string' || value.length === 0)
-                || (!Object.values(COMPONENT_TYPES).includes(value)
+                || (!Object.values(FORM_COMPONENT_TYPES).includes(value)
                 || (key.length > FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS))
               );
             });

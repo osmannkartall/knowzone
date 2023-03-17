@@ -7,7 +7,7 @@ const {
   MONGOOSE_DEFAULT_MESSAGES,
   FORM_VALIDATION_MESSAGES,
 } = require('../../src/models/validationMessages');
-const COMPONENT_TYPES = require('../../src/constants/componentTypes');
+const FORM_COMPONENT_TYPES = require('../../src/constants/formComponentTypes');
 
 const formRepository = new FormRepository();
 
@@ -24,8 +24,8 @@ const ownerMock = {
 };
 
 const fieldsMock = {
-  description: COMPONENT_TYPES.TEXT,
-  solution: COMPONENT_TYPES.EDITOR,
+  description: FORM_COMPONENT_TYPES.TEXT,
+  solution: FORM_COMPONENT_TYPES.EDITOR,
 };
 
 const formMock = {
@@ -56,17 +56,17 @@ describe('FormRepository.create() with invalid records', () => {
   const formWithMoreThanMaximumFields = {
     ...formMock,
     fields: {
-      1: COMPONENT_TYPES.TEXT,
-      2: COMPONENT_TYPES.TEXT,
-      3: COMPONENT_TYPES.TEXT,
-      4: COMPONENT_TYPES.TEXT,
-      5: COMPONENT_TYPES.TEXT,
-      6: COMPONENT_TYPES.TEXT,
-      7: COMPONENT_TYPES.TEXT,
-      8: COMPONENT_TYPES.TEXT,
-      9: COMPONENT_TYPES.TEXT,
-      10: COMPONENT_TYPES.TEXT,
-      11: COMPONENT_TYPES.TEXT,
+      1: FORM_COMPONENT_TYPES.TEXT,
+      2: FORM_COMPONENT_TYPES.TEXT,
+      3: FORM_COMPONENT_TYPES.TEXT,
+      4: FORM_COMPONENT_TYPES.TEXT,
+      5: FORM_COMPONENT_TYPES.TEXT,
+      6: FORM_COMPONENT_TYPES.TEXT,
+      7: FORM_COMPONENT_TYPES.TEXT,
+      8: FORM_COMPONENT_TYPES.TEXT,
+      9: FORM_COMPONENT_TYPES.TEXT,
+      10: FORM_COMPONENT_TYPES.TEXT,
+      11: FORM_COMPONENT_TYPES.TEXT,
     },
   };
 
@@ -91,15 +91,17 @@ describe('FormRepository.create() with invalid records', () => {
   const formWithInvalidKeyLength = {
     ...formMock,
     fields: {
-      1: COMPONENT_TYPES.TEXT,
-      [(new Array(FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS + 2)).join('-')]: COMPONENT_TYPES.EDITOR,
+      1: FORM_COMPONENT_TYPES.TEXT,
+      [
+      (new Array(FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS + 2)).join('-')
+      ]: FORM_COMPONENT_TYPES.EDITOR,
     },
   };
 
   const formWithInvalidComponentType = {
     ...formMock,
     fields: {
-      1: COMPONENT_TYPES.TEXT,
+      1: FORM_COMPONENT_TYPES.TEXT,
       2: 'non existing',
     },
   };
@@ -107,9 +109,9 @@ describe('FormRepository.create() with invalid records', () => {
   const formWithMultipleImage = {
     ...formMock,
     fields: {
-      description: COMPONENT_TYPES.TEXT,
-      testImages1: COMPONENT_TYPES.IMAGE,
-      testImages2: COMPONENT_TYPES.IMAGE,
+      description: FORM_COMPONENT_TYPES.TEXT,
+      testImages1: FORM_COMPONENT_TYPES.IMAGE,
+      testImages2: FORM_COMPONENT_TYPES.IMAGE,
     },
   };
 
@@ -228,7 +230,7 @@ describe('FormRepository.create() with valid records', () => {
       name: 'John Doe',
     },
     fields: {
-      description: COMPONENT_TYPES.TEXT,
+      description: FORM_COMPONENT_TYPES.TEXT,
     },
   };
 

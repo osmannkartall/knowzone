@@ -1,4 +1,4 @@
-const COMPONENT_TYPES = require('../constants/componentTypes');
+const FORM_COMPONENT_TYPES = require('../constants/formComponentTypes');
 const { POST_SCHEMA_CONFIGS } = require('./schemaConfigs');
 
 const VALIDATION_MESSAGES = Object.freeze({
@@ -21,7 +21,7 @@ const MONGOOSE_DEFAULT_MESSAGES = Object.freeze({
 
 const FORM_VALIDATION_MESSAGES = Object.freeze({
   MAX_IMAGE_COMPONENT: 'fields must have at most one image component',
-  INVALID_COMPONENT: `Valid component types are: ${Object.values(COMPONENT_TYPES).join(', ')}`,
+  INVALID_COMPONENT: `Valid component types are: ${Object.values(FORM_COMPONENT_TYPES).join(', ')}`,
 });
 
 const POST_VALIDATION_MESSAGES = Object.freeze({
