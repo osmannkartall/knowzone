@@ -56,6 +56,9 @@ const useStyles = makeStyles((theme) => ({
     borderTop: 0,
     backgroundColor: WHITE,
   },
+  formDataRow: {
+    margin: theme.spacing(2),
+  },
 }));
 
 const { IMAGE, ...rest } = FORM_COMPONENT_TYPES;
@@ -74,6 +77,12 @@ const defaultFields = {
   8: defaultField,
   9: defaultField,
 };
+
+const FormDataRow = ({ children }) => (
+  <div className={useStyles().formDataRow}>
+    {children}
+  </div>
+);
 
 const TopContainer = ({ title, handleClose }) => {
   const classes = useStyles();
@@ -115,111 +124,117 @@ const MiddleContainer = ({ control, errors, getValues, watch }) => {
     <div className={classes.middleContainer}>
       <div className={classes.middleInnerContainer}>
         <div style={{ borderRight: `1px solid ${GRAY3}`, width: '40%' }}>
-          <Controller
-            render={({ field: { onChange, onBlur, value, name } }) => (
-              <TextField
-                style={{ margin: '20px 20px', width: 'calc(100% - 40px)' }}
-                id="form type name"
-                label="Form Type Name"
-                variant="outlined"
-                onChange={onChange}
-                onBlur={onBlur}
-                value={value}
-                name={name}
-                size="small"
-              />
+          <FormDataRow>
+            <Controller
+              render={({ field: { onChange, onBlur, value, name } }) => (
+                <TextField
+                  fullWidth
+                  id="form type name"
+                  label="Form Type Name"
+                  variant="outlined"
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  name={name}
+                  size="small"
+                />
+              )}
+              control={control}
+              name="type"
+              shouldUnregister
+            />
+          </FormDataRow>
+          <FormDataRow>
+            {errors.type && (
+            <FormHelperText role="alert" error={errors.type !== undefined}>
+              {errors.type?.message}
+            </FormHelperText>
             )}
-            control={control}
-            name="type"
-            shouldUnregister
-          />
-          {errors.type && (
-          <FormHelperText role="alert" error={errors.type !== undefined}>
-            {errors.type?.message}
-          </FormHelperText>
-          )}
-          <span style={{ fontWeight: 'bold' }}>
-            Fields
-          </span>
-          {errors.fields && (
-          <FormHelperText role="alert" error={errors.fields !== undefined}>
-            {errors.fields?.message}
-          </FormHelperText>
-          )}
+          </FormDataRow>
+          <FormDataRow>
+            <span style={{ fontWeight: 'bold' }}>
+              Fields
+            </span>
+            {errors.fields && (
+            <FormHelperText role="alert" error={errors.fields !== undefined}>
+              {errors.fields?.message}
+            </FormHelperText>
+            )}
+          </FormDataRow>
           {Object.keys(getValues('fields') ?? {}).map((k) => (
-            <div className={classes.middleInnerContainer} key={k}>
-              <Controller
-                render={({ field: { onChange, onBlur, value, name } }) => (
-                  <TextField
-                    id="outlined-basic-name"
-                    data-testid="outlined-basic-name"
-                    fullWidth
-                    label="Name"
-                    variant="outlined"
-                    value={
-                    selectedImageComponentKey && selectedImageComponentKey === k
-                      ? 'images'
-                      : value
-                  }
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    style={{ margin: '4px 20px' }}
-                    size="small"
-                    disabled={selectedImageComponentKey && selectedImageComponentKey === k}
-                    name={name}
-                  />
-                )}
-                control={control}
-                name={`fields.${k}.name`}
-                shouldUnregister
-              />
-              <Controller
-                render={({ field: { onChange, onBlur, value, name } }) => (
-                  <TextField
-                    id="outlined-select-component-type"
-                    data-testid="outlined-select-component-type"
-                    select
-                    label="Select component type"
-                    variant="outlined"
-                    value={value}
-                    onChange={(e) => {
-                      if (e.target.value === IMAGE) {
-                        setSelectedImageComponentKey(k);
-                      } else if (k === selectedImageComponentKey) {
-                        setSelectedImageComponentKey(null);
+            <FormDataRow key={k}>
+              <div className={classes.middleInnerContainer}>
+                <Controller
+                  render={({ field: { onChange, onBlur, value, name } }) => (
+                    <TextField
+                      id="outlined-basic-name"
+                      data-testid="outlined-basic-name"
+                      fullWidth
+                      label="Name"
+                      variant="outlined"
+                      value={
+                        selectedImageComponentKey && selectedImageComponentKey === k
+                          ? 'images'
+                          : value
                       }
-                      onChange(e.target.value);
-                    }}
-                    onBlur={onBlur}
-                    name={name}
-                    fullWidth
-                    style={{ margin: '4px 20px' }}
-                    size="small"
-                  >
-                    <MenuItem key="none" value="">
-                      <em>Select</em>
-                    </MenuItem>
-                    {Object.values(rest).map((type) => (
-                      <MenuItem key={type} value={type}>{type}</MenuItem>
-                    ))}
-                    <MenuItem
-                      disabled={selectedImageComponentKey !== null}
-                      key={IMAGE}
-                      value={IMAGE}
+                      onChange={onChange}
+                      onBlur={onBlur}
+                      size="small"
+                      disabled={selectedImageComponentKey && selectedImageComponentKey === k}
+                      name={name}
+                    />
+                  )}
+                  control={control}
+                  name={`fields.${k}.name`}
+                  shouldUnregister
+                />
+                <Controller
+                  render={({ field: { onChange, onBlur, value, name } }) => (
+                    <TextField
+                      id="outlined-select-component-type"
+                      data-testid="outlined-select-component-type"
+                      select
+                      label="Select component type"
+                      variant="outlined"
+                      value={value}
+                      onChange={(e) => {
+                        if (e.target.value === IMAGE) {
+                          setSelectedImageComponentKey(k);
+                        } else if (k === selectedImageComponentKey) {
+                          setSelectedImageComponentKey(null);
+                        }
+                        onChange(e.target.value);
+                      }}
+                      onBlur={onBlur}
+                      name={name}
+                      fullWidth
+                      size="small"
                     >
-                      {IMAGE}
-                    </MenuItem>
-                  </TextField>
-                )}
-                control={control}
-                name={`fields.${k}.type`}
-                shouldUnregister
-              />
-            </div>
+                      <MenuItem key="none" value="">
+                        <em>Select</em>
+                      </MenuItem>
+                      {Object.values(rest).map((type) => (
+                        <MenuItem key={type} value={type}>{type}</MenuItem>
+                      ))}
+                      <MenuItem
+                        disabled={selectedImageComponentKey !== null}
+                        key={IMAGE}
+                        value={IMAGE}
+                      >
+                        {IMAGE}
+                      </MenuItem>
+                    </TextField>
+                  )}
+                  control={control}
+                  name={`fields.${k}.type`}
+                  shouldUnregister
+                />
+              </div>
+            </FormDataRow>
           ))}
         </div>
         <div style={{ width: '60%', padding: 20 }}>
-          {Object.entries(watchedFields ?? []).map(([k, v]) => {
+          {Object.entries(watchedFields ?? {}).map(([k, v]) => {
             if (v.type === FORM_COMPONENT_TYPES.TEXT) {
               return (
                 <div data-testid="component-type-preview" style={{ margin: '4px 0px' }} key={k}>

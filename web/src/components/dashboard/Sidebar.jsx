@@ -128,7 +128,7 @@ const Sidebar = ({ isSidebarOpen }) => {
     };
   }, []);
 
-  const onClickCreate = async (formValues) => {
+  const onClickCreateForm = async (formValues) => {
     try {
       setIsLinearProgressModalOpen(true);
 
@@ -244,7 +244,7 @@ const Sidebar = ({ isSidebarOpen }) => {
             Create Form
           </Button>
         </div>
-        <FormCreator open={isFormOpen} setOpen={setIsFormOpen} create={onClickCreate} />
+        <FormCreator open={isFormOpen} setOpen={setIsFormOpen} create={onClickCreateForm} />
         <FormProvider {...postCreatorMethods}>
           <PostCreator
             form={form}
