@@ -309,8 +309,10 @@ const DialogData = ({ create, handleClose }) => {
   });
 
   const onSubmit = async () => {
-    await create(getValues());
-    reset();
+    const isSuccessful = await create(getValues());
+    if (isSuccessful) {
+      reset();
+    }
   };
 
   return (

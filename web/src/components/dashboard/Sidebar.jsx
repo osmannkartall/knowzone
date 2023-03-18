@@ -150,10 +150,14 @@ const Sidebar = ({ isSidebarOpen }) => {
         setSidebarItems((prev) => [{ id: type, type }, ...prev]);
       } else {
         toast.error(result.message);
+        return false;
       }
+
+      return true;
     } catch (error) {
       console.log(error);
       toast.error(error.message);
+      return false;
     } finally {
       setIsLinearProgressModalOpen(false);
     }
