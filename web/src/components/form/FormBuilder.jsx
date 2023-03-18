@@ -1,14 +1,14 @@
-import { Button, IconButton, makeStyles, MenuItem, Modal, TextField } from '@material-ui/core';
+import { Button, FormHelperText, IconButton, makeStyles, MenuItem, Modal, TextField } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
 import { useState } from 'react';
-import { toast } from 'react-toastify';
-import createForm from '../../api/createForm';
+import { Controller, useForm } from 'react-hook-form';
+import { joiResolver } from '@hookform/resolvers/joi';
 import { GRAY3, PRIMARY, WHITE } from '../../constants/colors';
 import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
 import FileUploader from '../common/FileUploader';
-import LinearProgressModal from '../common/LinearProgressModal';
 import MarkdownEditor from '../common/MarkdownEditor';
 import TagPicker from '../common/TagPicker/TagPicker';
+import formBuilderSchema from '../../schemas/formBuilderSchema';
 
 const useStyles = makeStyles((theme) => ({
   modalData: {
@@ -58,16 +58,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const BottomContainer = ({ handleSubmit }) => {
-  const classes = useStyles();
+const { IMAGE, ...rest } = FORM_COMPONENT_TYPES;
 
-  return (
-    <div className={classes.bottomContainer}>
-      <Button variant="contained" color="primary" type="button" onClick={handleSubmit}>
-        Create
-      </Button>
-    </div>
-  );
+const defaultField = { name: '', type: '' };
+
+const defaultFields = {
+  0: defaultField,
+  1: defaultField,
+  2: defaultField,
+  3: defaultField,
+  4: defaultField,
+  5: defaultField,
+  6: defaultField,
+  7: defaultField,
+  8: defaultField,
+  9: defaultField,
 };
 
 const TopContainer = ({ title, handleClose }) => {
@@ -87,112 +92,134 @@ const TopContainer = ({ title, handleClose }) => {
   );
 };
 
-const defaultFormSetting = { name: '', type: '' };
+const BottomContainer = () => {
+  const classes = useStyles();
 
-const defaultFormSettings = {
-  0: defaultFormSetting,
-  1: defaultFormSetting,
-  2: defaultFormSetting,
-  3: defaultFormSetting,
-  4: defaultFormSetting,
-  5: defaultFormSetting,
-  6: defaultFormSetting,
-  7: defaultFormSetting,
-  8: defaultFormSetting,
-  9: defaultFormSetting,
+  return (
+    <div className={classes.bottomContainer}>
+      <Button variant="contained" color="primary" type="submit">
+        Create
+      </Button>
+    </div>
+  );
 };
 
-const { IMAGE, ...rest } = FORM_COMPONENT_TYPES;
-
-const MiddleContainer = ({ formSettings, setFormSettings, formType, setFormType }) => {
+const MiddleContainer = ({ control, errors, getValues, watch }) => {
   const classes = useStyles();
 
   const [selectedImageComponentKey, setSelectedImageComponentKey] = useState(null);
 
-  const onChangeName = (e, key) => {
-    const copyFormSettings = { ...formSettings };
-    const copyFormSetting = { ...copyFormSettings[key] };
-
-    copyFormSetting.name = e.target.value;
-    copyFormSettings[key] = copyFormSetting;
-
-    setFormSettings(copyFormSettings);
-  };
-
-  const onChangeType = (e, key) => {
-    const copyFormSettings = { ...formSettings };
-    const copyFormSetting = { ...copyFormSettings[key] };
-
-    copyFormSetting.type = e.target.value;
-    copyFormSettings[key] = copyFormSetting;
-
-    if (copyFormSetting.type === IMAGE) {
-      setSelectedImageComponentKey(key);
-    } else if (key === selectedImageComponentKey) {
-      setSelectedImageComponentKey(null);
-    }
-
-    setFormSettings(copyFormSettings);
-  };
+  const watchedFields = watch('fields');
 
   return (
     <div className={classes.middleContainer}>
       <div className={classes.middleInnerContainer}>
         <div style={{ borderRight: `1px solid ${GRAY3}`, width: '40%' }}>
-          <TextField
-            id="outlined-basic"
-            label="Form Type Name"
-            variant="outlined"
-            value={formType}
-            onChange={(e) => setFormType(e.target.value)}
-            size="small"
-            style={{ margin: '20px 20px', width: 'calc(100% - 40px)' }}
-          />
-          {Object.entries(formSettings).map(([key, value]) => (
-            <div className={classes.middleInnerContainer} key={key}>
+          <Controller
+            render={({ field: { onChange, onBlur, value, name } }) => (
               <TextField
-                id="outlined-basic-name"
-                data-testid="outlined-basic-name"
-                fullWidth
-                label="Name"
+                style={{ margin: '20px 20px', width: 'calc(100% - 40px)' }}
+                id="form type name"
+                label="Form Type Name"
                 variant="outlined"
-                value={selectedImageComponentKey && selectedImageComponentKey === key ? 'images' : value.name}
-                onChange={(e) => onChangeName(e, key)}
-                style={{ margin: '4px 20px' }}
+                onChange={onChange}
+                onBlur={onBlur}
+                value={value}
+                name={name}
                 size="small"
-                disabled={selectedImageComponentKey && selectedImageComponentKey === key}
               />
-              <TextField
-                id="outlined-select-component-type"
-                data-testid="outlined-select-component-type"
-                select
-                label="Select component type"
-                variant="outlined"
-                value={value.type}
-                onChange={(e) => onChangeType(e, key)}
-                fullWidth
-                style={{ margin: '4px 20px' }}
-                size="small"
-              >
-                <MenuItem key="none" value="">
-                  <em>Select</em>
-                </MenuItem>
-                {Object.values(rest).map((type) => (
-                  <MenuItem key={type} value={type}>{type}</MenuItem>
-                ))}
-                <MenuItem
-                  disabled={selectedImageComponentKey !== null}
-                  key={IMAGE}
-                  value={IMAGE}
-                >
-                  {IMAGE}
-                </MenuItem>
-              </TextField>
+            )}
+            control={control}
+            name="type"
+            shouldUnregister
+          />
+          {errors.type && (
+          <FormHelperText role="alert" error={errors.type !== undefined}>
+            {errors.type?.message}
+          </FormHelperText>
+          )}
+          <span style={{ fontWeight: 'bold' }}>
+            Fields
+          </span>
+          {errors.fields && (
+          <FormHelperText role="alert" error={errors.fields !== undefined}>
+            {errors.fields?.message}
+          </FormHelperText>
+          )}
+          {Object.keys(getValues('fields') ?? {}).map((k) => (
+            <div className={classes.middleInnerContainer} key={k}>
+              <Controller
+                render={({ field: { onChange, onBlur, value, name } }) => (
+                  <TextField
+                    id="outlined-basic-name"
+                    data-testid="outlined-basic-name"
+                    fullWidth
+                    label="Name"
+                    variant="outlined"
+                    value={
+                    selectedImageComponentKey && selectedImageComponentKey === k
+                      ? 'images'
+                      : value
+                  }
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    style={{ margin: '4px 20px' }}
+                    size="small"
+                    disabled={selectedImageComponentKey && selectedImageComponentKey === k}
+                    name={name}
+                  />
+                )}
+                control={control}
+                name={`fields.${k}.name`}
+                shouldUnregister
+              />
+              <Controller
+                render={({ field: { onChange, onBlur, value, name } }) => (
+                  <TextField
+                    id="outlined-select-component-type"
+                    data-testid="outlined-select-component-type"
+                    select
+                    label="Select component type"
+                    variant="outlined"
+                    value={value}
+                    onChange={(e) => {
+                      if (e.target.value === IMAGE) {
+                        setSelectedImageComponentKey(k);
+                      } else if (k === selectedImageComponentKey) {
+                        setSelectedImageComponentKey(null);
+                      }
+                      onChange(e.target.value);
+                    }}
+                    onBlur={onBlur}
+                    name={name}
+                    fullWidth
+                    style={{ margin: '4px 20px' }}
+                    size="small"
+                  >
+                    <MenuItem key="none" value="">
+                      <em>Select</em>
+                    </MenuItem>
+                    {Object.values(rest).map((type) => (
+                      <MenuItem key={type} value={type}>{type}</MenuItem>
+                    ))}
+                    <MenuItem
+                      disabled={selectedImageComponentKey !== null}
+                      key={IMAGE}
+                      value={IMAGE}
+                    >
+                      {IMAGE}
+                    </MenuItem>
+                  </TextField>
+                )}
+                control={control}
+                name={`fields.${k}.type`}
+                shouldUnregister
+              />
             </div>
           ))}
         </div>
         <div style={{ width: '60%', padding: 20 }}>
-          {Object.entries(formSettings).map(([k, v]) => {
+          {Object.entries(watchedFields ?? []).map(([k, v]) => {
             if (v.type === FORM_COMPONENT_TYPES.TEXT) {
               return (
                 <div data-testid="component-type-preview" style={{ margin: '4px 0px' }} key={k}>
@@ -225,6 +252,7 @@ const MiddleContainer = ({ formSettings, setFormSettings, formType, setFormType 
             if (v.type === FORM_COMPONENT_TYPES.EDITOR) {
               return (
                 <div data-testid="component-type-preview" style={{ margin: '8px 0px' }} key={k}>
+                  {v.name && <span>{v.name}</span>}
                   <MarkdownEditor
                     text={'# This is a markdown editor\n\n```js\nconsole.log("Click to SHOW PREVIEW Button")\n```'}
                     onChangeText={() => {}}
@@ -236,6 +264,7 @@ const MiddleContainer = ({ formSettings, setFormSettings, formType, setFormType 
             if (v.type === FORM_COMPONENT_TYPES.IMAGE) {
               return (
                 <div data-testid="component-type-preview" style={{ margin: '4px 0px' }} key={k}>
+                  <span>images</span>
                   <FileUploader files={[]} setFiles={() => {}} />
                 </div>
               );
@@ -248,79 +277,40 @@ const MiddleContainer = ({ formSettings, setFormSettings, formType, setFormType 
   );
 };
 
-const FormBuilder = ({ open, setOpen, setSidebarItems }) => {
+const FormBuilder = ({ open, setOpen, create }) => {
   const classes = useStyles();
 
-  const [formType, setFormType] = useState('');
-  const [formSettings, setFormSettings] = useState(defaultFormSettings);
-  const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
+  const { getValues, formState: { errors }, control, handleSubmit, watch, reset } = useForm({
+    resolver: joiResolver(formBuilderSchema),
+    defaultValues: { type: '', fields: defaultFields },
+  });
 
   const handleClose = () => setOpen(false);
 
-  const handleSubmit = async () => {
-    try {
-      setIsLinearProgressModalOpen(true);
-
-      if (!formType) {
-        throw new Error('Form type name is required');
-      }
-
-      const formSettingsKeys = [];
-      const newForm = { type: formType, fields: {} };
-      Object.values(formSettings).forEach((fs) => {
-        if (fs.type === IMAGE) {
-          newForm.fields.images = IMAGE;
-          formSettingsKeys.push('images');
-        } else if (fs.name && fs.type) {
-          newForm.fields[fs.name] = fs.type;
-          formSettingsKeys.push(fs.name);
-        }
-      });
-
-      if (formSettingsKeys.length !== new Set(formSettingsKeys).size) {
-        throw new Error('Each name of form field must be unique');
-      }
-
-      const result = await createForm(newForm);
-
-      if (result.status === 'success') {
-        setFormSettings(defaultFormSettings);
-        setOpen(false);
-        setSidebarItems((prev) => [{ id: formType, type: formType }, ...prev]);
-      } else {
-        toast.error(result.message);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message);
-    } finally {
-      setIsLinearProgressModalOpen(false);
-    }
+  const onSubmit = async () => {
+    await create(getValues());
+    reset();
   };
 
   const ModalData = (
     <div className={classes.modalData}>
       <form
         className={classes.form}
-        onSubmit={handleSubmit}
-        noValidate
-        aria-label="create-form-form"
+        onSubmit={handleSubmit(onSubmit)}
       >
         <TopContainer title="Create Form" handleClose={handleClose} />
         <MiddleContainer
-          formSettings={formSettings}
-          setFormSettings={setFormSettings}
-          formType={formType}
-          setFormType={setFormType}
+          control={control}
+          errors={errors}
+          getValues={getValues}
+          watch={watch}
         />
-        <BottomContainer handleSubmit={handleSubmit} />
+        <BottomContainer />
       </form>
     </div>
   );
   return (
-    <LinearProgressModal isOpen={isLinearProgressModalOpen}>
-      <Modal open={open} onClose={handleClose} disableRestoreFocus>{ModalData}</Modal>
-    </LinearProgressModal>
+    <Modal open={open} onClose={handleClose} disableRestoreFocus>{ModalData}</Modal>
   );
 };
 
