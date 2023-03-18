@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import FORM_COMPONENT_TYPES from '../constants/form-components-types';
 
-const formBuilderSchema = Joi.object({
+const formCreatorSchema = Joi.object({
   type:
     Joi.string()
       .required(),
@@ -32,4 +32,4 @@ const formBuilderSchema = Joi.object({
       .required(),
 }).required();
 
-export default formBuilderSchema;
+export default formCreatorSchema;

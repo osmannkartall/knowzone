@@ -4,7 +4,7 @@ import { setupServer } from 'msw/lib/node';
 import { FormProvider, useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import api from '../../../__mocks__/api';
-import PostBuilder from '../../../components/post/PostBuilder';
+import PostCreator from '../../../components/post/PostCreator';
 import { forms, formTypes } from '../../../__mocks__/data';
 import {
   getMuiDropdownOptions,
@@ -15,7 +15,7 @@ import {
   expectFormInputsAreNotInDocument,
   expectMuiDropdownHasSelectedValue,
 } from '../../utils';
-import postBuilderSchema from '../../../schemas/postBuilderSchema';
+import postCreatorSchema from '../../../schemas/postCreatorSchema';
 
 const server = setupServer(...api);
 
@@ -27,19 +27,19 @@ const mockOnSubmit = jest.fn((type, content, topics) => Promise.resolve({ type, 
 
 const mockSetForm = jest.fn((form) => Promise.resolve(form));
 
-describe('PostBuilder', () => {
+describe('PostCreator', () => {
   it('should create the post', async () => {
     const type = 'bugfix';
 
     const Component = () => {
       const methods = useForm({
-        resolver: joiResolver(postBuilderSchema),
+        resolver: joiResolver(postCreatorSchema),
         defaultValues: { type: '', topics: ['topic1', 'topic2'] },
       });
 
       return (
         <FormProvider {...methods}>
-          <PostBuilder
+          <PostCreator
             open
             form={forms[type]}
             setForm={mockSetForm}
@@ -113,13 +113,13 @@ describe('PostBuilder', () => {
   it('should set submit button to disabled when form type is not selected', () => {
     const Component = () => {
       const methods = useForm({
-        resolver: joiResolver(postBuilderSchema),
+        resolver: joiResolver(postCreatorSchema),
         defaultValues: { type: '' },
       });
 
       return (
         <FormProvider {...methods}>
-          <PostBuilder
+          <PostCreator
             open
             form={forms.tip}
             setForm={mockSetForm}
@@ -140,13 +140,13 @@ describe('PostBuilder', () => {
 
     const Component = () => {
       const methods = useForm({
-        resolver: joiResolver(postBuilderSchema),
+        resolver: joiResolver(postCreatorSchema),
         defaultValues: { type },
       });
 
       return (
         <FormProvider {...methods}>
-          <PostBuilder
+          <PostCreator
             open
             form={forms.tip}
             setForm={mockSetForm}
@@ -172,12 +172,12 @@ describe('PostBuilder', () => {
   it('should render the header with the given title', () => {
     const Component = () => {
       const methods = useForm({
-        resolver: joiResolver(postBuilderSchema),
+        resolver: joiResolver(postCreatorSchema),
         defaultValues: { type: '' },
       });
       return (
         <FormProvider {...methods}>
-          <PostBuilder open title="my type" />
+          <PostCreator open title="my type" />
         </FormProvider>
       );
     };
@@ -190,12 +190,12 @@ describe('PostBuilder', () => {
   it('should render the empty form', async () => {
     const Component = () => {
       const methods = useForm({
-        resolver: joiResolver(postBuilderSchema),
+        resolver: joiResolver(postCreatorSchema),
         defaultValues: { type: '' },
       });
       return (
         <FormProvider {...methods}>
-          <PostBuilder open title="my type" onSubmit={mockOnSubmit} />
+          <PostCreator open title="my type" onSubmit={mockOnSubmit} />
         </FormProvider>
       );
     };
@@ -217,12 +217,12 @@ describe('PostBuilder', () => {
   it('should change component types according to selected form type', () => {
     const Component = ({ type }) => {
       const methods = useForm({
-        resolver: joiResolver(postBuilderSchema),
+        resolver: joiResolver(postCreatorSchema),
         defaultValues: { type },
       });
       return (
         <FormProvider {...methods}>
-          <PostBuilder open form={forms[type]} setForm={mockSetForm} formTypes={formTypes} />
+          <PostCreator open form={forms[type]} setForm={mockSetForm} formTypes={formTypes} />
         </FormProvider>
       );
     };
@@ -244,12 +244,12 @@ describe('PostBuilder', () => {
 
     const Component = () => {
       const methods = useForm({
-        resolver: joiResolver(postBuilderSchema),
+        resolver: joiResolver(postCreatorSchema),
         defaultValues: { type: '' },
       });
       return (
         <FormProvider {...methods}>
-          <PostBuilder open form={{}} setForm={mockSetForm} formTypes={formTypes} />
+          <PostCreator open form={{}} setForm={mockSetForm} formTypes={formTypes} />
         </FormProvider>
       );
     };
@@ -268,12 +268,12 @@ describe('PostBuilder', () => {
 
     const Component = () => {
       const methods = useForm({
-        resolver: joiResolver(postBuilderSchema),
+        resolver: joiResolver(postCreatorSchema),
         defaultValues: { type: '' },
       });
       return (
         <FormProvider {...methods}>
-          <PostBuilder
+          <PostCreator
             open
             form={forms[type]}
             setForm={mockSetForm}

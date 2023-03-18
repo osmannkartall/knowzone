@@ -15,12 +15,12 @@ import { toast } from 'react-toastify';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { GRAY2, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
-import PostBuilder from '../post/PostBuilder';
+import PostCreator from '../post/PostCreator';
 import LinearProgressModal from '../common/LinearProgressModal';
 import { BE_ROUTES } from '../../constants/routes';
 import getFormTypes from '../../api/getFormTypes';
-import FormBuilder from '../form/FormBuilder';
-import postBuilderSchema from '../../schemas/postBuilderSchema';
+import FormCreator from '../form/FormCreator';
+import postCreatorSchema from '../../schemas/postCreatorSchema';
 import createForm from '../../api/createForm';
 import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
 
@@ -96,19 +96,19 @@ const SidebarItemList = ({ sidebarItems }) => (
 const Sidebar = ({ isSidebarOpen }) => {
   const classes = useStyles();
 
-  const [isPostBuilderOpen, setIsPostBuilderOpen] = useState(false);
+  const [isPostCreatorOpen, setIsPostCreatorOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const [form, setForm] = useState({});
 
-  const postBuilderMethods = useForm({
-    resolver: joiResolver(postBuilderSchema),
+  const postCreatorMethods = useForm({
+    resolver: joiResolver(postCreatorSchema),
     defaultValues: { type: '' },
   });
 
-  const watchedPostType = postBuilderMethods.watch('type');
+  const watchedPostType = postCreatorMethods.watch('type');
 
-  const onClickCreatePost = () => setIsPostBuilderOpen(true);
+  const onClickCreatePost = () => setIsPostCreatorOpen(true);
 
   const [sidebarItems, setSidebarItems] = useState([]);
 
@@ -163,7 +163,7 @@ const Sidebar = ({ isSidebarOpen }) => {
     try {
       setIsLinearProgressModalOpen(true);
       const fd = new FormData();
-      const { type, topics, content } = postBuilderMethods.getValues();
+      const { type, topics, content } = postCreatorMethods.getValues();
       const { images, ...rest } = content ?? {};
       const filledContentFields = {};
 
@@ -193,8 +193,8 @@ const Sidebar = ({ isSidebarOpen }) => {
         toast.error(result.message);
       } else {
         toast.success(result.message);
-        setIsPostBuilderOpen(false);
-        postBuilderMethods.reset();
+        setIsPostCreatorOpen(false);
+        postCreatorMethods.reset();
       }
     } catch (error) {
       console.log(error);
@@ -244,14 +244,14 @@ const Sidebar = ({ isSidebarOpen }) => {
             Create Form
           </Button>
         </div>
-        <FormBuilder open={isFormOpen} setOpen={setIsFormOpen} create={onClickCreate} />
-        <FormProvider {...postBuilderMethods}>
-          <PostBuilder
+        <FormCreator open={isFormOpen} setOpen={setIsFormOpen} create={onClickCreate} />
+        <FormProvider {...postCreatorMethods}>
+          <PostCreator
             form={form}
             setForm={setForm}
             title="Create Post"
-            open={isPostBuilderOpen}
-            setOpen={setIsPostBuilderOpen}
+            open={isPostCreatorOpen}
+            setOpen={setIsPostCreatorOpen}
             onSubmit={handleSubmit}
             formTypes={sidebarItems}
           />

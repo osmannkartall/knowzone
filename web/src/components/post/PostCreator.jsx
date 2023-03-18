@@ -356,7 +356,7 @@ const BottomContainer = ({ btnTitle }) => {
   );
 };
 
-const PostBuilder = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, formTypes }) => {
+const PostCreator = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, formTypes }) => {
   const classes = useStyles();
 
   const handleClose = () => setOpen(false);
@@ -404,8 +404,8 @@ const PostBuilder = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, 
   return <Modal open={open} onClose={handleClose} disableRestoreFocus>{ModalData}</Modal>;
 };
 
-PostBuilder.defaultProps = {
+PostCreator.defaultProps = {
   btnTitle: 'share',
 };
 
-export default PostBuilder;
+export default PostCreator;

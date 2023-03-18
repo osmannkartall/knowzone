@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import { POST_SCHEMA_CONFIGS } from './schemaConfigs';
 
-const postBuilderSchema = Joi.object({
+const postCreatorSchema = Joi.object({
   id: Joi.string(),
   createdAt: Joi.string(),
   updatedAt: Joi.string(),
@@ -42,4 +42,4 @@ const postBuilderSchema = Joi.object({
       .required(),
 }).required();
 
-export default postBuilderSchema;
+export default postCreatorSchema;

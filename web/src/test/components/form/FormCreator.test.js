@@ -1,7 +1,7 @@
 /* eslint-disable jest/no-mocks-import */
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { setupServer } from 'msw/node';
-import FormBuilder from '../../../components/form/FormBuilder';
+import FormCreator from '../../../components/form/FormCreator';
 import FORM_COMPONENT_TYPES from '../../../constants/form-components-types';
 import api from '../../../__mocks__/api';
 import {
@@ -36,15 +36,15 @@ afterAll(() => server.close());
 
 const mockCreateForm = jest.fn((type, fields) => Promise.resolve({ type, fields }));
 
-describe('FormBuilder', () => {
+describe('FormCreator', () => {
   it('should render the create form header', () => {
-    render(<FormBuilder open />);
+    render(<FormCreator open />);
 
     expect(screen.getByText(/create form/i)).toBeInTheDocument();
   });
 
   it('should change the form type name', () => {
-    render(<FormBuilder open />);
+    render(<FormCreator open />);
 
     const formTypeNameInput = screen.getByRole('textbox', { name: /form type name/i });
     fireEvent.change(formTypeNameInput, { target: { value: 'test form' } });
@@ -53,7 +53,7 @@ describe('FormBuilder', () => {
   });
 
   it('should render 10 component type dropdowns with valid options', () => {
-    render(<FormBuilder open />);
+    render(<FormCreator open />);
 
     const componentTypeDropdowns = getComponentTypeDropdowns();
     const options = getMuiDropdownOptions(componentTypeDropdowns[2]);
@@ -65,7 +65,7 @@ describe('FormBuilder', () => {
   });
 
   it('should set name value to `images` when it is image component', async () => {
-    render(<FormBuilder open />);
+    render(<FormCreator open />);
 
     onClickMuiDropdownOption(getComponentTypeDropdowns()[2], FORM_COMPONENT_TYPES.IMAGE);
 
@@ -74,7 +74,7 @@ describe('FormBuilder', () => {
   });
 
   it('should allow other names to be modified when image component is selected', async () => {
-    render(<FormBuilder open />);
+    render(<FormCreator open />);
 
     onClickMuiDropdownOption(getComponentTypeDropdowns()[2], FORM_COMPONENT_TYPES.IMAGE);
     fireEvent.change(await getNameTextField(4), { target: { value: 'description' } });
@@ -83,7 +83,7 @@ describe('FormBuilder', () => {
   });
 
   it('should disable the `image` options on the others when an image type is selected', () => {
-    render(<FormBuilder open />);
+    render(<FormCreator open />);
 
     const componentTypeDropdowns = getComponentTypeDropdowns();
     onClickMuiDropdownOption(componentTypeDropdowns[2], FORM_COMPONENT_TYPES.IMAGE);
@@ -96,7 +96,7 @@ describe('FormBuilder', () => {
   });
 
   it('should submit form with only image field and form type name', async () => {
-    render(<FormBuilder open create={mockCreateForm} />);
+    render(<FormCreator open create={mockCreateForm} />);
 
     const type = 'test form';
 
@@ -128,7 +128,7 @@ describe('FormBuilder', () => {
   });
 
   it('should submit form', async () => {
-    render(<FormBuilder open create={mockCreateForm} />);
+    render(<FormCreator open create={mockCreateForm} />);
 
     const type = 'test form';
 
@@ -168,7 +168,7 @@ describe('FormBuilder', () => {
   });
 
   it('should throw error when trying to create form without the form type name', async () => {
-    render(<FormBuilder open create={mockCreateForm} />);
+    render(<FormCreator open create={mockCreateForm} />);
 
     fireEvent.click(screen.getByText('Create'));
 
@@ -179,7 +179,7 @@ describe('FormBuilder', () => {
   });
 
   it('should throw error when trying to create form with the same form field name', async () => {
-    render(<FormBuilder open create={mockCreateForm} />);
+    render(<FormCreator open create={mockCreateForm} />);
 
     const formTypeNameInput = screen.getByRole('textbox', { name: /form type name/i });
     fireEvent.change(formTypeNameInput, { target: { value: 'test form' } });
@@ -201,7 +201,7 @@ describe('FormBuilder', () => {
   });
 
   it('should display preview of the selected component types by preserving order', async () => {
-    render(<FormBuilder open />);
+    render(<FormCreator open />);
 
     const componentTypeDropdowns = getComponentTypeDropdowns();
     onClickMuiDropdownOption(componentTypeDropdowns[0], FORM_COMPONENT_TYPES.EDITOR);

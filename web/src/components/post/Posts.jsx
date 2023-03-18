@@ -4,12 +4,12 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { joiResolver } from '@hookform/resolvers/joi';
 import Post from './Post';
-import PostBuilder from './PostBuilder';
+import PostCreator from './PostCreator';
 import ContentWrapper from '../common/ContentWrapper';
 import { IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../../constants/colors';
 import LinearProgressModal from '../common/LinearProgressModal';
 import { BE_ROUTES } from '../../constants/routes';
-import postBuilderSchema from '../../schemas/postBuilderSchema';
+import postCreatorSchema from '../../schemas/postCreatorSchema';
 
 const isNewImage = (image) => image instanceof File;
 
@@ -22,7 +22,7 @@ const Posts = ({ title, forms, form, setForm, posts, setPosts }) => {
   const handleClose = () => setOpenDialog(false);
 
   const { setValue, getValues, reset, ...methods } = useForm({
-    resolver: joiResolver(postBuilderSchema),
+    resolver: joiResolver(postCreatorSchema),
     defaultValues: { type: '' },
   });
 
@@ -171,7 +171,7 @@ const Posts = ({ title, forms, form, setForm, posts, setPosts }) => {
           ))) : null}
       </ContentWrapper>
       <FormProvider {...methods} getValues={getValues}>
-        <PostBuilder
+        <PostCreator
           form={getFormByType(getValues('type'))}
           setForm={setForm}
           title="Update Post"

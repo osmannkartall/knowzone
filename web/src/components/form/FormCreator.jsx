@@ -8,7 +8,7 @@ import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
 import FileUploader from '../common/FileUploader';
 import MarkdownEditor from '../common/MarkdownEditor';
 import TagPicker from '../common/TagPicker/TagPicker';
-import formBuilderSchema from '../../schemas/formBuilderSchema';
+import formCreatorSchema from '../../schemas/formCreatorSchema';
 
 const useStyles = makeStyles((theme) => ({
   modalData: {
@@ -277,11 +277,11 @@ const MiddleContainer = ({ control, errors, getValues, watch }) => {
   );
 };
 
-const FormBuilder = ({ open, setOpen, create }) => {
+const FormCreator = ({ open, setOpen, create }) => {
   const classes = useStyles();
 
   const { getValues, formState: { errors }, control, handleSubmit, watch, reset } = useForm({
-    resolver: joiResolver(formBuilderSchema),
+    resolver: joiResolver(formCreatorSchema),
     defaultValues: { type: '', fields: defaultFields },
   });
 
@@ -314,4 +314,4 @@ const FormBuilder = ({ open, setOpen, create }) => {
   );
 };
 
-export default FormBuilder;
+export default FormCreator;
