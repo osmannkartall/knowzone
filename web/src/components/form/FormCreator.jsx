@@ -1,4 +1,12 @@
-import { Button, FormHelperText, IconButton, makeStyles, MenuItem, Modal, TextField } from '@material-ui/core';
+import {
+  Button,
+  Dialog,
+  FormHelperText,
+  IconButton,
+  makeStyles,
+  MenuItem,
+  TextField,
+} from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -292,7 +300,7 @@ const MiddleContainer = ({ control, errors, getValues, watch }) => {
   );
 };
 
-const FormCreator = ({ open, setOpen, create }) => {
+const DialogData = ({ create, handleClose }) => {
   const classes = useStyles();
 
   const { getValues, formState: { errors }, control, handleSubmit, watch, reset } = useForm({
@@ -300,14 +308,12 @@ const FormCreator = ({ open, setOpen, create }) => {
     defaultValues: { type: '', fields: defaultFields },
   });
 
-  const handleClose = () => setOpen(false);
-
   const onSubmit = async () => {
     await create(getValues());
     reset();
   };
 
-  const ModalData = (
+  return (
     <div className={classes.modalData}>
       <form
         className={classes.form}
@@ -324,8 +330,15 @@ const FormCreator = ({ open, setOpen, create }) => {
       </form>
     </div>
   );
+};
+
+const FormCreator = ({ open, setOpen, create }) => {
+  const handleClose = () => setOpen(false);
+
   return (
-    <Modal open={open} onClose={handleClose} disableRestoreFocus>{ModalData}</Modal>
+    <Dialog onClose={handleClose} open={open}>
+      <DialogData create={create} handleClose={handleClose} />
+    </Dialog>
   );
 };
 
