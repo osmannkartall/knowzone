@@ -281,7 +281,7 @@ const TopicsFormPart = ({ setAreTopicsUnique }) => {
   );
 };
 
-const DynamicFormParts = ({ fields }) => Object.entries(fields ?? {}).map(([k, v]) => {
+const DynamicFormParts = ({ content }) => Object.entries(content ?? {}).map(([k, v]) => {
   if (v === FORM_COMPONENT_TYPES.TEXT) return <TextFormPart key={k} field={k} />;
   if (v === FORM_COMPONENT_TYPES.LIST) return <ListFormPart key={k} field={k} />;
   if (v === FORM_COMPONENT_TYPES.EDITOR) return <EditorFormPart key={k} field={k} />;
@@ -329,7 +329,7 @@ const MiddleContainer = ({ form, setAreTopicsUnique, formTypes }) => {
             </FormHelperText>
           </FormDataRow>
           )}
-          <DynamicFormParts fields={form?.fields} />
+          <DynamicFormParts content={form?.content} />
           <FormDataRow>
             <span style={{ fontWeight: 'bold' }}>
               Topics

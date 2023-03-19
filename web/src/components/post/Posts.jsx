@@ -163,7 +163,7 @@ const Posts = ({ title, forms, form, setForm, posts, setPosts }) => {
               key={p.id}
               showType
               editable
-              fields={getFormByType(p.type)?.fields ?? {}}
+              content={getFormByType(p.type)?.content ?? {}}
               post={p}
               onClickUpdate={() => setForUpdate(p)}
               onClickDelete={() => setForDelete(p)}

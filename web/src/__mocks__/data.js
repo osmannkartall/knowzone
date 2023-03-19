@@ -23,7 +23,7 @@ export const forms = {
       name: 'test',
     },
     type: 'tip',
-    fields: {
+    content: {
       description: FORM_COMPONENT_TYPES.TEXT,
       links: FORM_COMPONENT_TYPES.LIST,
       images: FORM_COMPONENT_TYPES.IMAGE,
@@ -39,7 +39,7 @@ export const forms = {
       name: 'test',
     },
     type: 'bugfix',
-    fields: {
+    content: {
       description: FORM_COMPONENT_TYPES.TEXT,
       links: FORM_COMPONENT_TYPES.LIST,
       error: FORM_COMPONENT_TYPES.EDITOR,
@@ -57,7 +57,7 @@ export const forms = {
       name: 'test',
     },
     type: 'todo',
-    fields: {
+    content: {
       todo: FORM_COMPONENT_TYPES.TEXT,
     },
     createdAt: '2023-03-13T08:13:33.055Z',

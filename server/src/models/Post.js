@@ -22,9 +22,9 @@ const validateArrayUniqueness = () => ({
 });
 
 const validateContentFields = (content, formRecord) => {
-  const formFields = Object.keys(formRecord.fields);
-  const postFields = Object.keys(content);
-  const invalidFields = postFields.filter((f) => !formFields.includes(f));
+  const formContent = Object.keys(formRecord.content);
+  const postContent = Object.keys(content);
+  const invalidFields = postContent.filter((f) => !formContent.includes(f));
 
   if (invalidFields.length > 0) {
     throw new Error(`${POST_VALIDATION_MESSAGES.INVALID_FIELD}: ${invalidFields.join(', ')}`);
@@ -36,7 +36,7 @@ const validateValueOfContentFields = (content, formRecord) => {
   let isAnyInvalidValue = false;
 
   Object.entries(content).forEach(([key, value]) => {
-    if (formRecord.fields[key] === FORM_COMPONENT_TYPES.TEXT) {
+    if (formRecord.content[key] === FORM_COMPONENT_TYPES.TEXT) {
       if (value === null || typeof value === 'object' || Array.isArray(value)) {
         messages.push(POST_VALIDATION_MESSAGES.VALUE(
           key,
@@ -55,7 +55,7 @@ const validateValueOfContentFields = (content, formRecord) => {
         messages.push(VALIDATION_MESSAGES.MIN_LEN(key, POST_SCHEMA_CONFIGS.MIN_LEN_TEXT));
         isAnyInvalidValue = true;
       }
-    } else if (formRecord.fields[key] === FORM_COMPONENT_TYPES.LIST) {
+    } else if (formRecord.content[key] === FORM_COMPONENT_TYPES.LIST) {
       if (!Array.isArray(value)) {
         messages.push(POST_VALIDATION_MESSAGES.VALUE(key, FORM_COMPONENT_TYPES.LIST, 'array'));
         isAnyInvalidValue = true;
@@ -65,7 +65,7 @@ const validateValueOfContentFields = (content, formRecord) => {
         messages.push(VALIDATION_MESSAGES.MAX_NUM(key, POST_SCHEMA_CONFIGS.MAX_NUM_LIST));
         isAnyInvalidValue = true;
       }
-    } else if (formRecord.fields[key] === FORM_COMPONENT_TYPES.EDITOR) {
+    } else if (formRecord.content[key] === FORM_COMPONENT_TYPES.EDITOR) {
       if (value === null || typeof value === 'object' || Array.isArray(value)) {
         messages.push(POST_VALIDATION_MESSAGES.VALUE(
           key,
@@ -138,9 +138,9 @@ const PostSchema = new Schema(
         },
         {
           validator(v) {
-            return Object.keys(v).length <= FORM_SCHEMA_CONFIGS.MAX_NUM_FIELD;
+            return Object.keys(v).length <= FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT;
           },
-          message: VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_FIELD),
+          message: VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT),
         },
         {
           async validator(v) {
@@ -153,13 +153,13 @@ const PostSchema = new Schema(
               throw new Error(VALIDATION_MESSAGES.NO_RECORD('form'));
             }
 
-            if (!formRecord.fields.images) {
+            if (!formRecord.content.images) {
               delete v.images;
             }
 
             if (!Object.keys(v).length) {
               throw new Error(
-                VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_FIELD),
+                VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_CONTENT),
               );
             }
 

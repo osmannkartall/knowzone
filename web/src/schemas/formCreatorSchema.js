@@ -5,29 +5,29 @@ const formCreatorSchema = Joi.object({
   type:
     Joi.string()
       .required(),
-  fields:
+  content:
     Joi.object()
       .unknown()
-      .custom((fields, helper) => {
-        const fieldsKeys = [];
+      .custom((content, helper) => {
+        const contentKeys = [];
 
-        Object.values(fields).forEach((f) => {
+        Object.values(content).forEach((f) => {
           if (f.type === FORM_COMPONENT_TYPES.IMAGE) {
-            fieldsKeys.push('images');
+            contentKeys.push('images');
           } else if (f.name && f.type) {
-            fieldsKeys.push(f.name);
+            contentKeys.push(f.name);
           }
         });
 
-        if (!fieldsKeys.length) {
+        if (!contentKeys.length) {
           return helper.message('At least one name and type required.');
         }
 
-        if (fieldsKeys.length !== new Set(fieldsKeys).size) {
+        if (contentKeys.length !== new Set(contentKeys).size) {
           return helper.message('Each name of form field must be unique');
         }
 
-        return fields;
+        return content;
       })
       .required(),
 }).required();

@@ -73,7 +73,7 @@ const { IMAGE, ...rest } = FORM_COMPONENT_TYPES;
 
 const defaultField = { name: '', type: '' };
 
-const defaultFields = {
+const defaultContent = {
   0: defaultField,
   1: defaultField,
   2: defaultField,
@@ -126,7 +126,7 @@ const MiddleContainer = ({ control, errors, getValues, watch }) => {
 
   const [selectedImageComponentKey, setSelectedImageComponentKey] = useState(null);
 
-  const watchedFields = watch('fields');
+  const watchedContent = watch('content');
 
   return (
     <div className={classes.middleContainer}>
@@ -161,15 +161,15 @@ const MiddleContainer = ({ control, errors, getValues, watch }) => {
           </FormDataRow>
           <FormDataRow>
             <span style={{ fontWeight: 'bold' }}>
-              Fields
+              Content
             </span>
-            {errors.fields && (
-            <FormHelperText role="alert" error={errors.fields !== undefined}>
-              {errors.fields?.message}
+            {errors.content && (
+            <FormHelperText role="alert" error={errors.content !== undefined}>
+              {errors.content?.message}
             </FormHelperText>
             )}
           </FormDataRow>
-          {Object.keys(getValues('fields') ?? {}).map((k) => (
+          {Object.keys(getValues('content') ?? {}).map((k) => (
             <FormDataRow key={k}>
               <div className={classes.middleInnerContainer}>
                 <Controller
@@ -193,7 +193,7 @@ const MiddleContainer = ({ control, errors, getValues, watch }) => {
                     />
                   )}
                   control={control}
-                  name={`fields.${k}.name`}
+                  name={`content.${k}.name`}
                   shouldUnregister
                 />
                 <Controller
@@ -234,7 +234,7 @@ const MiddleContainer = ({ control, errors, getValues, watch }) => {
                     </TextField>
                   )}
                   control={control}
-                  name={`fields.${k}.type`}
+                  name={`content.${k}.type`}
                   shouldUnregister
                 />
               </div>
@@ -242,7 +242,7 @@ const MiddleContainer = ({ control, errors, getValues, watch }) => {
           ))}
         </div>
         <div style={{ width: '60%', padding: 20 }}>
-          {Object.entries(watchedFields ?? {}).map(([k, v]) => {
+          {Object.entries(watchedContent ?? {}).map(([k, v]) => {
             if (v.type === FORM_COMPONENT_TYPES.TEXT) {
               return (
                 <div data-testid="component-type-preview" style={{ margin: '4px 0px' }} key={k}>
@@ -305,7 +305,7 @@ const DialogData = ({ create, handleClose }) => {
 
   const { getValues, formState: { errors }, control, handleSubmit, watch, reset } = useForm({
     resolver: joiResolver(formCreatorSchema),
-    defaultValues: { type: '', fields: defaultFields },
+    defaultValues: { type: '', content: defaultContent },
   });
 
   const onSubmit = async () => {

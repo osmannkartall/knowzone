@@ -23,7 +23,7 @@ const FormSchema = Schema(
         VALIDATION_MESSAGES.MIN_LEN('type', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE),
       ],
     },
-    fields: {
+    content: {
       type: Schema.Types.Mixed,
       required: true,
       validate: [
@@ -31,19 +31,19 @@ const FormSchema = Schema(
           validator(v) {
             return v !== null && typeof v === 'object' && !Array.isArray(v);
           },
-          message: VALIDATION_MESSAGES.TYPE('fields', 'object'),
+          message: VALIDATION_MESSAGES.TYPE('content', 'object'),
         },
         {
           validator(v) {
             return Object.keys(v).length;
           },
-          message: VALIDATION_MESSAGES.MIN_KEY('fields', FORM_SCHEMA_CONFIGS.MIN_NUM_FIELD),
+          message: VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_CONTENT),
         },
         {
           validator(v) {
-            return Object.keys(v).length <= FORM_SCHEMA_CONFIGS.MAX_NUM_FIELD;
+            return Object.keys(v).length <= FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT;
           },
-          message: VALIDATION_MESSAGES.MAX_KEY('fields', FORM_SCHEMA_CONFIGS.MAX_NUM_FIELD),
+          message: VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT),
         },
         {
           validator(v) {
@@ -56,7 +56,7 @@ const FormSchema = Schema(
               return (
                 (typeof value !== 'string' || value.length === 0)
                 || (!Object.values(FORM_COMPONENT_TYPES).includes(value)
-                || (key.length > FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS))
+                || (key.length > FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT))
               );
             });
 
@@ -64,7 +64,7 @@ const FormSchema = Schema(
           },
           message: [
             VALIDATION_MESSAGES.MIN_LEN('name'),
-            VALIDATION_MESSAGES.MAX_LEN('name', FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_FIELDS),
+            VALIDATION_MESSAGES.MAX_LEN('name', FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT),
             VALIDATION_MESSAGES.MIN_LEN('component type'),
             FORM_VALIDATION_MESSAGES.INVALID_COMPONENT,
           ].join('. '),

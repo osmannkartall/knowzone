@@ -33,7 +33,7 @@ const myForm = {
     username: 'john_doe',
     name: 'John Doe',
   },
-  fields: {
+  content: {
     textInput: FORM_COMPONENT_TYPES.TEXT,
     editorInput: FORM_COMPONENT_TYPES.EDITOR,
     listInput: FORM_COMPONENT_TYPES.LIST,
@@ -48,7 +48,7 @@ const notMyForm = {
     username: 'john_doe2',
     name: 'John Doe',
   },
-  fields: {
+  content: {
     textInput: FORM_COMPONENT_TYPES.TEXT,
     editorInput: FORM_COMPONENT_TYPES.EDITOR,
     listInput: FORM_COMPONENT_TYPES.LIST,
@@ -238,13 +238,13 @@ describe('PostRepository.create() with invalid records', () => {
 
   it('should throw error when there are more than max fields in content', async () => {
     await expect(createInvalid(postWithMoreThanMaxContentField)).rejects.toThrow(
-      VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_FIELD),
+      VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT),
     );
   });
 
   it('should throw error when there is less than 1 field in content', async () => {
     await expect(createInvalid(postWithoutContentField)).rejects.toThrow(
-      VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_FIELD),
+      VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_CONTENT),
     );
   });
 

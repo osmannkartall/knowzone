@@ -229,12 +229,12 @@ describe('PostCreator', () => {
 
     const { rerender } = render(<Component type="tip" />);
 
-    expectFormInputsAreInDocument(Object.keys(forms.tip.fields));
+    expectFormInputsAreInDocument(Object.keys(forms.tip.content));
 
     rerender(<Component type="todo" />);
 
-    expectFormInputsAreInDocument(Object.keys(forms.todo.fields));
-    expectFormInputsAreNotInDocument(Object.keys(forms.tip.fields));
+    expectFormInputsAreInDocument(Object.keys(forms.todo.content));
+    expectFormInputsAreNotInDocument(Object.keys(forms.tip.content));
   });
 
   it('should change the form after the selected type is changed', async () => {

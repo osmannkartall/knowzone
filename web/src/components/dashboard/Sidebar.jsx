@@ -132,14 +132,14 @@ const Sidebar = ({ isSidebarOpen }) => {
     try {
       setIsLinearProgressModalOpen(true);
 
-      const { type, fields } = formValues;
-      const newForm = { type, fields: {} };
+      const { type, content } = formValues;
+      const newForm = { type, content: {} };
 
-      Object.values(fields).forEach((fs) => {
+      Object.values(content).forEach((fs) => {
         if (fs.type === FORM_COMPONENT_TYPES.IMAGE) {
-          newForm.fields.images = FORM_COMPONENT_TYPES.IMAGE;
+          newForm.content.images = FORM_COMPONENT_TYPES.IMAGE;
         } else if (fs.name && fs.type) {
-          newForm.fields[fs.name] = fs.type;
+          newForm.content[fs.name] = fs.type;
         }
       });
 

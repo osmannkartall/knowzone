@@ -34,7 +34,7 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-const mockCreateForm = jest.fn((type, fields) => Promise.resolve({ type, fields }));
+const mockCreateForm = jest.fn((type, content) => Promise.resolve({ type, content }));
 
 describe('FormCreator', () => {
   it('should render the create form header', () => {
@@ -111,7 +111,7 @@ describe('FormCreator', () => {
     await waitFor(() => {
       expect(mockCreateForm).toHaveBeenCalledWith({
         type,
-        fields: {
+        content: {
           0: { name: '', type: '' },
           1: { name: '', type: '' },
           2: { name: '', type: FORM_COMPONENT_TYPES.IMAGE },
@@ -150,7 +150,7 @@ describe('FormCreator', () => {
     await waitFor(() => {
       expect(mockCreateForm).toHaveBeenCalledWith({
         type,
-        fields: {
+        content: {
           0: { name: 'my text', type: FORM_COMPONENT_TYPES.TEXT },
           1: { name: '', type: '' },
           // This is '' in test because of the selectedImageComponentKey internal state
