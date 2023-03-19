@@ -4,6 +4,8 @@ const {
   isCustomError,
   isMulterError,
   isSchemaError,
+  isMongoError,
+  setMongoErrorDescription,
 } = require('../knowzoneErrorHandler');
 
 function getCustomFieldsByErrorType(err) {
@@ -14,6 +16,8 @@ function getCustomFieldsByErrorType(err) {
   if (isSchemaError(err)) {
     statusCode = 400;
     description = err.message;
+  } else if (isMongoError(err)) {
+    description = setMongoErrorDescription(err);
   } else if (isMulterError(err)) {
     description = err.message;
   } else if (isApiSchemaError(err)) {

@@ -12,14 +12,17 @@ import { FormProvider, useForm } from 'react-hook-form';
 import BookmarkBorder from '@material-ui/icons/BookmarkBorder';
 import Bookmark from '@material-ui/icons/Bookmark';
 import { toast } from 'react-toastify';
+import { joiResolver } from '@hookform/resolvers/joi';
 import { GRAY2, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
-import PostBuilder from '../post/PostBuilder';
+import PostCreator from '../post/PostCreator';
 import LinearProgressModal from '../common/LinearProgressModal';
-import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
 import { BE_ROUTES } from '../../constants/routes';
 import getFormTypes from '../../api/getFormTypes';
-import FormBuilder from '../form/FormBuilder';
+import FormCreator from '../form/FormCreator';
+import postCreatorSchema from '../../schemas/postCreatorSchema';
+import createForm from '../../api/createForm';
+import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
 
 const useStyles = makeStyles((theme) => ({
   sidebar: {
@@ -93,15 +96,19 @@ const SidebarItemList = ({ sidebarItems }) => (
 const Sidebar = ({ isSidebarOpen }) => {
   const classes = useStyles();
 
-  const [isPostBuilderOpen, setIsPostBuilderOpen] = useState(false);
+  const [isPostCreatorOpen, setIsPostCreatorOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const [form, setForm] = useState({});
 
-  const { reset, getValues, watch, ...methods } = useForm({ defaultValues: { type: '' } });
-  const watchedType = watch('type');
+  const postCreatorMethods = useForm({
+    resolver: joiResolver(postCreatorSchema),
+    defaultValues: { type: '' },
+  });
 
-  const onClickCreatePost = () => setIsPostBuilderOpen(true);
+  const watchedPostType = postCreatorMethods.watch('type');
+
+  const onClickCreatePost = () => setIsPostCreatorOpen(true);
 
   const [sidebarItems, setSidebarItems] = useState([]);
 
@@ -121,28 +128,61 @@ const Sidebar = ({ isSidebarOpen }) => {
     };
   }, []);
 
+  const onClickCreateForm = async (formValues) => {
+    try {
+      setIsLinearProgressModalOpen(true);
+
+      const { type, content } = formValues;
+      const newForm = { type, content: {} };
+
+      Object.values(content).forEach((fs) => {
+        if (fs.type === FORM_COMPONENT_TYPES.IMAGE) {
+          newForm.content.images = FORM_COMPONENT_TYPES.IMAGE;
+        } else if (fs.name && fs.type) {
+          newForm.content[fs.name] = fs.type;
+        }
+      });
+
+      const result = await createForm(newForm);
+
+      if (result.status === 'success') {
+        setIsFormOpen(false);
+        setSidebarItems((prev) => [{ id: type, type }, ...prev]);
+      } else {
+        toast.error(result.message);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      return false;
+    } finally {
+      setIsLinearProgressModalOpen(false);
+    }
+  };
+
   const addPost = async () => {
     try {
       setIsLinearProgressModalOpen(true);
       const fd = new FormData();
-      const { type, topics, ...dynamicFields } = getValues();
-      const content = {};
+      const { type, topics, content } = postCreatorMethods.getValues();
+      const { images, ...rest } = content ?? {};
+      const filledContentFields = {};
 
-      Object.entries(dynamicFields).forEach(([k, v]) => {
-        if (form?.fields?.[k] === FORM_COMPONENT_TYPES.IMAGE) {
-          (Array.isArray(v) ? v : []).forEach((image) => {
-            if (image.preview) {
-              // Revoke the data uri to avoid memory leaks
-              URL.revokeObjectURL(image.preview);
-            }
-            fd.append('image', image);
-          });
-        } else {
-          content[k] = v;
-        }
-      });
+      Object.entries(rest).forEach(([k, v]) => { if (v) filledContentFields[k] = v; });
 
-      fd.append('content', JSON.stringify(content));
+      if (images) {
+        (Array.isArray(images) ? images : []).forEach((image) => {
+          if (image.preview) {
+            URL.revokeObjectURL(image.preview);
+          }
+          fd.append('image', image);
+        });
+      }
+
+      fd.append('content', JSON.stringify(filledContentFields));
       fd.append('type', JSON.stringify(type));
       fd.append('topics', JSON.stringify(topics));
 
@@ -152,13 +192,13 @@ const Sidebar = ({ isSidebarOpen }) => {
         credentials: 'include',
       });
       const result = await response.json();
-      console.log(result.status, result.message);
 
       if (result?.status === 'fail') {
         toast.error(result.message);
       } else {
         toast.success(result.message);
-        setIsPostBuilderOpen(false);
+        setIsPostCreatorOpen(false);
+        postCreatorMethods.reset();
       }
     } catch (error) {
       console.log(error);
@@ -168,7 +208,7 @@ const Sidebar = ({ isSidebarOpen }) => {
   };
 
   const handleSubmit = () => {
-    if (watchedType !== '') {
+    if (watchedPostType !== '') {
       addPost();
     }
   };
@@ -208,14 +248,14 @@ const Sidebar = ({ isSidebarOpen }) => {
             Create Form
           </Button>
         </div>
-        <FormBuilder open={isFormOpen} setOpen={setIsFormOpen} setSidebarItems={setSidebarItems} />
-        <FormProvider {...methods} getValues={getValues} watch={watch} reset={reset}>
-          <PostBuilder
+        <FormCreator open={isFormOpen} setOpen={setIsFormOpen} create={onClickCreateForm} />
+        <FormProvider {...postCreatorMethods}>
+          <PostCreator
             form={form}
             setForm={setForm}
             title="Create Post"
-            open={isPostBuilderOpen}
-            setOpen={setIsPostBuilderOpen}
+            open={isPostCreatorOpen}
+            setOpen={setIsPostCreatorOpen}
             onSubmit={handleSubmit}
             formTypes={sidebarItems}
           />

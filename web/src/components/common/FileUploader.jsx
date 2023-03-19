@@ -201,7 +201,7 @@ const FileUploader = ({ files, setFiles }) => {
     <section className={classes.container}>
       {Array.isArray(files) && files.length < NUM_MAX_FILES ? (
         <div {...getRootProps({ style })} className={classes.dragAndDropArea}>
-          <input {...getInputProps()} />
+          <input id="images" {...getInputProps()} />
           <CloudUploadIcon />
           <p>{infoTitle}</p>
           <em>{infoSubtitle}</em>

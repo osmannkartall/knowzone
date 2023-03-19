@@ -25,20 +25,20 @@ class SearchService {
         filterQuery['owner.username'] = { $regex: `\\b${v.trim()}\\b`, $options: 'i' };
       } else if (k === 'topics') {
         filterQuery[k] = { $in: v.map((topic) => new RegExp(`\\b${topic.trim()}\\b`, 'i')) };
-      } else if (k === 'createdStartDate') {
-        const date = new Date(filterInfo.createdStartDate);
+      } else if (k === 'createdAtStartDate') {
+        const date = new Date(filterInfo.createdAtStartDate);
         date.setUTCHours(0, 0, 0, 0);
         filterQuery.createdAt.$gte = date;
-      } else if (k === 'createdEndDate') {
-        const date = new Date(filterInfo.createdEndDate);
+      } else if (k === 'createdAtEndDate') {
+        const date = new Date(filterInfo.createdAtEndDate);
         date.setUTCHours(23, 59, 59, 999);
         filterQuery.createdAt.$lte = date;
-      } else if (k === 'modifiedStartDate') {
-        const date = new Date(filterInfo.modifiedStartDate);
+      } else if (k === 'updatedAtStartDate') {
+        const date = new Date(filterInfo.updatedAtStartDate);
         date.setUTCHours(0, 0, 0, 0);
         filterQuery.updatedAt.$gte = date;
-      } else if (k === 'modifiedEndDate') {
-        const date = new Date(filterInfo.modifiedEndDate);
+      } else if (k === 'updatedAtEndDate') {
+        const date = new Date(filterInfo.updatedAtEndDate);
         date.setUTCHours(23, 59, 59, 999);
         filterQuery.updatedAt.$lte = date;
       } else if (k === 'type') {

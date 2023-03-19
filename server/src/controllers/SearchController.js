@@ -28,13 +28,13 @@ const filterSchema = Joi.object({
       'string.pattern.base': 'Author should start with alphanumeric characters and can include underscore.',
     }),
 
-  createdStartDate: Joi.date(),
+  createdAtStartDate: Joi.date(),
 
-  createdEndDate: Joi.date(),
+  createdAtEndDate: Joi.date(),
 
-  modifiedStartDate: Joi.date(),
+  updatedAtStartDate: Joi.date(),
 
-  modifiedEndDate: Joi.date(),
+  updatedAtEndDate: Joi.date(),
 
   description: Joi.string().max(256),
 

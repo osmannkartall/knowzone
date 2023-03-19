@@ -6,8 +6,8 @@ import {
   MenuItem,
   Button,
   Modal,
-  InputLabel,
   FormHelperText,
+  FormControl,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -105,15 +105,14 @@ const TypeFormPart = ({ formTypes }) => {
         render={
           ({ field: { onChange, onBlur, value, name } }) => (
             <TextField
-              id="outlined-select-post-type"
+              id="select-post-type"
+              data-testid="select-post-type"
               select
               label="Post Type"
               onChange={onChange}
               onBlur={onBlur}
               value={value}
               name={name}
-              error={errors.type !== undefined}
-              helperText={errors.type?.message}
               variant="outlined"
               fullWidth
             >
@@ -130,13 +129,18 @@ const TypeFormPart = ({ formTypes }) => {
         name="type"
         shouldUnregister
       />
+      {errors.type && (
+        <FormHelperText role="alert" error={errors.type !== undefined}>
+          {errors.type?.message}
+        </FormHelperText>
+      )}
     </FormDataRow>
     )
   );
 };
 
 const TextFormPart = ({ field }) => {
-  const { control, formState: { errors } } = useFormContext();
+  const { control } = useFormContext();
 
   return field && (
     <FormDataRow>
@@ -145,6 +149,7 @@ const TextFormPart = ({ field }) => {
           ({ field: { onChange, onBlur, value, name } }) => (
             <TextField
               variant="outlined"
+              title={field}
               fullWidth
               multiline
               minRows={4}
@@ -155,13 +160,11 @@ const TextFormPart = ({ field }) => {
               onBlur={onBlur}
               value={value}
               name={name}
-              error={errors[field] !== undefined}
-              helperText={errors[field]?.message}
             />
           )
         }
         control={control}
-        name={field}
+        name={`content.${field}`}
         shouldUnregister
       />
     </FormDataRow>
@@ -169,26 +172,27 @@ const TextFormPart = ({ field }) => {
 };
 
 const ListFormPart = ({ field }) => {
-  const { control, formState: { errors } } = useFormContext();
+  const { control } = useFormContext();
 
   return (
     <FormDataRow>
       <Controller
         render={
           ({ field: { onChange, value } }) => (
-            <TagPicker
-              tags={Array.isArray(value) ? value : []}
-              setTags={onChange}
-              placeholder="Type an item and press enter to add"
-              unique
-              border
-              showError={errors[field] !== undefined}
-              helperText={errors[field]?.message}
-            />
+            <div title={field}>
+              <TagPicker
+                id={field}
+                tags={Array.isArray(value) ? value : []}
+                setTags={onChange}
+                placeholder="Type an item and press enter to add"
+                unique
+                border
+              />
+            </div>
           )
         }
         control={control}
-        name={field}
+        name={`content.${field}`}
         shouldUnregister
       />
     </FormDataRow>
@@ -198,33 +202,28 @@ const ListFormPart = ({ field }) => {
 const EditorFormPart = ({ field }) => {
   const classes = useStyles();
 
-  const { control, formState: { errors } } = useFormContext();
+  const { control } = useFormContext();
 
   return (
     <FormDataRow>
-      <InputLabel
-        required
-        className={classes.label}
-      >
-        {field}
-      </InputLabel>
       <Controller
         render={
           ({ field: { onChange, value } }) => (
-            <MarkdownEditor
-              text={value}
-              onChangeText={onChange}
-              containerMaxHeight="50vh"
-            />
+            <FormControl style={{ display: 'flex', flexDirection: 'column' }}>
+              <label htmlFor={field} className={classes.label}>{field}</label>
+              <MarkdownEditor
+                id={field}
+                text={value}
+                onChangeText={onChange}
+                containerMaxHeight="50vh"
+              />
+            </FormControl>
           )
         }
         control={control}
-        name={field}
+        name={`content.${field}`}
         shouldUnregister
       />
-      <FormHelperText error={errors[field] !== undefined}>
-        {errors[field]?.message}
-      </FormHelperText>
     </FormDataRow>
   );
 };
@@ -235,22 +234,25 @@ const ImageFormPart = ({ field }) => {
   const { control } = useFormContext();
 
   return (
-    <div className={classes.fileUploaderContainer}>
+    <div className={classes.fileUploaderContainer} title={field}>
       <Controller
         render={
           ({ field: { onChange, value } }) => (
-            <FileUploader files={Array.isArray(value) ? value : []} setFiles={onChange} />
+            <FormControl style={{ display: 'flex', flexDirection: 'column' }}>
+              <label htmlFor="images" className={classes.label}>{field}</label>
+              <FileUploader files={Array.isArray(value) ? value : []} setFiles={onChange} />
+            </FormControl>
           )
         }
         control={control}
-        name={field}
+        name={`content.${field}`}
         shouldUnregister
       />
     </div>
   );
 };
 
-const TagFormPart = ({ setAreTopicsUnique }) => {
+const TopicsFormPart = ({ setAreTopicsUnique }) => {
   const { control, formState: { errors } } = useFormContext();
 
   return (
@@ -279,7 +281,7 @@ const TagFormPart = ({ setAreTopicsUnique }) => {
   );
 };
 
-const DynamicFormParts = ({ fields }) => Object.entries(fields ?? {}).map(([k, v]) => {
+const DynamicFormParts = ({ content }) => Object.entries(content ?? {}).map(([k, v]) => {
   if (v === FORM_COMPONENT_TYPES.TEXT) return <TextFormPart key={k} field={k} />;
   if (v === FORM_COMPONENT_TYPES.LIST) return <ListFormPart key={k} field={k} />;
   if (v === FORM_COMPONENT_TYPES.EDITOR) return <EditorFormPart key={k} field={k} />;
@@ -308,11 +310,34 @@ const TopContainer = ({ title, handleClose }) => {
 const MiddleContainer = ({ form, setAreTopicsUnique, formTypes }) => {
   const classes = useStyles();
 
+  const { formState: { errors }, getValues } = useFormContext();
+
   return (
     <div className={classes.middleContainer}>
       <TypeFormPart formTypes={formTypes} />
-      <DynamicFormParts fields={form?.fields} />
-      {form?.type && <TagFormPart setAreTopicsUnique={setAreTopicsUnique} /> }
+      {getValues('type') && (
+        <>
+          <FormDataRow>
+            <span style={{ fontWeight: 'bold' }}>
+              Content
+            </span>
+          </FormDataRow>
+          {errors.content && (
+          <FormDataRow>
+            <FormHelperText role="alert" error={errors.content !== undefined}>
+              {errors.content?.message}
+            </FormHelperText>
+          </FormDataRow>
+          )}
+          <DynamicFormParts content={form?.content} />
+          <FormDataRow>
+            <span style={{ fontWeight: 'bold' }}>
+              Topics
+            </span>
+          </FormDataRow>
+          <TopicsFormPart setAreTopicsUnique={setAreTopicsUnique} />
+        </>
+      )}
     </div>
   );
 };
@@ -320,16 +345,18 @@ const MiddleContainer = ({ form, setAreTopicsUnique, formTypes }) => {
 const BottomContainer = ({ btnTitle }) => {
   const classes = useStyles();
 
+  const { getValues } = useFormContext();
+
   return (
     <div className={classes.bottomContainer}>
-      <Button variant="contained" color="primary" type="submit">
+      <Button variant="contained" color="primary" type="submit" disabled={!getValues('type')}>
         {btnTitle}
       </Button>
     </div>
   );
 };
 
-const PostBuilder = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, formTypes }) => {
+const PostCreator = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, formTypes }) => {
   const classes = useStyles();
 
   const handleClose = () => setOpen(false);
@@ -346,8 +373,7 @@ const PostBuilder = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, 
         const selectedForm = await getFormByType(watchedPostType);
         setForm(selectedForm);
 
-        const defaultValues = { topics: [], type: watchedPostType };
-        Object.keys(selectedForm.fields).forEach((formField) => { defaultValues[formField] = ''; });
+        const defaultValues = { topics: [], type: watchedPostType, content: {} };
         reset(defaultValues);
       };
       initializeForm();
@@ -363,11 +389,14 @@ const PostBuilder = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, 
       <form
         className={classes.form}
         onSubmit={handleSubmit((data) => areTopicsUnique && onSubmit(data))}
-        noValidate
       >
         <TopContainer title={title} handleClose={handleClose} />
-        <MiddleContainer form={form} setAreTopicsUnique={setAreTopicsUnique} formTypes={formTypes} />
-        <BottomContainer btnTitle={btnTitle} />
+        <MiddleContainer
+          form={form}
+          setAreTopicsUnique={setAreTopicsUnique}
+          formTypes={formTypes}
+        />
+        <BottomContainer btnTitle={btnTitle} onSubmit={onSubmit} />
       </form>
     </div>
   );
@@ -375,8 +404,8 @@ const PostBuilder = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, 
   return <Modal open={open} onClose={handleClose} disableRestoreFocus>{ModalData}</Modal>;
 };
 
-PostBuilder.defaultProps = {
+PostCreator.defaultProps = {
   btnTitle: 'share',
 };
 
-export default PostBuilder;
+export default PostCreator;

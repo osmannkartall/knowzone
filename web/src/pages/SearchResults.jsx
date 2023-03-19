@@ -46,6 +46,7 @@ const SearchResults = () => {
       <ContentWrapper title="Search Results">
         {Array.isArray(posts) && posts.length ? (
           posts.map((p) => (
+            // TODO: props are outdated
             <Post
               key={p.id}
               showType

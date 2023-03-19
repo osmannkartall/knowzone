@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MarkdownEditor = ({ text, onChangeText, containerMaxHeight }) => {
+const MarkdownEditor = ({ id, text, onChangeText, containerMaxHeight }) => {
   const [showEditor, setShowEditor] = useState(true);
   const classes = useStyles({ containerMaxHeight });
 
@@ -102,6 +102,7 @@ const MarkdownEditor = ({ text, onChangeText, containerMaxHeight }) => {
               </div>
               <div className={classes.editorContainer}>
                 <textarea
+                  id={id}
                   className={classes.editor}
                   value={text}
                   onChange={(e) => onChangeText(e.target.value)}

@@ -67,10 +67,10 @@ const SearchBar = () => {
     description: '',
     topics: [],
     author: '',
-    createdStartDate: null,
-    createdEndDate: null,
-    modifiedStartDate: null,
-    modifiedEndDate: null,
+    createdAtStartDate: null,
+    createdAtEndDate: null,
+    updatedAtStartDate: null,
+    updatedAtEndDate: null,
   };
   const [searchOptions, setSearchOptions] = useState(emptySearchOptions);
   const [isSearchOptionsMenuOpen, setIsSearchOptionsMenuOpen] = useState(false);
@@ -102,12 +102,12 @@ const SearchBar = () => {
   const checkAllSearchOptions = () => !areAllSearchOptionsEmpty() && areTopicsUnique;
 
   const checkDates = () => {
-    if ((searchOptions.createdStartDate && searchOptions.createdEndDate)
-      && (searchOptions.createdStartDate > searchOptions.createdEndDate)) {
+    if ((searchOptions.createdAtStartDate && searchOptions.createdAtEndDate)
+      && (searchOptions.createdAtStartDate > searchOptions.createdAtEndDate)) {
       return false;
     }
-    if ((searchOptions.modifiedStartDate && searchOptions.modifiedEndDate)
-      && (searchOptions.modifiedStartDate > searchOptions.modifiedEndDate)) {
+    if ((searchOptions.updatedAtStartDate && searchOptions.updatedAtEndDate)
+      && (searchOptions.updatedAtStartDate > searchOptions.updatedAtEndDate)) {
       return false;
     }
     return true;

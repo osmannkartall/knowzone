@@ -1,40 +1,118 @@
 const { Schema, model, Error } = require('mongoose');
-const { isLengthBetween, isArrayUnique, transformToJSON } = require('../utils');
+const FORM_COMPONENT_TYPES = require('../constants/formComponentTypes');
+const { isArrayUnique, transformToJSON } = require('../utils');
 const Form = require('./Form');
 const owner = require('./Owner');
-const { SCHEMA_CONFIGS, POST_SCHEMA_CONFIGS } = require('./schemaConfigs');
+const type = require('./Type');
+const { FORM_SCHEMA_CONFIGS, POST_SCHEMA_CONFIGS } = require('./schemaConfigs');
+const { VALIDATION_MESSAGES, POST_VALIDATION_MESSAGES } = require('./validationMessages');
 
-const validateArrayLength = (name, max, min = 0) => ({
-  validator: (items) => isLengthBetween(items, max, min),
-  message: (props) => `Number of ${name} should be in [${min}, ${max}], RECEIVED: ${props.value.length}`,
+const validateMinNum = (name, min = 0) => ({
+  validator: (items) => items.length >= min,
+  message: VALIDATION_MESSAGES.MIN_NUM(name, min),
+});
+
+const validateMaxNum = (name, max = 0) => ({
+  validator: (items) => items.length <= max,
+  message: VALIDATION_MESSAGES.MAX_NUM(name, max),
 });
 
 const validateArrayUniqueness = () => ({
   validator: (items) => isArrayUnique(items),
-  message: 'Array cannot have duplicated items, RECEIVED: [{VALUE}]',
+  message: VALIDATION_MESSAGES.DUPLICATED_ITEMS,
 });
+
+const validateContentFields = (content, formRecord) => {
+  const formContent = Object.keys(formRecord.content);
+  const postContent = Object.keys(content);
+  const invalidFields = postContent.filter((f) => !formContent.includes(f));
+
+  if (invalidFields.length > 0) {
+    throw new Error(`${POST_VALIDATION_MESSAGES.INVALID_FIELD}: ${invalidFields.join(', ')}`);
+  }
+};
+
+const validateValueOfContentFields = (content, formRecord) => {
+  const messages = [];
+  let isAnyInvalidValue = false;
+
+  Object.entries(content).forEach(([key, value]) => {
+    if (formRecord.content[key] === FORM_COMPONENT_TYPES.TEXT) {
+      if (value === null || typeof value === 'object' || Array.isArray(value)) {
+        messages.push(POST_VALIDATION_MESSAGES.VALUE(
+          key,
+          FORM_COMPONENT_TYPES.TEXT,
+          'string, number or boolean',
+        ));
+        isAnyInvalidValue = true;
+      }
+
+      if (value?.length > POST_SCHEMA_CONFIGS.MAX_LEN_TEXT) {
+        messages.push(VALIDATION_MESSAGES.MAX_LEN(key, POST_SCHEMA_CONFIGS.MAX_LEN_TEXT));
+        isAnyInvalidValue = true;
+      }
+
+      if (value?.length < POST_SCHEMA_CONFIGS.MIN_LEN_TEXT) {
+        messages.push(VALIDATION_MESSAGES.MIN_LEN(key, POST_SCHEMA_CONFIGS.MIN_LEN_TEXT));
+        isAnyInvalidValue = true;
+      }
+    } else if (formRecord.content[key] === FORM_COMPONENT_TYPES.LIST) {
+      if (!Array.isArray(value)) {
+        messages.push(POST_VALIDATION_MESSAGES.VALUE(key, FORM_COMPONENT_TYPES.LIST, 'array'));
+        isAnyInvalidValue = true;
+      }
+
+      if (value?.length > POST_SCHEMA_CONFIGS.MAX_NUM_LIST) {
+        messages.push(VALIDATION_MESSAGES.MAX_NUM(key, POST_SCHEMA_CONFIGS.MAX_NUM_LIST));
+        isAnyInvalidValue = true;
+      }
+    } else if (formRecord.content[key] === FORM_COMPONENT_TYPES.EDITOR) {
+      if (value === null || typeof value === 'object' || Array.isArray(value)) {
+        messages.push(POST_VALIDATION_MESSAGES.VALUE(
+          key,
+          FORM_COMPONENT_TYPES.EDITOR,
+          'string, number or boolean',
+        ));
+        isAnyInvalidValue = true;
+      }
+
+      if (value?.length > POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR) {
+        messages.push(VALIDATION_MESSAGES.MAX_LEN(key, POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR));
+        isAnyInvalidValue = true;
+      }
+
+      if (value?.length < POST_SCHEMA_CONFIGS.MIN_LEN_EDITOR) {
+        messages.push(VALIDATION_MESSAGES.MIN_LEN(key, POST_SCHEMA_CONFIGS.MIN_LEN_EDITOR));
+        isAnyInvalidValue = true;
+      }
+    }
+  });
+
+  if (isAnyInvalidValue) {
+    throw new Error(messages.join(', '));
+  }
+};
 
 const PostSchema = new Schema(
   {
     owner,
-    type: {
-      type: String,
-      required: true,
-      maxLength: [SCHEMA_CONFIGS.MAX_LEN_TYPE, `length of type can not be longer than ${SCHEMA_CONFIGS.MAX_LEN_TYPE}`],
-      minLength: [SCHEMA_CONFIGS.MIN_LEN_TYPE, `length of type can not be smaller than ${SCHEMA_CONFIGS.MIN_LEN_TYPE}`],
-    },
+    type,
     topics: {
       type: [
         {
           type: String,
           // TODO: it should not be only ascii.
-          match: new RegExp(`^@?([a-z0-9-]){1,${POST_SCHEMA_CONFIGS.MAX_LEN_TOPIC}}$`),
+          match: [
+            new RegExp(`^@?([a-z0-9-]){1,${POST_SCHEMA_CONFIGS.MAX_LEN_TOPIC}}$`),
+            POST_VALIDATION_MESSAGES.INVALID_TOPIC,
+          ],
           lowercase: true,
         },
       ],
       required: true,
       validate: [
-        validateArrayLength('topics', POST_SCHEMA_CONFIGS.MAX_NUM_TOPICS, POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS),
+        validateMinNum('topics', POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS),
+        validateMaxNum('topics', POST_SCHEMA_CONFIGS.MAX_NUM_TOPICS),
         validateArrayUniqueness(),
       ],
     },
@@ -46,19 +124,13 @@ const PostSchema = new Schema(
           validator(v) {
             return v !== null && typeof v === 'object' && !Array.isArray(v);
           },
-          message: 'content must be object',
+          message: VALIDATION_MESSAGES.TYPE('content', 'object'),
         },
         {
           validator(v) {
-            return Object.keys(v).length;
+            return Object.keys(v).length <= FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT;
           },
-          message: 'content must have at least 1 key',
-        },
-        {
-          validator(v) {
-            return Object.keys(v).length <= SCHEMA_CONFIGS.MAX_NUM_FIELD;
-          },
-          message: `content must have at most ${SCHEMA_CONFIGS.MAX_NUM_FIELD} keys`,
+          message: VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT),
         },
         {
           async validator(v) {
@@ -68,71 +140,22 @@ const PostSchema = new Schema(
             );
 
             if (!formRecord) {
-              throw new Error(`form record not found for the given type: ${this.type}`);
+              throw new Error(VALIDATION_MESSAGES.NO_RECORD('form'));
             }
 
-            if (!formRecord.fields.images) {
+            if (!formRecord.content.images) {
               delete v.images;
             }
 
-            const formFields = Object.keys(formRecord.fields);
-            const postFields = Object.keys(v);
-            const invalidFields = postFields.filter((f) => !formFields.includes(f));
-
-            if (invalidFields.length > 0) {
-              throw new Error(`invalid fields for form type: ${invalidFields.join(', ')}`);
+            if (!Object.keys(v).length) {
+              throw new Error(
+                VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_CONTENT),
+              );
             }
 
-            const messages = [];
-            let isAnyInvalidValue = false;
+            validateContentFields(v, formRecord);
 
-            Object.entries(v).forEach(([key, value]) => {
-              if (formRecord.fields[key] === 'text') {
-                if (value === null || typeof value === 'object' || Array.isArray(value)) {
-                  messages.push(`invalid value for text type field ${key}. Value can be string, number or boolean`);
-                  isAnyInvalidValue = true;
-                }
-
-                if (value?.length > POST_SCHEMA_CONFIGS.MAX_LEN_TEXT) {
-                  messages.push(`length of value of a text type field can't be longer than ${POST_SCHEMA_CONFIGS.MAX_LEN_TEXT}`);
-                  isAnyInvalidValue = true;
-                }
-
-                if (value?.length < POST_SCHEMA_CONFIGS.MIN_LEN_TEXT) {
-                  messages.push(`length of a value of a text type field can't be smaller than ${POST_SCHEMA_CONFIGS.MIN_LEN_TEXT}`);
-                  isAnyInvalidValue = true;
-                }
-              } else if (formRecord.fields[key] === 'list') {
-                if (!Array.isArray(value)) {
-                  messages.push('value of a list type field must be array');
-                  isAnyInvalidValue = true;
-                }
-
-                if (value?.length > POST_SCHEMA_CONFIGS.MAX_NUM_LIST) {
-                  messages.push(`number of elements in a list type field can't be greater than ${POST_SCHEMA_CONFIGS.MAX_NUM_LIST}`);
-                  isAnyInvalidValue = true;
-                }
-              } else if (formRecord.fields[key] === 'editor') {
-                if (value === null || typeof value === 'object' || Array.isArray(value)) {
-                  messages.push(`invalid value for editor type field ${key}. Value can be string, number or boolean`);
-                  isAnyInvalidValue = true;
-                }
-
-                if (value?.length > POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR) {
-                  messages.push(`length of value of a editor type field can't be longer than ${POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR}`);
-                  isAnyInvalidValue = true;
-                }
-
-                if (value?.length < POST_SCHEMA_CONFIGS.MIN_LEN_EDITOR) {
-                  messages.push(`length of a value of a editor type field can't be smaller than ${POST_SCHEMA_CONFIGS.MIN_LEN_EDITOR}`);
-                  isAnyInvalidValue = true;
-                }
-              }
-            });
-
-            if (isAnyInvalidValue) {
-              throw new Error(messages.join(', '));
-            }
+            validateValueOfContentFields(v, formRecord);
 
             return true;
           },
@@ -148,7 +171,7 @@ const PostSchema = new Schema(
             },
           },
         ],
-        validate: validateArrayLength('images', POST_SCHEMA_CONFIGS.MAX_NUM_IMAGES),
+        validate: validateMaxNum('images', POST_SCHEMA_CONFIGS.MAX_NUM_IMAGES),
       },
     },
   },

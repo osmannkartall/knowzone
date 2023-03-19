@@ -1,4 +1,4 @@
-const FORM_SCHEMA_CONFIGS = Object.freeze({
+export const FORM_SCHEMA_CONFIGS = Object.freeze({
   MAX_IMAGE_COMP: 1,
   MAX_NUM_CONTENT: 10,
   MIN_NUM_CONTENT: 1,
@@ -7,7 +7,7 @@ const FORM_SCHEMA_CONFIGS = Object.freeze({
   MAX_LEN_KEY_OF_CONTENT: 100,
 });
 
-const POST_SCHEMA_CONFIGS = Object.freeze({
+export const POST_SCHEMA_CONFIGS = Object.freeze({
   MAX_LEN_TEXT: 100,
   MIN_LEN_TEXT: 1,
   MAX_NUM_LIST: 5,
@@ -18,8 +18,3 @@ const POST_SCHEMA_CONFIGS = Object.freeze({
   MIN_NUM_TOPICS: 1,
   MAX_LEN_TOPIC: 30,
 });
-
-module.exports = {
-  FORM_SCHEMA_CONFIGS,
-  POST_SCHEMA_CONFIGS,
-};

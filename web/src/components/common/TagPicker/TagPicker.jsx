@@ -116,7 +116,7 @@ const TagPicker = ({
           />
         )}
       {(showError || (unique && !areCurrentTagsUnique)) && (
-        <p className={classes.errorText}>
+        <p role="alert" className={classes.errorText}>
           {showError && helperText && (helperText.length > 0) && areCurrentTagsUnique
             ? helperText
             : `Tag list should contain unique items. '${tags.at(-1)}' exists in the list.`}

@@ -161,7 +161,7 @@ const ImagePart = ({ images }) => {
   );
 };
 
-const TagPart = ({ topics }) => {
+const TopicsPart = ({ topics }) => {
   const classes = useStyles();
 
   return (
@@ -181,11 +181,11 @@ const OwnerTopbar = ({ owner }) => {
   );
 };
 
-const DynamicPart = ({ post, fields }) => Object.entries(post.content ?? {}).map(([k, v]) => {
-  if (fields?.[k] === FORM_COMPONENT_TYPES.TEXT) return <TextPart key={k} value={v} />;
-  if (fields?.[k] === FORM_COMPONENT_TYPES.LIST) return <ListPart key={k} title={k} listItems={v} />;
-  if (fields?.[k] === FORM_COMPONENT_TYPES.EDITOR) return <EditorPart key={k} title={k} text={v} />;
-  if (fields?.[k] === FORM_COMPONENT_TYPES.IMAGE) return <ImagePart key={k} images={v} />;
+const DynamicPart = ({ post, content }) => Object.entries(post.content ?? {}).map(([k, v]) => {
+  if (content?.[k] === FORM_COMPONENT_TYPES.TEXT) return <TextPart key={k} value={v} />;
+  if (content?.[k] === FORM_COMPONENT_TYPES.LIST) return <ListPart key={k} title={k} listItems={v} />;
+  if (content?.[k] === FORM_COMPONENT_TYPES.EDITOR) return <EditorPart key={k} title={k} text={v} />;
+  if (content?.[k] === FORM_COMPONENT_TYPES.IMAGE) return <ImagePart key={k} images={v} />;
   return null;
 });
 
@@ -255,19 +255,19 @@ const PostTopbar = ({ showType, editable, type, onClickUpdate, onClickDelete }) 
   );
 };
 
-const PostBody = ({ owner, fields, post }) => {
+const PostBody = ({ owner, content, post }) => {
   const classes = useStyles();
 
   return (
     <div className={classes.postBodyContainer}>
       <OwnerTopbar owner={owner?.username} />
-      <DynamicPart post={post} fields={fields} />
+      <DynamicPart post={post} content={content} />
       <TimestampBar post={post} />
     </div>
   );
 };
 
-const Post = ({ showType, editable, fields, post, onClickUpdate, onClickDelete }) => {
+const Post = ({ showType, editable, content, post, onClickUpdate, onClickDelete }) => {
   const classes = useStyles();
 
   return (
@@ -279,9 +279,9 @@ const Post = ({ showType, editable, fields, post, onClickUpdate, onClickDelete }
         onClickUpdate={onClickUpdate}
         onClickDelete={onClickDelete}
       />
-      <PostBody owner={post.owner} fields={fields} post={post} />
+      <PostBody owner={post.owner} content={content} post={post} />
       <Divider />
-      <TagPart topics={post.topics ?? []} />
+      <TopicsPart topics={post.topics ?? []} />
     </div>
   );
 };

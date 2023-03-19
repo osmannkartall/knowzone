@@ -21,6 +21,17 @@ function isSchemaError(err) {
   return err.name === 'ValidationError';
 }
 
+function isMongoError(err) {
+  return err.name === 'MongoError';
+}
+
+function setMongoErrorDescription(err) {
+  if (err.code === 11000) {
+    return `${Object.values(err.keyValue)[0]} already exists. Select a different value.`;
+  }
+  return err.message;
+}
+
 function isCustomError(err) {
   return err && err.statusCode && err.description;
 }
@@ -65,6 +76,8 @@ module.exports = {
   isApiSchemaError,
   isMulterError,
   isSchemaError,
+  isMongoError,
+  setMongoErrorDescription,
   isCustomError,
   hasLowerLayerCustomError,
   changeToCustomError,

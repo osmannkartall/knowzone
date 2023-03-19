@@ -3,6 +3,6 @@ import App from '../App';
 
 test('renders welcome message', () => {
   render(<App />);
-  const paragraph = screen.getByText(/hi. this is your knowzone/i);
+  const paragraph = screen.getByText(/Login to your Knowzone account/i);
   expect(paragraph).toBeInTheDocument();
 });
