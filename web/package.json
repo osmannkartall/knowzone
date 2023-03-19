@@ -80,6 +80,7 @@
     ]
   },
   "devDependencies": {
-    "msw": "^1.1.0"
+    "msw": "^1.1.0",
+    "react-error-overlay": "6.0.9"
   }
 }
