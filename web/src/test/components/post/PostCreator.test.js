@@ -99,9 +99,9 @@ describe('PostCreator', () => {
 
       // no available dropzone after uploading 2 files
       expect(screen.queryByText(/Drag n drop some images here, or click to select/i)).not.toBeInTheDocument();
-    });
 
-    fireEvent.submit(screen.getByText(/share/i));
+      fireEvent.submit(screen.getByText(/share/i));
+    });
 
     await waitFor(() => {
       expect(mockOnSubmit).toBeCalledWith(expectedPost);
