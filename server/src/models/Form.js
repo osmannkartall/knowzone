@@ -2,6 +2,7 @@ const { Schema, model } = require('mongoose');
 const FORM_COMPONENT_TYPES = require('../constants/formComponentTypes');
 const { transformToJSON } = require('../utils');
 const owner = require('./Owner');
+const type = require('./Type');
 const { FORM_SCHEMA_CONFIGS } = require('./schemaConfigs');
 const { VALIDATION_MESSAGES, FORM_VALIDATION_MESSAGES } = require('./validationMessages');
 
@@ -11,17 +12,8 @@ const FormSchema = Schema(
   {
     owner,
     type: {
-      type: String,
-      required: true,
+      ...type,
       unique: true,
-      maxLength: [
-        FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE,
-        VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE),
-      ],
-      minLength: [
-        FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE,
-        VALIDATION_MESSAGES.MIN_LEN('type', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE),
-      ],
     },
     content: {
       type: Schema.Types.Mixed,

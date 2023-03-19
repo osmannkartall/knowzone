@@ -3,6 +3,7 @@ const FORM_COMPONENT_TYPES = require('../constants/formComponentTypes');
 const { isArrayUnique, transformToJSON } = require('../utils');
 const Form = require('./Form');
 const owner = require('./Owner');
+const type = require('./Type');
 const { FORM_SCHEMA_CONFIGS, POST_SCHEMA_CONFIGS } = require('./schemaConfigs');
 const { VALIDATION_MESSAGES, POST_VALIDATION_MESSAGES } = require('./validationMessages');
 
@@ -95,18 +96,7 @@ const validateValueOfContentFields = (content, formRecord) => {
 const PostSchema = new Schema(
   {
     owner,
-    type: {
-      type: String,
-      required: true,
-      maxLength: [
-        FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE,
-        VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE),
-      ],
-      minLength: [
-        FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE,
-        VALIDATION_MESSAGES.MIN_LEN('type', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE),
-      ],
-    },
+    type,
     topics: {
       type: [
         {
