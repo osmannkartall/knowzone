@@ -178,6 +178,10 @@ const PostSchema = new Schema(
   { timestamps: true },
 );
 
+PostSchema.index({ '$**': 'text' });
+PostSchema.index({ type: 1 });
+PostSchema.index({ topics: 1 });
+
 transformToJSON(PostSchema);
 
 const Post = model('Post', PostSchema);
