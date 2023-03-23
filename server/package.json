@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "start": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "dev": "nodemon src/app.js",
+    "data-generator": "node src/dataGenerator.js"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +19,7 @@
     "nodemon": "^2.0.12"
   },
   "dependencies": {
+    "@faker-js/faker": "^7.6.0",
     "bcryptjs": "^2.4.3",
     "connect-mongo": "^4.6.0",
     "cors": "^2.8.5",

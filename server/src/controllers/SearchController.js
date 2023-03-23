@@ -2,32 +2,14 @@ const router = require('express').Router();
 const Joi = require('joi');
 const SearchService = require('../services/SearchService');
 const { checkAuthentication } = require('../middlewares/checkAuthentication');
-const { KNOWZONE_ERROR_TYPES, hasLowerLayerCustomError, createCustomError } = require('../knowzoneErrorHandler');
+const {
+  KNOWZONE_ERROR_TYPES,
+  hasLowerLayerCustomError,
+  createCustomError,
+} = require('../knowzoneErrorHandler');
 const { isObjectEmpty } = require('../utils');
 
-const postsByOwnerSchema = (sessionUserId) => Joi.object({
-  owner: Joi
-    .string()
-    .required()
-    .custom((value, helper) => {
-      if (sessionUserId && value !== sessionUserId) {
-        return helper.message('Invalid owner information.');
-      }
-      return true;
-    }),
-});
-
-const filterSchema = Joi.object({
-  author: Joi
-    .string()
-    .regex(/^@?([a-z0-9_])*$/)
-    .min(1)
-    .max(15)
-    .lowercase()
-    .messages({
-      'string.pattern.base': 'Author should start with alphanumeric characters and can include underscore.',
-    }),
-
+const searchSchema = Joi.object({
   createdAtStartDate: Joi.date(),
 
   createdAtEndDate: Joi.date(),
@@ -35,12 +17,6 @@ const filterSchema = Joi.object({
   updatedAtStartDate: Joi.date(),
 
   updatedAtEndDate: Joi.date(),
-
-  description: Joi.string().max(256),
-
-  error: Joi.string().max(256),
-
-  solution: Joi.string().max(256),
 
   searchText: Joi.string().max(128),
 
@@ -60,27 +36,7 @@ const filterSchema = Joi.object({
     ),
 });
 
-const getPostsByOwner = async (req, res, next) => {
-  try {
-    await postsByOwnerSchema(req.session.userId).validateAsync(req.query);
-    const result = await SearchService.getPostsByOwner(req.query.owner);
-
-    res.json(result);
-  } catch (err) {
-    if (!hasLowerLayerCustomError()) {
-      err.description = 'Error when getting posts by owner';
-      err.statusCode = 500;
-      err.type = KNOWZONE_ERROR_TYPES.SEARCH;
-      err.data = {
-        id: req.params.id,
-      };
-    }
-
-    next(err);
-  }
-};
-
-const filter = async (req, res, next) => {
+const search = async (req, res, next) => {
   try {
     const info = req.body;
 
@@ -92,8 +48,10 @@ const filter = async (req, res, next) => {
       });
       next(err);
     } else {
-      await filterSchema.validateAsync(info);
-      const result = await SearchService.filter(info);
+      await searchSchema.validateAsync(info);
+
+      info.ownerId = req.session.userId;
+      const result = await SearchService.search(info);
       res.json(result);
     }
   } catch (err) {
@@ -106,7 +64,6 @@ const filter = async (req, res, next) => {
   }
 };
 
-router.get('/', checkAuthentication, getPostsByOwner);
-router.post('/filter', checkAuthentication, filter);
+router.post('/', checkAuthentication, search);
 
 module.exports = router;
