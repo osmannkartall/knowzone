@@ -1,57 +1,5 @@
 const PostModel = require('../models/Post');
 
-function getReduceQueryForArrayToString() {
-  return {
-    $reduce: {
-      input: {
-        $map: {
-          input: '$$this.v',
-          in: { $toString: '$$this' },
-        },
-      },
-      initialValue: '',
-      in: { $concat: ['$$value', '$$this'] },
-    },
-  };
-}
-
-function getReduceQueryForContentField(searchText) {
-  return {
-    $expr: {
-      $regexMatch: {
-        input: {
-          // collect value of content fields into a single string
-          $reduce: {
-            input: { $objectToArray: '$content' },
-            initialValue: '',
-            in: {
-              $switch: {
-                branches: [
-                  {
-                    case: { $eq: ['$$this.k', 'images'] },
-                    then: '$$value',
-                  },
-                  {
-                    case: { $eq: [{ $type: '$$this.v' }, 'array'] },
-                    then: getReduceQueryForArrayToString(),
-                  },
-                  {
-                    case: { $eq: [{ $type: '$$this.v' }, 'object'] },
-                    then: '$$value',
-                  },
-                ],
-                default: { $concat: ['$$value', '$$this.v'] },
-              },
-            },
-          },
-        },
-        regex: searchText,
-        options: 'i',
-      },
-    },
-  };
-}
-
 function prepareFilterQuery(info) {
   const filterQuery = { 'owner.id': info.ownerId };
 
@@ -101,29 +49,18 @@ function prepareFilterQuery(info) {
 }
 
 function prepareSearchTextQuery(info) {
-  let searchTextQuery = {};
-
   if (info.searchText) {
-    // type and topics shouldn't be searched if they are in filters already.
-    searchTextQuery.$or = [getReduceQueryForContentField(info.searchText)];
-
-    if (!info.type) {
-      searchTextQuery.$or.push({ type: new RegExp(`\\b${info.searchText.trim()}\\b`, 'i') });
-    }
-
-    if (!info.topics) {
-      searchTextQuery.$or.push(
-        { topics: { $in: [new RegExp(`\\b${info.searchText.trim()}\\b`, 'i')] } },
-      );
-    }
-  } else if (info.content) {
-    searchTextQuery = getReduceQueryForContentField(info.content);
+    return { $text: { $search: info.searchText } };
   }
 
-  return searchTextQuery;
+  return {};
 }
 
 async function search(info) {
+  if (!info.ownerId) {
+    return [];
+  }
+
   const filterQuery = prepareFilterQuery(info);
   const searchTextQuery = prepareSearchTextQuery(info);
   let query = {};
@@ -137,4 +74,4 @@ async function search(info) {
   return PostModel.find(query);
 }
 
-module.exports = { search, getReduceQueryForContentField };
+module.exports = { search };

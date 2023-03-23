@@ -7,8 +7,7 @@ jest.mock('../../src/models/Post');
 beforeEach(() => { PostModel.find.mockReturnValueOnce([]); });
 
 describe('SearchService - filter()', () => {
-  const searchText = 'hello';
-  const content = 'hello';
+  const searchText = 'search this words';
   const ownerId = '641ac3f13325cf129878ca49';
   const type = 'test type';
   const createdAtStartDate = '2022-10-22';
@@ -28,34 +27,7 @@ describe('SearchService - filter()', () => {
     $lte: new Date(`${updatedAtEndDate}T23:59:59.999Z`),
   };
 
-  it('should create query with content, dates, type and topics', async () => {
-    const filterInfo = {
-      content,
-      ownerId,
-      type,
-      createdAtStartDate,
-      createdAtEndDate,
-      updatedAtStartDate,
-      updatedAtEndDate,
-      topics,
-    };
-    const expectedQuery = {
-      $and: [
-        { ...SearchService.getReduceQueryForContentField(content) },
-        {
-          createdAt: createdAtFilter,
-          updatedAt: updatedAtFilter,
-          topics: topicsFilter,
-          type: typeFilter,
-          'owner.id': ownerId,
-        },
-      ],
-    };
-
-    await SearchService.search(filterInfo);
-
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
-  });
+  const textIndexQuery = { $text: { $search: searchText } };
 
   it('should create query with search text, dates, type and topics', async () => {
     const filterInfo = {
@@ -70,9 +42,7 @@ describe('SearchService - filter()', () => {
     };
     const expectedQuery = {
       $and: [
-        {
-          $or: [{ ...SearchService.getReduceQueryForContentField(searchText) }],
-        },
+        textIndexQuery,
         {
           createdAt: createdAtFilter,
           updatedAt: updatedAtFilter,
@@ -195,12 +165,7 @@ describe('SearchService - filter()', () => {
     const filterInfo = { ownerId, type, searchText };
     const expectedQuery = {
       $and: [
-        {
-          $or: [
-            { ...SearchService.getReduceQueryForContentField(searchText) },
-            { topics: { $in: [new RegExp(`\\b${searchText.trim()}\\b`, 'i')] } },
-          ],
-        },
+        textIndexQuery,
         {
           type: typeFilter,
           'owner.id': ownerId,
@@ -217,12 +182,7 @@ describe('SearchService - filter()', () => {
     const filterInfo = { ownerId, topics, searchText };
     const expectedQuery = {
       $and: [
-        {
-          $or: [
-            { ...SearchService.getReduceQueryForContentField(searchText) },
-            { type: new RegExp(`\\b${searchText.trim()}\\b`, 'i') },
-          ],
-        },
+        textIndexQuery,
         {
           topics: topicsFilter,
           'owner.id': ownerId,
@@ -235,33 +195,10 @@ describe('SearchService - filter()', () => {
     expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
   });
 
-  it('should create query with only content', async () => {
-    const filterInfo = { ownerId, content };
-    const expectedQuery = {
-      $and: [
-        { ...SearchService.getReduceQueryForContentField(content) },
-        { 'owner.id': ownerId },
-      ],
-    };
-
-    await SearchService.search(filterInfo);
-
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
-  });
-
   it('should create query with only searchText', async () => {
     const filterInfo = { ownerId, searchText };
     const expectedQuery = {
-      $and: [
-        {
-          $or: [
-            { ...SearchService.getReduceQueryForContentField(searchText) },
-            { type: new RegExp(`\\b${searchText.trim()}\\b`, 'i') },
-            { topics: { $in: [new RegExp(`\\b${searchText.trim()}\\b`, 'i')] } },
-          ],
-        },
-        { 'owner.id': ownerId },
-      ],
+      $and: [textIndexQuery, { 'owner.id': ownerId }],
     };
 
     await SearchService.search(filterInfo);
