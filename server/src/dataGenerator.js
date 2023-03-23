@@ -12,6 +12,7 @@ const User = require('./models/User');
 const MAX_NUM_USERS = 1000;
 const MAX_NUM_FORMS_PER_USER = 20;
 const MAX_NUM_POSTS_PER_FORM = 5;
+const NUM_BULK_INSERTS = 20;
 
 async function startDB() {
   try {
@@ -324,7 +325,7 @@ async function generate() {
   const users = await createUsers(MAX_NUM_USERS);
   await bulkInsert(User, users);
 
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < NUM_BULK_INSERTS; i++) {
     const forms = createForms(users);
     await bulkInsert(Form, forms);
 
