@@ -9,10 +9,10 @@ const Post = require('./models/Post');
 const { POST_SCHEMA_CONFIGS, FORM_SCHEMA_CONFIGS } = require('./models/schemaConfigs');
 const User = require('./models/User');
 
-const MAX_NUM_USERS = 1000;
-const MAX_NUM_FORMS_PER_USER = 20;
-const MAX_NUM_POSTS_PER_FORM = 5;
-const NUM_BULK_INSERTS = 20;
+const MAX_NUM_USERS = 10;
+const MAX_NUM_FORMS_PER_USER = 5;
+const MAX_NUM_POSTS_PER_FORM = 2;
+const NUM_BULK_INSERTS = 2;
 
 async function startDB() {
   try {
@@ -195,7 +195,30 @@ function generateTextValue() {
 }
 
 function generateEditorValue() {
-  return faker.random.words(getRandomInt(1, 50)).substring(0, POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR);
+  const markdownExamples = [
+    '# Heading 1\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed imperdiet auctor dolor vel finibus.\n\n```python\ndef example_function():\n print("This is an example function.")\n```\n',
+    '## Heading 2\n\nInteger posuere erat a ante venenatis dapibus posuere velit aliquet.\n\n```python\nclass ExampleClass:\n def init(self, name):\n self.name = name\n\n def say_hello(self):\n print(f"Hello, my name is {self.name}.")\n```\n',
+    faker.random.words(getRandomInt(1, 50)).substring(0, POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR),
+    '### Heading 3\n\nSed et lectus dignissim, malesuada libero vitae, fermentum sapien. Donec tempus neque at pharetra suscipit.\n\n```javascript\nfunction exampleFunction() {\n console.log("This is an example function.");\n}\n```\n',
+    '## This is a second-level heading\n\nThis is a paragraph of text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer cursus leo a dolor suscipit fringilla. Sed at bibendum ex, vel vestibulum magna.\n\n```python\nx = 5\ny = 10\nprint(x + y)\n```\n',
+    '# This is a top-level heading\n\nThis is another paragraph of text. Aliquam bibendum, purus eget efficitur semper, quam elit eleifend elit, eu vulputate lacus lectus quis massa.\n\n```java\nclass ExampleClass {\n public static void main(String[] args) {\n System.out.println("Hello, world!");\n }\n}\n```\n',
+    faker.random.words(getRandomInt(1, 50)).substring(0, POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR),
+    '### This is a third-level heading\n\nThis is yet another paragraph of text. Phasellus fringilla, mauris sit amet vulputate bibendum, mauris nulla mattis magna, ut varius ex nisi eget leo.\n\n```python\ndef factorial(n):\n if n == 0:\n return 1\n else:\n return n * factorial(n-1)\n\nprint(factorial(5))\n```\n',
+    '#### This is a fourth-level heading\n\nThis is a final paragraph of text. Vestibulum vel tincidunt lectus. Integer viverra magna ut est efficitur, quis tristique elit sollicitudin.\n\n```javascript\nlet arr = [1, 2, 3, 4, 5];\narr.forEach(function(value, index) {\n console.log(value * index);\n});\n```\n',
+    '#### Heading 4\n\nMorbi vestibulum nulla non est fermentum, non blandit odio porttitor. Proin ut arcu turpis.\n\n```javascript\nclass ExampleClass {\n constructor(name) {\n this.name = name;\n }\n\n sayHello() {\n console.log("Hello, my name is " + this.name.);\n }\n}\n```\n',
+    faker.random.words(getRandomInt(1, 50)).substring(0, POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR),
+    '### Example Heading\n\nThis is some text in a paragraph. Nullam maximus laoreet libero in posuere. Proin eu fringilla quam.\n\n```python\nprint("Hello, world!")\n```\n',
+    '# Another Heading\n\nThis is another paragraph. Sed vel purus aliquam, rhoncus nunc sed, viverra nisi. Integer porttitor vel arcu quis pellentesque.\n\n```c\n#include <stdio.h>\n\nint main() {\n printf("Hello, world!");\n return 0;\n}\n```\n',
+    '## More Headings\n\nThis is a third paragraph. Etiam auctor ipsum eget arcu imperdiet convallis. Suspendisse lobortis ut ipsum vel laoreet.\n\n```ruby\ndef say_hello(name)\n puts "Hello, #{name}!"\nend\n\nsay_hello("world")\n```\n',
+    '# Another Example\n\nThis is a fourth paragraph. Fusce a metus faucibus, placerat neque in, eleifend sapien. Integer aliquet gravida tellus, vel pellentesque enim sollicitudin sed.\n\n```java\nclass ExampleClass {\n public static void main(String[] args) {\n System.out.println("Hello, world!");\n }\n}\n```\n',
+    '## A Heading\n\nThis is a fifth paragraph. Nunc congue lacus id neque vehicula, in luctus quam rhoncus. Integer et justo sed mauris eleifend convallis.\n\n```python\ndef fibonacci(n):\n if n <= 1:\n return n\n else:\n return fibonacci(n-1) + fibonacci(n-2)\n\nprint(fibonacci(10))\n```\n',
+    '#### Another Example\n\nThis is a sixth paragraph. Suspendisse potenti. In non sem a turpis convallis faucibus at et libero. Fusce vel nulla sed ante ullamcorper tincidunt.\n\n```javascript\nfunction multiplyArray(arr) {\n let product = 1;\n arr.forEach(function(value) {\n product *= value;\n });\n return product;\n}\n\nconsole.log(multiplyArray([1, 2, 3, 4, 5]));\n```\n',
+    '### Headings Everywhere\n\nThis is a seventh paragraph. Aliquam id commodo orci. Donec consequat sapien eu bibendum luctus.\n\n```python\ndef reverse_string(string):\n return string[::-1]\n\nprint(reverse_string("hello"))\n```\n',
+    '# Some More Headings\n\nThis is an eighth paragraph. Morbi ut elit elit. Donec auctor bibendum massa non feugiat.\n\n```c++\n#include <iostream>\n\nint main() {\n std::cout << "Hello, world!" << std::endl;\n return 0;\n}\n```\n',
+    faker.random.words(getRandomInt(1, 50)).substring(0, POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR),
+  ];
+
+  return markdownExamples[getRandomInt(0, markdownExamples.length - 1)];
 }
 
 function generateListValue() {

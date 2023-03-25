@@ -1,4 +1,5 @@
 const PostModel = require('../models/Post');
+const FormModel = require('../models/Form');
 
 function prepareFilterQuery(info) {
   const filterQuery = { 'owner.id': info.ownerId };
@@ -71,7 +72,13 @@ async function search(info) {
     query = filterQuery;
   }
 
-  return PostModel.find(query);
+  const posts = await PostModel.find(query);
+
+  const types = posts.map((p) => p.type);
+
+  const forms = await FormModel.find({ type: { $in: types } }, { type: 1, content: 1 });
+
+  return { posts, forms };
 }
 
 module.exports = { search };

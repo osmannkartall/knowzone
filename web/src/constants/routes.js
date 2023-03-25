@@ -9,7 +9,6 @@ export const FE_ROUTES = Object.freeze({
 
 export const BE_ROUTES = Object.freeze({
   SEARCH: 'search',
-  SEARCH_FILTER: 'search/filter',
   FORMS: 'forms',
   LOGIN: 'login',
   LOGOUT: 'logout',

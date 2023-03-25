@@ -61,12 +61,8 @@ const useStyles = makeStyles((theme) => ({
 const SearchBar = () => {
   const emptySearchOptions = {
     searchText: '',
-    postType: '',
-    error: '',
-    solution: '',
-    description: '',
+    type: '',
     topics: [],
-    author: '',
     createdAtStartDate: null,
     createdAtEndDate: null,
     updatedAtStartDate: null,
@@ -114,7 +110,6 @@ const SearchBar = () => {
   };
 
   const search = () => {
-    // Copy state object with spread operator to not mutate itself.
     const tempSearchOptions = { ...searchOptions };
 
     Object.entries(searchOptions).forEach(([key, value]) => {
@@ -125,7 +120,7 @@ const SearchBar = () => {
 
     hideSearchOptionsMenu();
     const data = JSON.parse(JSON.stringify(tempSearchOptions));
-    history.push(FE_ROUTES.SEARCH_RESULTS, data);
+    history.push(`/${FE_ROUTES.SEARCH_RESULTS}`, data);
   };
 
   const searchOrGiveError = () => {
