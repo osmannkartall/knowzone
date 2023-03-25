@@ -16,8 +16,6 @@ async function startDB() {
     await mongoose.connect(config.databaseURL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true,
     });
     console.log('Connected to the database!');
   } catch (err) {
