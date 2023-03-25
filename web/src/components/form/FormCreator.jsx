@@ -1,13 +1,6 @@
-import {
-  Button,
-  Dialog,
-  FormHelperText,
-  IconButton,
-  makeStyles,
-  MenuItem,
-  TextField,
-} from '@material-ui/core';
-import Close from '@material-ui/icons/Close';
+import { Button, Dialog, FormHelperText, IconButton, MenuItem, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Close from '@mui/icons-material/Close';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
@@ -18,20 +11,34 @@ import MarkdownEditor from '../common/MarkdownEditor';
 import TagPicker from '../common/TagPicker/TagPicker';
 import formCreatorSchema from '../../schemas/formCreatorSchema';
 
-const useStyles = makeStyles((theme) => ({
-  modalData: {
+const PREFIX = 'FormCreator';
+
+const classes = {
+  modalData: `${PREFIX}-modalData`,
+  form: `${PREFIX}-form`,
+  topContainer: `${PREFIX}-topContainer`,
+  middleContainer: `${PREFIX}-middleContainer`,
+  middleInnerContainer: `${PREFIX}-middleInnerContainer`,
+  bottomContainer: `${PREFIX}-bottomContainer`,
+  formDataRow: `${PREFIX}-formDataRow`,
+};
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  [`& .${classes.modalData}`]: {
     position: 'fixed',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: `calc(100% - ${theme.spacing(10)}px)`,
+    width: `calc(100% - ${theme.spacing(10)})`,
   },
-  form: {
+
+  [`& .${classes.form}`]: {
     display: 'flex',
     flexDirection: 'column',
     maxHeight: '90vh',
   },
-  topContainer: {
+
+  [`& .${classes.topContainer}`]: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -42,19 +49,22 @@ const useStyles = makeStyles((theme) => ({
     borderTopRightRadius: theme.spacing(1),
     backgroundColor: PRIMARY,
   },
-  middleContainer: {
+
+  [`& .${classes.middleContainer}`]: {
     overflowY: 'auto',
     borderTop: 0,
     border: `1px solid ${GRAY3}`,
     backgroundColor: WHITE,
     padding: theme.spacing(1, 0),
   },
-  middleInnerContainer: {
+
+  [`& .${classes.middleInnerContainer}`]: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  bottomContainer: {
+
+  [`& .${classes.bottomContainer}`]: {
     display: 'flex',
     justifyContent: 'flex-end',
     padding: theme.spacing(2),
@@ -64,7 +74,8 @@ const useStyles = makeStyles((theme) => ({
     borderTop: 0,
     backgroundColor: WHITE,
   },
-  formDataRow: {
+
+  [`& .${classes.formDataRow}`]: {
     margin: theme.spacing(2),
   },
 }));
@@ -86,15 +97,15 @@ const defaultContent = {
   9: defaultField,
 };
 
-const FormDataRow = ({ children }) => (
-  <div className={useStyles().formDataRow}>
-    {children}
-  </div>
-);
+function FormDataRow({ children }) {
+  return (
+    <div className={classes.formDataRow}>
+      {children}
+    </div>
+  );
+}
 
-const TopContainer = ({ title, handleClose }) => {
-  const classes = useStyles();
-
+function TopContainer({ title, handleClose }) {
   return (
     <div className={classes.topContainer}>
       <h1>{title}</h1>
@@ -102,16 +113,15 @@ const TopContainer = ({ title, handleClose }) => {
         aria-label="close post form"
         style={{ color: WHITE }}
         onClick={handleClose}
+        size="large"
       >
         <Close style={{ color: WHITE, width: 35, height: 35 }} />
       </IconButton>
     </div>
   );
-};
+}
 
-const BottomContainer = () => {
-  const classes = useStyles();
-
+function BottomContainer() {
   return (
     <div className={classes.bottomContainer}>
       <Button variant="contained" color="primary" type="submit">
@@ -119,11 +129,9 @@ const BottomContainer = () => {
       </Button>
     </div>
   );
-};
+}
 
-const MiddleContainer = ({ control, errors, getValues, watch }) => {
-  const classes = useStyles();
-
+function MiddleContainer({ control, errors, getValues, watch }) {
   const [selectedImageComponentKey, setSelectedImageComponentKey] = useState(null);
 
   const watchedContent = watch('content');
@@ -298,11 +306,9 @@ const MiddleContainer = ({ control, errors, getValues, watch }) => {
       </div>
     </div>
   );
-};
+}
 
-const DialogData = ({ create, handleClose }) => {
-  const classes = useStyles();
-
+function DialogData({ create, handleClose }) {
   const { getValues, formState: { errors }, control, handleSubmit, watch, reset } = useForm({
     resolver: joiResolver(formCreatorSchema),
     defaultValues: { type: '', content: defaultContent },
@@ -332,16 +338,16 @@ const DialogData = ({ create, handleClose }) => {
       </form>
     </div>
   );
-};
+}
 
-const FormCreator = ({ open, setOpen, create }) => {
+function FormCreator({ open, setOpen, create }) {
   const handleClose = () => setOpen(false);
 
   return (
-    <Dialog onClose={handleClose} open={open}>
+    <StyledDialog onClose={handleClose} open={open}>
       <DialogData create={create} handleClose={handleClose} />
-    </Dialog>
+    </StyledDialog>
   );
-};
+}
 
 export default FormCreator;

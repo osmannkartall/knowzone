@@ -1,15 +1,23 @@
 import { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import ReactTagInput from '@pathofdev/react-tag-input';
 import '@pathofdev/react-tag-input/build/index.css';
 import './TagPicker.css';
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@mui/material';
 import uniq from 'lodash/uniq';
 
 const ERROR_COLOR = '#f44336';
 const TAG_BOX_COLOR = 'grey.400';
 
-const useStyles = makeStyles((theme) => ({
-  errorText: {
+const PREFIX = 'TagPicker';
+
+const classes = {
+  errorText: `${PREFIX}-errorText`,
+  tagBox: `${PREFIX}-tagBox`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.errorText}`]: {
     margin: 0,
     fontSize: '0.75rem',
     marginTop: 3,
@@ -22,12 +30,13 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 14,
     color: ERROR_COLOR,
   },
-  tagBox: {
+
+  [`& .${classes.tagBox}`]: {
     padding: theme.spacing(1),
   },
 }));
 
-const TagPicker = ({
+function TagPicker({
   tags,
   setTags,
   readOnly,
@@ -38,8 +47,7 @@ const TagPicker = ({
   onNotUniqueError,
   showError,
   helperText,
-}) => {
-  const classes = useStyles();
+}) {
   const [areCurrentTagsUnique, setAreCurrentTagsUnique] = useState(true);
 
   let placeholderText = placeholder;
@@ -87,7 +95,7 @@ const TagPicker = ({
   };
 
   return (
-    <>
+    <Root>
       {border
         ? (
           <Box
@@ -122,9 +130,9 @@ const TagPicker = ({
             : `Tag list should contain unique items. '${tags.at(-1)}' exists in the list.`}
         </p>
       )}
-    </>
+    </Root>
   );
-};
+}
 
 TagPicker.defaultProps = {
   placeholder: 'Type a tag and press enter to add',

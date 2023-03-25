@@ -1,8 +1,9 @@
-import { makeStyles, IconButton } from '@material-ui/core';
+import { IconButton } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
-import CloseIcon from '@material-ui/icons/Close';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import CloseIcon from '@mui/icons-material/Close';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { toast } from 'react-toastify';
 import uniqueId from 'lodash/uniqueId';
 import { GRAY2, GRAY3, GRAY4, IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../../constants/colors';
@@ -16,35 +17,49 @@ const THUMBNAIL_HEIGHT = 300;
 const THUMBNAIL_BUTTON_SIZE = 40;
 const THUMBNAIL_SMALL_BUTTON_SIZE = 30;
 
-const activeStyle = { borderColor: PRIMARY };
-const acceptStyle = { borderColor: PRIMARY };
-const rejectStyle = { borderColor: IRREVERSIBLE_ACTION };
+const PREFIX = 'FileUploader';
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const classes = {
+  container: `${PREFIX}-container`,
+  dragAndDropArea: `${PREFIX}-dragAndDropArea`,
+  thumbnailsContainer: `${PREFIX}-thumbnailsContainer`,
+  thumbnails: `${PREFIX}-thumbnails`,
+  thumbnail: `${PREFIX}-thumbnail`,
+  imageContainer: `${PREFIX}-imageContainer`,
+  image: `${PREFIX}-image`,
+  thumbnailDeleteButton: `${PREFIX}-thumbnailDeleteButton`,
+  closeIcon: `${PREFIX}-closeIcon`,
+};
+
+const Root = styled('section')(({ theme }) => ({
+  [`&.${classes.container}`]: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
   },
-  dragAndDropArea: {
+
+  [`& .${classes.dragAndDropArea}`]: {
     margin: theme.spacing(2, 0),
   },
-  thumbnailsContainer: {
+
+  [`& .${classes.thumbnailsContainer}`]: {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
   },
-  thumbnails: {
+
+  [`& .${classes.thumbnails}`]: {
     display: 'flex',
     flexDirection: 'column',
     marginRight: theme.spacing(4),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(1),
     },
   },
-  thumbnail: {
+
+  [`& .${classes.thumbnail}`]: {
     display: 'inline-flex',
     borderRadius: 2,
     border: `1px solid ${GRAY3}`,
@@ -58,24 +73,27 @@ const useStyles = makeStyles((theme) => ({
     '&:hover $image': {
       opacity: 0.4,
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       width: THUMBNAIL_WIDTH / 2,
       height: THUMBNAIL_HEIGHT / 2,
     },
   },
-  imageContainer: {
+
+  [`& .${classes.imageContainer}`]: {
     display: 'flex',
     minWidth: 0,
     overflow: 'hidden',
   },
-  image: {
+
+  [`& .${classes.image}`]: {
     display: 'block',
     width: 'auto',
     height: '100%',
     cursor: 'pointer',
     opacity: 0.6,
   },
-  thumbnailDeleteButton: {
+
+  [`& .${classes.thumbnailDeleteButton}`]: {
     position: 'absolute',
     top: 10,
     right: 10,
@@ -89,20 +107,25 @@ const useStyles = makeStyles((theme) => ({
       opacity: 1,
       transition: 'opacity .2s ease-in-out',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       width: THUMBNAIL_SMALL_BUTTON_SIZE,
       height: THUMBNAIL_SMALL_BUTTON_SIZE,
     },
   },
-  closeIcon: {
+
+  [`& .${classes.closeIcon}`]: {
     width: THUMBNAIL_BUTTON_SIZE,
     height: THUMBNAIL_BUTTON_SIZE,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       width: THUMBNAIL_SMALL_BUTTON_SIZE,
       height: THUMBNAIL_SMALL_BUTTON_SIZE,
     },
   },
 }));
+
+const activeStyle = { borderColor: PRIMARY };
+const acceptStyle = { borderColor: PRIMARY };
+const rejectStyle = { borderColor: IRREVERSIBLE_ACTION };
 
 const baseStyle = {
   flex: 1,
@@ -128,8 +151,7 @@ const getImageSource = (file) => {
   return `${process.env.REACT_APP_KNOWZONE_BE_URI}/${file.path}`;
 };
 
-const Image = ({ file }) => {
-  const classes = useStyles();
+function Image({ file }) {
   const imageSource = getImageSource(file);
 
   return (
@@ -137,10 +159,9 @@ const Image = ({ file }) => {
       <img src={imageSource} className={classes.image} alt={file.name} />
     </div>
   );
-};
+}
 
-const FileUploader = ({ files, setFiles }) => {
-  const classes = useStyles();
+function FileUploader({ files, setFiles }) {
   const infoTitle = 'Drag n drop some images here, or click to select';
   const infoSubtitle = `(You can select ${NUM_MAX_FILES} files and the maximum size of a single file is 1 MB)`;
 
@@ -198,7 +219,7 @@ const FileUploader = ({ files, setFiles }) => {
   };
 
   return (
-    <section className={classes.container}>
+    <Root className={classes.container}>
       {Array.isArray(files) && files.length < NUM_MAX_FILES ? (
         <div {...getRootProps({ style })} className={classes.dragAndDropArea}>
           <input id="images" {...getInputProps()} />
@@ -215,6 +236,7 @@ const FileUploader = ({ files, setFiles }) => {
               <IconButton
                 className={classes.thumbnailDeleteButton}
                 onClick={() => onClickDelete(file)}
+                size="large"
               >
                 <CloseIcon className={classes.closeIcon} />
               </IconButton>
@@ -222,8 +244,8 @@ const FileUploader = ({ files, setFiles }) => {
           </div>
         ))}
       </aside>
-    </section>
+    </Root>
   );
-};
+}
 
 export default FileUploader;

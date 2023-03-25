@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { makeStyles, TextField } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import { TextField } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
@@ -10,8 +11,14 @@ import AuthFormWrapper from '../components/common/AuthFormWrapper';
 import { useAuthDispatch } from '../contexts/AuthContext';
 import { register } from '../contexts/AuthActions';
 
-const useStyles = makeStyles((theme) => ({
-  input: {
+const PREFIX = 'Register';
+
+const classes = {
+  input: `${PREFIX}-input`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.input}`]: {
     display: 'flex',
     width: 450,
     marginBottom: theme.spacing(3),
@@ -75,8 +82,7 @@ const registerSchema = yup.object().shape({
     .max(256),
 });
 
-const Register = () => {
-  const classes = useStyles();
+function Register() {
   const history = useHistory();
   const authDispatch = useAuthDispatch();
   const isMounted = useRef(true);
@@ -111,24 +117,25 @@ const Register = () => {
     }
   };
 
-  useEffect(() => function cleanup() {
+  useEffect(() => (function cleanup() {
     isMounted.current = false;
-  }, []);
+  }), []);
 
   return (
-    <AuthFormWrapper
-      title="Create your Knowzone account"
-      mainFormAction={{
-        title: 'Create',
-        handler: handleSubmit(handleRegister),
-      }}
-      otherFormAction={{
-        title: 'Login instead',
-        handler: () => history.push(FE_ROUTES.LOGIN),
-      }}
-    >
-      <Controller
-        render={
+    <Root>
+      <AuthFormWrapper
+        title="Create your Knowzone account"
+        mainFormAction={{
+          title: 'Create',
+          handler: handleSubmit(handleRegister),
+        }}
+        otherFormAction={{
+          title: 'Login instead',
+          handler: () => history.push(FE_ROUTES.LOGIN),
+        }}
+      >
+        <Controller
+          render={
           ({ field: { onChange, onBlur, value, name, ref } }) => (
             <TextField
               id="name"
@@ -146,13 +153,13 @@ const Register = () => {
             />
           )
         }
-        control={control}
-        name="name"
-        shouldUnregister
-      />
+          control={control}
+          name="name"
+          shouldUnregister
+        />
 
-      <Controller
-        render={
+        <Controller
+          render={
           ({ field: { onChange, onBlur, value, name, ref } }) => (
             <TextField
               id="username"
@@ -170,13 +177,13 @@ const Register = () => {
             />
           )
         }
-        control={control}
-        name="username"
-        shouldUnregister
-      />
+          control={control}
+          name="username"
+          shouldUnregister
+        />
 
-      <Controller
-        render={
+        <Controller
+          render={
           ({ field: { onChange, onBlur, value, name, ref } }) => (
             <TextField
               id="email"
@@ -194,13 +201,13 @@ const Register = () => {
             />
           )
         }
-        control={control}
-        name="email"
-        shouldUnregister
-      />
+          control={control}
+          name="email"
+          shouldUnregister
+        />
 
-      <Controller
-        render={
+        <Controller
+          render={
           ({ field: { onChange, onBlur, value, name, ref } }) => (
             <TextField
               id="password"
@@ -219,13 +226,13 @@ const Register = () => {
             />
           )
         }
-        control={control}
-        name="password"
-        shouldUnregister
-      />
+          control={control}
+          name="password"
+          shouldUnregister
+        />
 
-      <Controller
-        render={
+        <Controller
+          render={
           ({ field: { onChange, onBlur, value, name, ref } }) => (
             <TextField
               id="confirm-password"
@@ -244,13 +251,13 @@ const Register = () => {
             />
           )
         }
-        control={control}
-        name="confirmPassword"
-        shouldUnregister
-      />
-
-    </AuthFormWrapper>
+          control={control}
+          name="confirmPassword"
+          shouldUnregister
+        />
+      </AuthFormWrapper>
+    </Root>
   );
-};
+}
 
 export default Register;

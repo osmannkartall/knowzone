@@ -1,10 +1,23 @@
-import { makeStyles, Button } from '@material-ui/core';
+import { Button } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useState } from 'react';
 import { GRAY1, GRAY3 } from '../../constants/colors';
 import LinearProgressModal from './LinearProgressModal';
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const PREFIX = 'AuthFormContainer';
+
+const classes = {
+  container: `${PREFIX}-container`,
+  form: `${PREFIX}-form`,
+  logoAndTitleContainer: `${PREFIX}-logoAndTitleContainer`,
+  logo: `${PREFIX}-logo`,
+  title: `${PREFIX}-title`,
+  buttonGroup: `${PREFIX}-buttonGroup`,
+  orText: `${PREFIX}-orText`,
+};
+
+const Root = styled('form')(({ theme }) => ({
+  [`& .${classes.container}`]: {
     display: 'flex',
     width: '100vw',
     height: '100vh',
@@ -12,7 +25,8 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
     color: GRAY1,
   },
-  form: {
+
+  [`& .${classes.form}`]: {
     margin: 'auto',
     padding: theme.spacing(2),
     border: `1px solid ${GRAY3}`,
@@ -21,34 +35,38 @@ const useStyles = makeStyles((theme) => ({
       border: 'none',
     },
   },
-  logoAndTitleContainer: {
+
+  [`& .${classes.logoAndTitleContainer}`]: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
-  logo: {
+
+  [`& .${classes.logo}`]: {
     width: 100,
     height: 100,
   },
-  title: {
+
+  [`& .${classes.title}`]: {
     fontWeight: '500',
     margin: theme.spacing(3, 0),
   },
-  buttonGroup: {
+
+  [`& .${classes.buttonGroup}`]: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
-  orText: {
+
+  [`& .${classes.orText}`]: {
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(0.5),
     opacity: 0.5,
   },
 }));
 
-const AuthFormContainer = ({ title, mainFormAction, otherFormAction, children }) => {
+function AuthFormContainer({ title, mainFormAction, otherFormAction, children }) {
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
-  const classes = useStyles();
 
   const handleMainFormAction = (event) => {
     event.preventDefault();
@@ -58,7 +76,7 @@ const AuthFormContainer = ({ title, mainFormAction, otherFormAction, children })
   };
 
   return (
-    <form onSubmit={handleMainFormAction} noValidate>
+    <Root onSubmit={handleMainFormAction} noValidate>
       <LinearProgressModal isOpen={isLinearProgressModalOpen}>
         <div className={classes.container}>
           <div className={classes.form}>
@@ -89,8 +107,8 @@ const AuthFormContainer = ({ title, mainFormAction, otherFormAction, children })
           </div>
         </div>
       </LinearProgressModal>
-    </form>
+    </Root>
   );
-};
+}
 
 export default AuthFormContainer;

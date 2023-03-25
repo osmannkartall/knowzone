@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@material-ui/core/styles';
+import { ThemeProvider, createTheme, StyledEngineProvider } from '@mui/material/styles';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Dashboard from './components/dashboard/Dashboard';
@@ -16,7 +16,7 @@ import { PrivateRoute, AuthRoute } from './components/common/CustomRoute';
 import { checkUserSession } from './contexts/AuthActions';
 import PostsByType from './pages/PostsByType';
 
-const theme = createTheme({
+const theme = createTheme(({
   palette: {
     primary: {
       main: PRIMARY,
@@ -25,9 +25,9 @@ const theme = createTheme({
       default: WHITE,
     },
   },
-});
+}));
 
-const Wrapper = () => {
+function Wrapper() {
   const authDispatch = useAuthDispatch();
 
   useEffect(() => {
@@ -90,15 +90,17 @@ const Wrapper = () => {
       />
     </>
   );
-};
+}
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <AuthProvider>
-        <Wrapper />
-      </AuthProvider>
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <AuthProvider>
+          <Wrapper />
+        </AuthProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 }
 

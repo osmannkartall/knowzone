@@ -1,9 +1,19 @@
-import { makeStyles } from '@material-ui/core/styles';
-import { Button } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import { Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-const useStyles = makeStyles(() => ({
-  notFound: {
+const PREFIX = 'NotFound';
+
+const classes = {
+  notFound: `${PREFIX}-notFound`,
+  logo: `${PREFIX}-logo`,
+  title: `${PREFIX}-title`,
+  message: `${PREFIX}-message`,
+  button: `${PREFIX}-button`,
+};
+
+const Root = styled('div')(() => ({
+  [`&.${classes.notFound}`]: {
     maxWidth: '35%',
     width: '100%',
     paddingLeft: '200px',
@@ -13,13 +23,15 @@ const useStyles = makeStyles(() => ({
     top: '50%',
     transform: 'translate(-50%, -50%)',
   },
-  logo: {
+
+  [`& .${classes.logo}`]: {
     position: 'fixed',
     left: '10%',
     top: '50%',
     transform: 'translate(-50%, -50%)',
   },
-  title: {
+
+  [`& .${classes.title}`]: {
     fontFamily: 'Roboto, sans-serif',
     color: '#292929',
     fontSize: '28px',
@@ -28,7 +40,8 @@ const useStyles = makeStyles(() => ({
     fontWeight: 700,
     textTransform: 'uppercase',
   },
-  message: {
+
+  [`& .${classes.message}`]: {
     fontFamily: 'Roboto, sans-serif',
     fontSize: '14px',
     fontWeight: 400,
@@ -36,7 +49,8 @@ const useStyles = makeStyles(() => ({
     marginBottom: '15px',
     color: '#333',
   },
-  button: {
+
+  [`& .${classes.button}`]: {
     fontFamily: 'Roboto, sans-serif',
     fontSize: '14px',
     textDecoration: 'none',
@@ -52,11 +66,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const NotFound = () => {
-  const classes = useStyles();
-
+function NotFound() {
   return (
-    <div className={classes.notFound}>
+    <Root className={classes.notFound}>
       <img src="/knowzone-logo192.png" alt="knowzone-logo" className={classes.logo} />
       <h1 className={classes.title}>
         404 - Page not found
@@ -69,8 +81,8 @@ const NotFound = () => {
           HOME PAGE
         </Button>
       </Link>
-    </div>
+    </Root>
   );
-};
+}
 
 export default NotFound;

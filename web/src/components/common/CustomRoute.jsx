@@ -18,11 +18,12 @@ const RouteRenderContent = ({ Success, Terminated }) => {
   return component;
 };
 
-const PrivateRoute = ({ path, redirectPath, children }) => (
-  <Route
-    exact
-    path={path}
-    render={
+function PrivateRoute({ path, redirectPath, children }) {
+  return (
+    <Route
+      exact
+      path={path}
+      render={
       ({ location }) => (
         <RouteRenderContent
           Success={children}
@@ -37,14 +38,16 @@ const PrivateRoute = ({ path, redirectPath, children }) => (
         />
       )
     }
-  />
-);
+    />
+  );
+}
 
-const AuthRoute = ({ path, children }) => (
-  <Route
-    exact
-    path={path}
-    render={
+function AuthRoute({ path, children }) {
+  return (
+    <Route
+      exact
+      path={path}
+      render={
       ({ location }) => (
         <RouteRenderContent
           Success={(
@@ -59,7 +62,8 @@ const AuthRoute = ({ path, children }) => (
         />
       )
     }
-  />
-);
+    />
+  );
+}
 
 export { PrivateRoute, AuthRoute };

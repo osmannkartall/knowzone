@@ -1,12 +1,14 @@
-import { LinearProgress, Modal } from '@material-ui/core';
+import { LinearProgress, Modal } from '@mui/material';
 
-const LinearProgressModal = ({ isOpen, children }) => (
-  <>
-    <Modal open={isOpen}>
-      <LinearProgress />
-    </Modal>
-    {children}
-  </>
-);
+function LinearProgressModal({ isOpen, children }) {
+  return (
+    <>
+      <Modal open={isOpen}>
+        <LinearProgress />
+      </Modal>
+      {children}
+    </>
+  );
+}
 
 export default LinearProgressModal;

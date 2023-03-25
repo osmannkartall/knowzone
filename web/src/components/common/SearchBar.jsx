@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import { useHistory, useLocation } from 'react-router-dom';
-import { IconButton, makeStyles, Grid } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import TuneIcon from '@material-ui/icons/Tune';
+import { IconButton, Grid } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import TuneIcon from '@mui/icons-material/Tune';
 import { toast } from 'react-toastify';
 import { isEmpty } from 'lodash';
 import SearchOptions from './SearchOptions';
@@ -10,37 +11,52 @@ import { GRAY2, GRAY3, PRIMARY } from '../../constants/colors';
 import { FE_ROUTES } from '../../constants/routes';
 import { searchBarHeight } from '../../constants/styles';
 
-const useStyles = makeStyles((theme) => ({
-  searchBarWrapper: {
-    display: 'flex',
-    width: '100%',
-    zIndex: 3,
-    height: searchBarHeight,
-    border: `1px solid ${GRAY3}`,
-    borderRadius: 6,
-    position: 'relative',
-  },
-  searchBar: {
+const PREFIX = 'SearchBar';
+
+const classes = {
+  searchBarWrapper: `${PREFIX}-searchBarWrapper`,
+  searchBar: `${PREFIX}-searchBar`,
+  searchIconWrapper: `${PREFIX}-searchIconWrapper`,
+  searchIcon: `${PREFIX}-searchIcon`,
+  searchInputWrapper: `${PREFIX}-searchInputWrapper`,
+  searchInput: `${PREFIX}-searchInput`,
+  optionsIconButtonWrapper: `${PREFIX}-optionsIconButtonWrapper`,
+};
+
+const Root = styled(Grid)(({ theme }) => ({
+  display: 'flex',
+  width: '100%',
+  zIndex: 3,
+  height: searchBarHeight,
+  border: `1px solid ${GRAY3}`,
+  borderRadius: 6,
+  position: 'relative',
+
+  [`& .${classes.searchBar}`]: {
     display: 'flex',
     flex: 1,
   },
-  searchIconWrapper: {
+
+  [`& .${classes.searchIconWrapper}`]: {
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0, 1),
     color: GRAY2,
   },
-  searchIcon: {
+
+  [`& .${classes.searchIcon}`]: {
     width: 20,
     height: 20,
     lineHeight: 20,
   },
-  searchInputWrapper: {
+
+  [`& .${classes.searchInputWrapper}`]: {
     display: 'flex',
     flex: 1,
     flexWrap: 'wrap',
   },
-  searchInput: {
+
+  [`& .${classes.searchInput}`]: {
     display: 'flex',
     flexGrow: 1,
     flexShrink: 1,
@@ -50,7 +66,8 @@ const useStyles = makeStyles((theme) => ({
     border: 'none',
     fontSize: 16,
   },
-  optionsIconButtonWrapper: {
+
+  [`& .${classes.optionsIconButtonWrapper}`]: {
     display: 'flex',
     flexBasis: 'auto',
     alignItems: 'center',
@@ -58,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SearchBar = () => {
+function SearchBar() {
   const emptySearchOptions = {
     searchText: '',
     type: '',
@@ -72,7 +89,6 @@ const SearchBar = () => {
   const [isSearchOptionsMenuOpen, setIsSearchOptionsMenuOpen] = useState(false);
   const [areTopicsUnique, setAreTopicsUnique] = useState(true);
 
-  const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
 
@@ -161,48 +177,47 @@ const SearchBar = () => {
   }, [location.pathname, location.state]);
 
   return (
-    <>
-      <Grid item xs={12} sm={7} md={7} lg={7} className={classes.searchBarWrapper}>
-        <div className={classes.searchBar}>
-          <div className={classes.searchIconWrapper}>
-            <SearchIcon className={classes.searchIcon} />
-          </div>
-          <div className={classes.searchInputWrapper}>
-            <input
-              className={classes.searchInput}
-              type="text"
-              placeholder="Search"
-              value={searchOptions.searchText}
-              onKeyPress={handleOnPressEnter}
-              onChange={handleOptionChange('searchText')}
-            />
-          </div>
-          <div className={classes.optionsIconButtonWrapper}>
-            <IconButton
-              aria-label="search options"
-              aria-controls="menu-search"
-              aria-haspopup="true"
-              style={{ width: 35, height: 35, color: PRIMARY }}
-              onClick={toggleSearchOptionsMenu}
-            >
-              <TuneIcon />
-            </IconButton>
-          </div>
+    <Root item xs={12} sm={7} md={7} lg={7}>
+      <div className={classes.searchBar}>
+        <div className={classes.searchIconWrapper}>
+          <SearchIcon className={classes.searchIcon} />
         </div>
-        {isSearchOptionsMenuOpen && (
-          <SearchOptions
-            options={searchOptions}
-            setTopics={(topics) => setSearchOptions({ ...searchOptions, topics })}
-            handleOptionChange={handleOptionChange}
-            handleDateChange={handleDateChange}
-            handleSearchOnClick={handleSearchOnClick}
-            handleResetOnClick={handleResetOnClick}
-            handleTopicsNotUniqueError={handleTopicsNotUniqueError}
+        <div className={classes.searchInputWrapper}>
+          <input
+            className={classes.searchInput}
+            type="text"
+            placeholder="Search"
+            value={searchOptions.searchText}
+            onKeyDown={handleOnPressEnter}
+            onChange={handleOptionChange('searchText')}
           />
-        )}
-      </Grid>
-    </>
+        </div>
+        <div className={classes.optionsIconButtonWrapper}>
+          <IconButton
+            aria-label="search options"
+            aria-controls="menu-search"
+            aria-haspopup="true"
+            style={{ width: 35, height: 35, color: PRIMARY }}
+            onClick={toggleSearchOptionsMenu}
+            size="large"
+          >
+            <TuneIcon />
+          </IconButton>
+        </div>
+      </div>
+      {isSearchOptionsMenuOpen && (
+      <SearchOptions
+        options={searchOptions}
+        setTopics={(topics) => setSearchOptions({ ...searchOptions, topics })}
+        handleOptionChange={handleOptionChange}
+        handleDateChange={handleDateChange}
+        handleSearchOnClick={handleSearchOnClick}
+        handleResetOnClick={handleResetOnClick}
+        handleTopicsNotUniqueError={handleTopicsNotUniqueError}
+      />
+      )}
+    </Root>
   );
-};
+}
 
 export default SearchBar;

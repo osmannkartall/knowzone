@@ -1,78 +1,109 @@
 import { useState } from 'react';
-import { makeStyles, IconButton, Menu, MenuItem, Divider } from '@material-ui/core';
-import MoreHoriz from '@material-ui/icons/MoreHoriz';
+import { styled } from '@mui/material/styles';
+import { IconButton, Menu, MenuItem, Divider } from '@mui/material';
+import MoreHoriz from '@mui/icons-material/MoreHoriz';
 import { GRAY3, GRAY4, PRIMARY } from '../../constants/colors';
 import TagPicker from '../common/TagPicker/TagPicker';
-import { convertDate } from '../../utils';
 import MarkdownPreview from '../common/MarkdownPreview';
 import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const PREFIX = 'Post';
+
+const classes = {
+  container: `${PREFIX}-container`,
+  postTopbar: `${PREFIX}-postTopbar`,
+  postTypeContainer: `${PREFIX}-postTypeContainer`,
+  postTypeText: `${PREFIX}-postTypeText`,
+  actionButton: `${PREFIX}-actionButton`,
+  ownerTopbar: `${PREFIX}-ownerTopbar`,
+  ownerTitle: `${PREFIX}-ownerTitle`,
+  postBodyContainer: `${PREFIX}-postBodyContainer`,
+  text: `${PREFIX}-text`,
+  imageContainer: `${PREFIX}-imageContainer`,
+  list: `${PREFIX}-list`,
+  timeInfo: `${PREFIX}-timeInfo`,
+  listItem: `${PREFIX}-listItem`,
+  postBodySectionContent: `${PREFIX}-postBodySectionContent`,
+  tagContainer: `${PREFIX}-tagContainer`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.container}`]: {
     border: `1px solid ${GRAY3}`,
     borderRadius: 4,
     marginBottom: theme.spacing(2),
   },
-  postTopbar: {
+
+  [`& .${classes.postTopbar}`]: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     margin: theme.spacing(2),
     alignItems: 'center',
   },
-  postTypeContainer: {
+
+  [`& .${classes.postTypeContainer}`]: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
     color: PRIMARY,
   },
-  postTypeText: {
+
+  [`& .${classes.postTypeText}`]: {
     fontWeight: 'bold',
     marginLeft: theme.spacing(1),
   },
-  actionButton: {
+
+  [`& .${classes.actionButton}`]: {
     color: PRIMARY,
   },
-  ownerTopbar: {
+
+  [`& .${classes.ownerTopbar}`]: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: theme.spacing(2),
     alignItems: 'center',
   },
-  ownerTitle: {
+
+  [`& .${classes.ownerTitle}`]: {
     fontSize: 16,
     alignSelf: 'center',
     fontWeight: '600',
   },
-  postBodyContainer: {
+
+  [`& .${classes.postBodyContainer}`]: {
     padding: theme.spacing(2),
   },
-  text: {
+
+  [`& .${classes.text}`]: {
     whiteSpace: 'pre-wrap',
     overflow: 'auto',
   },
-  imageContainer: {
+
+  [`& .${classes.imageContainer}`]: {
     display: 'flex',
     flexDirection: 'row',
     marginTop: theme.spacing(2),
     overflow: 'auto',
     maxWidth: 1000,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       display: 'block',
     },
   },
-  list: {
+
+  [`& .${classes.list}`]: {
     margin: 0,
   },
-  timeInfo: {
+
+  [`& .${classes.timeInfo}`]: {
     marginTop: theme.spacing(2),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-end',
     fontWeight: '100',
     fontSize: 14,
-    '& > :nth-child(2)': {
+    '& > :nth-of-type(2)': {
       margin: theme.spacing(0, 2),
       fontSize: 10,
     },
@@ -80,10 +111,12 @@ const useStyles = makeStyles((theme) => ({
       justifyContent: 'center',
     },
   },
-  listItem: {
+
+  [`& .${classes.listItem}`]: {
     marginTop: theme.spacing(1),
   },
-  postBodySectionContent: {
+
+  [`&.${classes.postBodySectionContent}`]: {
     backgroundColor: GRAY4,
     borderRadius: 4,
     height: 'auto',
@@ -91,17 +124,20 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
     padding: theme.spacing(2),
   },
-  tagContainer: {
+
+  [`& .${classes.tagContainer}`]: {
     padding: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       overflowX: 'auto',
     },
   },
 }));
 
-const PostBodySection = ({ title, children }) => {
-  const classes = useStyles();
+function convertDate(dateStr) {
+  return new Date(dateStr).toLocaleString('en-GB');
+}
 
+function PostBodySection({ title, children }) {
   return (
     <>
       <h3>{title}</h3>
@@ -110,19 +146,15 @@ const PostBodySection = ({ title, children }) => {
       </div>
     </>
   );
-};
+}
 
-const TextPart = ({ value }) => {
-  const classes = useStyles();
-
+function TextPart({ value }) {
   return (
     <div className={classes.text}>{value}</div>
   );
-};
+}
 
-const ListPart = ({ title, listItems }) => {
-  const classes = useStyles();
-
+function ListPart({ title, listItems }) {
   return (
     <PostBodySection title={title ?? 'List'}>
       <ul className={classes.list}>
@@ -132,23 +164,23 @@ const ListPart = ({ title, listItems }) => {
       </ul>
     </PostBodySection>
   );
-};
+}
 
-const EditorPart = ({ title, text }) => (
-  <PostBodySection title={title}>
-    <MarkdownPreview text={text} />
-  </PostBodySection>
-);
+function EditorPart({ title, text }) {
+  return (
+    <PostBodySection title={title}>
+      <MarkdownPreview text={text} />
+    </PostBodySection>
+  );
+}
 
-const ImagePart = ({ images }) => {
-  const classes = useStyles();
-
+function ImagePart({ images }) {
   return (
     <div className={classes.imageContainer}>
       {
         images.map((i) => (
           <img
-            key={i._id}
+            key={i.name}
             src={`${process.env.REACT_APP_KNOWZONE_BE_URI}/${i.path}`}
             width="300"
             height="200"
@@ -159,39 +191,34 @@ const ImagePart = ({ images }) => {
       }
     </div>
   );
-};
+}
 
-const TopicsPart = ({ topics }) => {
-  const classes = useStyles();
-
+function TopicsPart({ topics }) {
   return (
     <div className={classes.tagContainer}>
       <TagPicker tags={topics} readOnly />
     </div>
   );
-};
+}
 
-const OwnerTopbar = ({ owner }) => {
-  const classes = useStyles();
-
+function OwnerTopbar({ owner }) {
   return (
     <div className={classes.ownerTopbar}>
       <div className={classes.ownerTitle}>{owner}</div>
     </div>
   );
-};
+}
 
 const DynamicPart = ({ post, content }) => Object.entries(post.content ?? {}).map(([k, v]) => {
-  if (content?.[k] === FORM_COMPONENT_TYPES.TEXT) return <TextPart key={k} value={v} />;
-  if (content?.[k] === FORM_COMPONENT_TYPES.LIST) return <ListPart key={k} title={k} listItems={v} />;
-  if (content?.[k] === FORM_COMPONENT_TYPES.EDITOR) return <EditorPart key={k} title={k} text={v} />;
-  if (content?.[k] === FORM_COMPONENT_TYPES.IMAGE) return <ImagePart key={k} images={v} />;
+  const { TEXT, LIST, EDITOR, IMAGE } = FORM_COMPONENT_TYPES;
+  if (content?.[k] === TEXT) return <TextPart key={k} value={v} />;
+  if (content?.[k] === LIST) return <ListPart key={k} title={k} listItems={v} />;
+  if (content?.[k] === EDITOR) return <EditorPart key={k} title={k} text={v} />;
+  if (content?.[k] === IMAGE) return <ImagePart key={k} images={v} />;
   return null;
 });
 
-const TimestampBar = ({ post }) => {
-  const classes = useStyles();
-
+function TimestampBar({ post }) {
   const updatedAtInfo = `Last Modified ${convertDate(post.updatedAt)}`;
   const createdAtInfo = `Created ${convertDate(post.createdAt)}`;
 
@@ -202,10 +229,9 @@ const TimestampBar = ({ post }) => {
       <div>{createdAtInfo}</div>
     </div>
   );
-};
+}
 
-const PostTopbar = ({ showType, editable, type, onClickUpdate, onClickDelete }) => {
-  const classes = useStyles();
+function PostTopbar({ showType, editable, type, onClickUpdate, onClickDelete }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -232,6 +258,7 @@ const PostTopbar = ({ showType, editable, type, onClickUpdate, onClickDelete }) 
                   onClick={handleMenu}
                   className={classes.actionButton}
                   style={{ width: 30, height: 30 }}
+                  size="large"
                 >
                   <MoreHoriz />
                 </IconButton>
@@ -253,11 +280,9 @@ const PostTopbar = ({ showType, editable, type, onClickUpdate, onClickDelete }) 
       </>
     ) : null
   );
-};
+}
 
-const PostBody = ({ owner, content, post }) => {
-  const classes = useStyles();
-
+function PostBody({ owner, content, post }) {
   return (
     <div className={classes.postBodyContainer}>
       <OwnerTopbar owner={owner?.username} />
@@ -265,25 +290,25 @@ const PostBody = ({ owner, content, post }) => {
       <TimestampBar post={post} />
     </div>
   );
-};
+}
 
-const Post = ({ showType, editable, content, post, onClickUpdate, onClickDelete }) => {
-  const classes = useStyles();
-
+function Post({ showType, editable, content, post, onClickUpdate, onClickDelete }) {
   return (
-    <div className={classes.container}>
-      <PostTopbar
-        showType={showType}
-        editable={editable}
-        type={post.type}
-        onClickUpdate={onClickUpdate}
-        onClickDelete={onClickDelete}
-      />
-      <PostBody owner={post.owner} content={content} post={post} />
-      <Divider />
-      <TopicsPart topics={post.topics ?? []} />
-    </div>
+    <Root>
+      <div className={classes.container}>
+        <PostTopbar
+          showType={showType}
+          editable={editable}
+          type={post.type}
+          onClickUpdate={onClickUpdate}
+          onClickDelete={onClickDelete}
+        />
+        <PostBody owner={post.owner} content={content} post={post} />
+        <Divider />
+        <TopicsPart topics={post.topics ?? []} />
+      </div>
+    </Root>
   );
-};
+}
 
 export default Post;

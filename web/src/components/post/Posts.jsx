@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogActions, DialogTitle, Button } from '@material-ui/core';
+import { Dialog, DialogActions, DialogTitle, Button } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { joiResolver } from '@hookform/resolvers/joi';
@@ -13,7 +13,7 @@ import postCreatorSchema from '../../schemas/postCreatorSchema';
 
 const isNewImage = (image) => image instanceof File;
 
-const Posts = ({ title, forms, form, setForm, posts, setPosts }) => {
+function Posts({ title, forms, form, setForm, posts, setPosts }) {
   const [openForm, setOpenForm] = useState(false);
   const [action, setAction] = useState('update');
   const [openDialog, setOpenDialog] = useState(false);
@@ -209,6 +209,6 @@ const Posts = ({ title, forms, form, setForm, posts, setPosts }) => {
       </Dialog>
     </LinearProgressModal>
   );
-};
+}
 
 export default Posts;

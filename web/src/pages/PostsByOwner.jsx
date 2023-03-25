@@ -4,7 +4,7 @@ import getPosts from '../api/getPosts';
 import { useAuthState } from '../contexts/AuthContext';
 import Posts from '../components/post/Posts';
 
-const PostsByOwner = () => {
+function PostsByOwner() {
   const [forms, setForms] = useState([]);
   const [form, setForm] = useState({});
   const [posts, setPosts] = useState([]);
@@ -53,6 +53,6 @@ const PostsByOwner = () => {
       setPosts={setPosts}
     />
   );
-};
+}
 
 export default PostsByOwner;

@@ -1,20 +1,24 @@
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
 
-const useStyles = makeStyles((theme) => ({
-  wrapper: {
+const PREFIX = 'ContentWrapper';
+
+const classes = {
+  wrapper: `${PREFIX}-wrapper`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`&.${classes.wrapper}`]: {
     padding: theme.spacing(0, 2),
   },
 }));
 
-const ContentWrapper = ({ title, children }) => {
-  const classes = useStyles();
-
+function ContentWrapper({ title, children }) {
   return (
-    <div className={classes.wrapper}>
+    <Root className={classes.wrapper}>
       <h2>{title}</h2>
       {children}
-    </div>
+    </Root>
   );
-};
+}
 
 export default ContentWrapper;

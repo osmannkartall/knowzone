@@ -5,7 +5,7 @@ import getFormByType from '../api/getFormByType';
 import { useAuthState } from '../contexts/AuthContext';
 import getPostsByType from '../api/getPostsByType';
 
-const PostsByType = () => {
+function PostsByType() {
   const [form, setForm] = useState({});
   const [posts, setPosts] = useState([]);
 
@@ -54,6 +54,6 @@ const PostsByType = () => {
       setPosts={setPosts}
     />
   );
-};
+}
 
 export default PostsByType;

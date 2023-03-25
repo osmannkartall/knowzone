@@ -1,13 +1,27 @@
 import { useState } from 'react';
-import { makeStyles, Button } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import { Button } from '@mui/material';
 import { GRAY3, GRAY4 } from '../../constants/colors';
 import MarkdownPreview from './MarkdownPreview';
 
 const TITLE_HEIGHT = 30;
 const OPTION_BUTTON_HEIGHT = 20;
 
-const useStyles = makeStyles((theme) => ({
-  optionContainer: {
+const PREFIX = 'MarkdownEditor';
+
+const classes = {
+  optionContainer: `${PREFIX}-optionContainer`,
+  optionButton: `${PREFIX}-optionButton`,
+  container: `${PREFIX}-container`,
+  editorOuterContainer: `${PREFIX}-editorOuterContainer`,
+  editorContainer: `${PREFIX}-editorContainer`,
+  editor: `${PREFIX}-editor`,
+  previewOuterContainer: `${PREFIX}-previewOuterContainer`,
+  title: `${PREFIX}-title`,
+};
+
+const Root = styled('div')(({ theme, $containerMaxHeight }) => ({
+  [`& .${classes.optionContainer}`]: {
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -15,7 +29,8 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: 'none',
     borderRadius: '10px 10px 0 0',
   },
-  optionButton: {
+
+  [`& .${classes.optionButton}`]: {
     height: OPTION_BUTTON_HEIGHT,
     width: 130,
     marginRight: theme.spacing(2),
@@ -23,22 +38,26 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: `calc(${(TITLE_HEIGHT - OPTION_BUTTON_HEIGHT) / 2}px)`,
     fontSize: 12,
   },
-  container: {
+
+  [`& .${classes.container}`]: {
     display: 'flex',
-    maxHeight: (props) => `calc(${props.containerMaxHeight} - ${TITLE_HEIGHT}px)`,
+    maxHeight: `calc(${$containerMaxHeight} - ${TITLE_HEIGHT}px)`,
     border: `1px solid ${GRAY3}`,
   },
-  editorOuterContainer: {
+
+  [`& .${classes.editorOuterContainer}`]: {
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
   },
-  editorContainer: {
+
+  [`& .${classes.editorContainer}`]: {
     display: 'flex',
     overflowWrap: 'break-word',
-    height: (props) => `calc(${props.containerMaxHeight} - ${TITLE_HEIGHT}px)`,
+    height: `calc(${$containerMaxHeight} - ${TITLE_HEIGHT}px)`,
   },
-  editor: {
+
+  [`& .${classes.editor}`]: {
     display: 'flex',
     width: '100%',
     resize: 'none',
@@ -49,15 +68,17 @@ const useStyles = makeStyles((theme) => ({
     },
     padding: theme.spacing(1),
   },
-  previewOuterContainer: {
+
+  [`& .${classes.previewOuterContainer}`]: {
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
     overflowY: 'auto',
     overflowWrap: 'break-word',
-    height: (props) => `calc(${props.containerMaxHeight} - ${TITLE_HEIGHT}px)`,
+    height: `calc(${$containerMaxHeight} - ${TITLE_HEIGHT}px)`,
   },
-  title: {
+
+  [`& .${classes.title}`]: {
     fontSize: 17,
     fontWeight: '600',
     lineHeight: `${TITLE_HEIGHT}px`,
@@ -67,12 +88,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MarkdownEditor = ({ id, text, onChangeText, containerMaxHeight }) => {
+function MarkdownEditor({ id, text, onChangeText, containerMaxHeight }) {
   const [showEditor, setShowEditor] = useState(true);
-  const classes = useStyles({ containerMaxHeight });
 
   return (
-    <>
+    <Root $containerMaxHeight={containerMaxHeight}>
       <div className={classes.optionContainer}>
         <Button
           type="button"
@@ -119,9 +139,9 @@ const MarkdownEditor = ({ id, text, onChangeText, containerMaxHeight }) => {
           )
         }
       </div>
-    </>
+    </Root>
   );
-};
+}
 
 MarkdownEditor.defaultProps = {
   containerMaxHeight: '90vh',
