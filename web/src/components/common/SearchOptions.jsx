@@ -1,17 +1,7 @@
-import {
-  makeStyles,
-  Grid,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-  Button,
-  Divider,
-} from '@material-ui/core';
+import { makeStyles, Grid, Typography, Button, Divider, TextField } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import TagPicker from './TagPicker/TagPicker';
-import POST_TYPES from '../../constants/post-types';
 import { searchBarHeight } from '../../constants/styles';
 import { WHITE } from '../../constants/colors';
 
@@ -94,51 +84,10 @@ const SearchOptions = ({
   return (
     <div className={classes.container}>
       <div className={classes.topContainer}>
-        <SearchOptionRow label="Post Type">
-          <Select
-            name="postType"
-            value={options.postType}
-            onChange={handleOptionChange('postType')}
-            fullWidth
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {Array.from(POST_TYPES).map(([, opt]) => (
-              <MenuItem key={opt.value} value={opt.value}>{opt.name}</MenuItem>
-            ))}
-          </Select>
-        </SearchOptionRow>
-        {options.postType !== POST_TYPES.get('tip').value ? (
-          <>
-            <SearchOptionRow label="Error">
-              <TextField
-                id="search-option-error-text"
-                name="error"
-                multiline
-                maxRows={4}
-                value={options.error}
-                onChange={handleOptionChange('error')}
-                fullWidth
-              />
-            </SearchOptionRow>
-            <SearchOptionRow label="Solution">
-              <TextField
-                id="search-option-solution-text"
-                name="solution"
-                value={options.solution}
-                onChange={handleOptionChange('solution')}
-                fullWidth
-              />
-            </SearchOptionRow>
-          </>
-        ) : null}
-        <SearchOptionRow label="Description">
+        <SearchOptionRow label="Type">
           <TextField
-            id="search-option-description-text"
-            name="description"
-            value={options.description}
-            onChange={handleOptionChange('description')}
+            value={options.type}
+            onChange={handleOptionChange('type')}
             fullWidth
           />
         </SearchOptionRow>
@@ -151,15 +100,6 @@ const SearchOptions = ({
             onNotUniqueError={handleTopicsNotUniqueError}
             fullWidth
             unique
-          />
-        </SearchOptionRow>
-        <SearchOptionRow label="Author">
-          <TextField
-            id="search-option-author-text"
-            name="author"
-            value={options.author}
-            onChange={handleOptionChange('author')}
-            fullWidth
           />
         </SearchOptionRow>
         <SearchOptionRow label="Date Created">
