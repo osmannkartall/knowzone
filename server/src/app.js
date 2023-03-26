@@ -3,9 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const config = require('./config');
-const tipController = require('./controllers/TipController');
 const helloController = require('./controllers/HelloController');
-const bugfixController = require('./controllers/BugfixController');
+const formController = require('./controllers/FormController');
+const postController = require('./controllers/PostController');
 const searchController = require('./controllers/SearchController');
 const authController = require('./controllers/AuthController');
 const { handleError } = require('./middlewares/handleError');
@@ -29,8 +29,8 @@ async function startDB() {
 function addControllers(app) {
   // Add route names for repositories in plural form.
   app.use('/hello', helloController);
-  app.use('/tips', tipController);
-  app.use('/bugfixes', bugfixController);
+  app.use('/forms', formController);
+  app.use('/posts', postController);
   app.use('/search', searchController);
   app.use('/', authController);
 }

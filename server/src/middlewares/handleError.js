@@ -3,20 +3,29 @@ const {
   isApiSchemaError,
   isCustomError,
   isMulterError,
+  isSchemaError,
+  isMongoError,
+  setMongoErrorDescription,
 } = require('../knowzoneErrorHandler');
 
 function getCustomFieldsByErrorType(err) {
   let statusCode = 500;
   let description = 'An error occurred';
 
-  if (isApiSchemaError(err)) {
+  // The order of check is important.
+  if (isSchemaError(err)) {
+    statusCode = 400;
+    description = err.message;
+  } else if (isMongoError(err)) {
+    description = setMongoErrorDescription(err);
+  } else if (isMulterError(err)) {
+    description = err.message;
+  } else if (isApiSchemaError(err)) {
     statusCode = 400;
     description = err.details[0].message;
   } else if (isCustomError(err)) {
     statusCode = err.statusCode;
     description = err.description;
-  } else if (isMulterError(err)) {
-    description = err.message;
   }
 
   return { statusCode, description };

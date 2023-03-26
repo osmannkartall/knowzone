@@ -15,17 +15,24 @@ class BaseRepository {
     return this.model.findById(id);
   }
 
-  async updateById(id, update) {
-    const filter = { _id: id };
-    return this.model.findOneAndUpdate(filter, update, { new: true });
+  async find(fields, projection) {
+    return this.model.find(fields, projection, { sort: { createdAt: -1 } });
   }
 
-  async deleteById(id) {
-    return this.model.findByIdAndRemove(id);
+  async findOne(conditions, projection) {
+    return this.model.findOne(conditions, projection);
   }
 
-  async deleteAll() {
-    return this.model.deleteMany({});
+  async updateById(filter, updateQuery, options) {
+    return this.model.findOneAndUpdate(filter, updateQuery, options);
+  }
+
+  async deleteOne(conditions) {
+    return this.model.deleteOne(conditions);
+  }
+
+  async deleteMany(conditions) {
+    return this.model.deleteMany(conditions);
   }
 }
 

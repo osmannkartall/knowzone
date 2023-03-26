@@ -50,7 +50,12 @@ const createPostBody = (body, session) => {
 
   if (body) {
     Object.entries(body).forEach(([k, v]) => {
-      postBody[k] = JSON.parse(v);
+      // TODO: Why this check is necessary?
+      if (v === 'undefined') {
+        postBody[k] = JSON.parse(null);
+      } else {
+        postBody[k] = JSON.parse(v);
+      }
     });
   }
 
@@ -78,8 +83,10 @@ const getPathsOfUploadedFiles = (files) => {
 
 const preparePostForCreate = (req, res, next) => {
   const data = createPostBody(req.body, req.session);
-  data.images = getPathsOfUploadedFiles(req.files);
-
+  if (!data.content) {
+    data.content = {};
+  }
+  data.content.images = getPathsOfUploadedFiles(req.files);
   res.locals.data = data;
 
   next();
@@ -101,12 +108,18 @@ const isNoImageAfterUpdate = (oldImages) => (
 const preparePostForUpdate = (req, res, next) => {
   const { oldImages, ...rest } = req.body;
   const data = createPostBody(rest, req.session);
-  const changedImages = mergeImages(oldImages, req.files);
 
+  const changedImages = mergeImages(oldImages, req.files);
   if (changedImages.length) {
-    data.images = changedImages;
+    if (!data.content) {
+      data.content = {};
+    }
+    data.content.images = changedImages;
   } else if (isNoImageAfterUpdate(oldImages)) {
-    data.images = [];
+    if (!data.content) {
+      data.content = {};
+    }
+    data.content.images = [];
   }
 
   res.locals.data = data;
