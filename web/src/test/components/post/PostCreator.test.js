@@ -31,7 +31,7 @@ describe('PostCreator', () => {
   it('should create the post', async () => {
     const type = 'bugfix';
 
-    const Component = () => {
+    function Component() {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
         defaultValues: { type: '', topics: ['topic1', 'topic2'] },
@@ -48,7 +48,7 @@ describe('PostCreator', () => {
           />
         </FormProvider>
       );
-    };
+    }
 
     const file1 = new File(['file1'], 'file1.png', { type: 'image/png' });
     const file2 = new File(['file2'], 'file2.png', { type: 'image/png' });
@@ -89,16 +89,18 @@ describe('PostCreator', () => {
       },
     });
 
-    await waitFor(async () => {
-      const uploader = screen.getByLabelText(/images/i);
+    const uploader = screen.getByLabelText(/images/i);
 
+    await waitFor(async () => {
       await fireEvent.change(uploader, { target: { files: [file1, file2] } });
 
       expect(uploader.files[0]).toBe(file1);
       expect(uploader.files[1]).toBe(file2);
 
       // no available dropzone after uploading 2 files
-      expect(screen.queryByText(/Drag n drop some images here, or click to select/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Drag n drop some images here, or click to select/i),
+      ).not.toBeInTheDocument();
 
       fireEvent.submit(screen.getByText(/share/i));
     });
@@ -111,7 +113,7 @@ describe('PostCreator', () => {
   });
 
   it('should set submit button to disabled when form type is not selected', () => {
-    const Component = () => {
+    function Component() {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
         defaultValues: { type: '' },
@@ -128,7 +130,7 @@ describe('PostCreator', () => {
           />
         </FormProvider>
       );
-    };
+    }
 
     render(<Component />);
 
@@ -138,7 +140,7 @@ describe('PostCreator', () => {
   it('should display error when all the content fields are empty', async () => {
     const type = 'tip';
 
-    const Component = () => {
+    function Component() {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
         defaultValues: { type },
@@ -155,7 +157,7 @@ describe('PostCreator', () => {
           />
         </FormProvider>
       );
-    };
+    }
 
     render(<Component />);
 
@@ -170,7 +172,7 @@ describe('PostCreator', () => {
   });
 
   it('should render the header with the given title', () => {
-    const Component = () => {
+    function Component() {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
         defaultValues: { type: '' },
@@ -180,7 +182,7 @@ describe('PostCreator', () => {
           <PostCreator open title="my type" />
         </FormProvider>
       );
-    };
+    }
 
     render(<Component />);
 
@@ -188,7 +190,7 @@ describe('PostCreator', () => {
   });
 
   it('should render the empty form', async () => {
-    const Component = () => {
+    function Component() {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
         defaultValues: { type: '' },
@@ -198,7 +200,7 @@ describe('PostCreator', () => {
           <PostCreator open title="my type" onSubmit={mockOnSubmit} />
         </FormProvider>
       );
-    };
+    }
 
     render(<Component />);
 
@@ -215,7 +217,7 @@ describe('PostCreator', () => {
   });
 
   it('should change component types according to selected form type', () => {
-    const Component = ({ type }) => {
+    function Component({ type }) {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
         defaultValues: { type },
@@ -225,7 +227,7 @@ describe('PostCreator', () => {
           <PostCreator open form={forms[type]} setForm={mockSetForm} formTypes={formTypes} />
         </FormProvider>
       );
-    };
+    }
 
     const { rerender } = render(<Component type="tip" />);
 
@@ -242,7 +244,7 @@ describe('PostCreator', () => {
     const selectedFormType = formTypes.find((i) => i.type === type);
     const selectedForm = forms[type];
 
-    const Component = () => {
+    function Component() {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
         defaultValues: { type: '' },
@@ -252,7 +254,7 @@ describe('PostCreator', () => {
           <PostCreator open form={{}} setForm={mockSetForm} formTypes={formTypes} />
         </FormProvider>
       );
-    };
+    }
 
     render(<Component />);
 
@@ -261,12 +263,12 @@ describe('PostCreator', () => {
     await waitFor(() => expect(mockSetForm).toHaveBeenCalledWith(selectedForm));
   });
 
-  it('should display error when only content.images is filled', async () => {
+  it('should display only topics error when only content.images is filled', async () => {
     const type = 'tip';
 
     window.URL.createObjectURL = jest.fn();
 
-    const Component = () => {
+    function Component() {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
         defaultValues: { type: '' },
@@ -282,7 +284,7 @@ describe('PostCreator', () => {
           />
         </FormProvider>
       );
-    };
+    }
 
     render(<Component />);
 
@@ -303,8 +305,7 @@ describe('PostCreator', () => {
     fireEvent.submit(screen.getByText(/share/i));
 
     await waitFor(() => {
-      expect(screen.getAllByRole('alert')).toHaveLength(2);
-      screen.getByText(/at least one content field must be filled/i);
+      expect(screen.getAllByRole('alert')).toHaveLength(1);
       screen.getByText(/at least one topic must be added/i);
     });
 
