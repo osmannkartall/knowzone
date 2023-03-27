@@ -88,8 +88,11 @@ const Root = styled('section')(({ theme }) => ({
     display: 'block',
     width: 'auto',
     height: '100%',
-    cursor: 'pointer',
     opacity: 0.6,
+    '&:hover': {
+      opacity: 1,
+      transition: 'opacity .2s ease-in-out',
+    },
   },
 
   [`& .${classes.thumbnailDeleteButton}`]: {
@@ -101,11 +104,6 @@ const Root = styled('section')(({ theme }) => ({
     height: THUMBNAIL_BUTTON_SIZE,
     backgroundColor: IRREVERSIBLE_ACTION,
     opacity: 1,
-    '&:hover': {
-      backgroundColor: IRREVERSIBLE_ACTION,
-      opacity: 1,
-      transition: 'opacity .2s ease-in-out',
-    },
     [theme.breakpoints.down('md')]: {
       width: THUMBNAIL_SMALL_BUTTON_SIZE,
       height: THUMBNAIL_SMALL_BUTTON_SIZE,
