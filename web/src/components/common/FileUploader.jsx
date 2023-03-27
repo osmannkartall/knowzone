@@ -10,7 +10,6 @@ import { GRAY2, GRAY3, GRAY4, IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../../
 
 const NUM_MAX_FILES = 2;
 const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
-const ACCEPTED_TYPES = 'image/*';
 
 const THUMBNAIL_WIDTH = 300;
 const THUMBNAIL_HEIGHT = 300;
@@ -178,7 +177,7 @@ function FileUploader({ files, setFiles }) {
     isDragAccept,
     isDragReject,
   } = useDropzone({
-    accept: ACCEPTED_TYPES,
+    accept: { 'image/*': [] },
     onDrop: (acceptedFiles) => {
       if (hasAvailableSpace(acceptedFiles)) {
         const newFiles = acceptedFiles.map((file) => Object.assign(file, {
@@ -230,7 +229,7 @@ function FileUploader({ files, setFiles }) {
       ) : null}
       <aside className={classes.thumbnailsContainer}>
         {files.map((file) => (
-          <div className={classes.thumbnails} key={file._id}>
+          <div className={classes.thumbnails} key={file._id ?? file.name}>
             <div className={classes.thumbnail}>
               <Image file={file} />
               <IconButton
