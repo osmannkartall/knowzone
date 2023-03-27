@@ -46,13 +46,7 @@ function Wrapper() {
   const authDispatch = useAuthDispatch();
 
   useEffect(() => {
-    let isMounted = true;
-    if (isMounted) {
-      checkUserSession(authDispatch);
-    }
-    return function cleanup() {
-      isMounted = false;
-    };
+    checkUserSession(authDispatch);
   }, [authDispatch]);
 
   return (

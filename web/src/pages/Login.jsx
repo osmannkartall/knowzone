@@ -1,4 +1,3 @@
-import { useRef, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -52,7 +51,6 @@ const loginSchema = yup.object().shape({
 function Login() {
   const navigate = useNavigate();
   const authDispatch = useAuthDispatch();
-  const isMounted = useRef(true);
   const { handleSubmit, control, formState: { errors } } = useForm({
     resolver: yupResolver(loginSchema),
     defaultValues: {
@@ -62,21 +60,14 @@ function Login() {
   });
 
   const handleLogin = async (data) => {
-    if (isMounted.current) {
-      const response = await login(authDispatch, data);
-      console.log(response);
-      if (response.status === 'success') {
-        navigate(`/${FE_ROUTES.HOME}`);
-      } else {
-        toast.error(response.message);
-        console.log('Something bad happened during login!');
-      }
+    const response = await login(authDispatch, data);
+    if (response.status === 'success') {
+      navigate(`/${FE_ROUTES.HOME}`);
+    } else {
+      toast.error(response.message);
+      console.log('Something bad happened during login!');
     }
   };
-
-  useEffect(() => (function cleanup() {
-    isMounted.current = false;
-  }), []);
 
   return (
     <Root>

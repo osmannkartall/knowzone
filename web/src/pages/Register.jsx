@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import { TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -85,7 +84,6 @@ const registerSchema = yup.object().shape({
 function Register() {
   const navigate = useNavigate();
   const authDispatch = useAuthDispatch();
-  const isMounted = useRef(true);
   const { handleSubmit, control, formState: { errors } } = useForm({
     resolver: yupResolver(registerSchema),
     defaultValues: {
@@ -98,28 +96,22 @@ function Register() {
   });
 
   const handleRegister = async (data) => {
-    if (isMounted.current) {
-      const { name, username, email, password } = data;
-      const response = await register(authDispatch, {
-        name,
-        username,
-        email,
-        password,
-        bio: 'This is a mock bio.',
-      });
+    const { name, username, email, password } = data;
+    const response = await register(authDispatch, {
+      name,
+      username,
+      email,
+      password,
+      bio: 'This is a mock bio.',
+    });
 
-      if (response.status === 'success') {
-        navigate(`/${FE_ROUTES.HOME}`);
-      } else {
-        toast.error(response.message);
-        console.log('Something bad happened during register!');
-      }
+    if (response.status === 'success') {
+      navigate(`/${FE_ROUTES.HOME}`);
+    } else {
+      toast.error(response.message);
+      console.log('Something bad happened during register!');
     }
   };
-
-  useEffect(() => (function cleanup() {
-    isMounted.current = false;
-  }), []);
 
   return (
     <Root>
