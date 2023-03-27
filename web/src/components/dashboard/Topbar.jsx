@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { styled } from '@mui/material/styles';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { IconButton, MenuItem, Menu } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -93,7 +93,7 @@ function AppLogoWithTitle() {
 function Topbar({ openSidebar }) {
   const [anchorMenu, setAnchorMenu] = useState(null);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const isMenuOpen = Boolean(anchorMenu);
   const authDispatch = useAuthDispatch();
@@ -105,13 +105,12 @@ function Topbar({ openSidebar }) {
 
   const onClickPosts = () => {
     closeMenu();
-    history.push(`/${FE_ROUTES.POSTS}`);
+    navigate(`/${FE_ROUTES.POSTS}`);
   };
 
   const onClickAccount = () => {
     closeMenu();
     console.log('account');
-    // history.push('account');
   };
 
   const onClickLogout = useCallback(async () => {
@@ -121,7 +120,7 @@ function Topbar({ openSidebar }) {
       const response = await logout(authDispatch);
 
       if (response.status === 'success') {
-        history.push(`/${FE_ROUTES.LOGIN}`);
+        navigate(`/${FE_ROUTES.LOGIN}`);
       } else {
         console.log(response.message);
       }
@@ -133,7 +132,7 @@ function Topbar({ openSidebar }) {
         setIsLinearProgressModalOpen(false);
       }
     }
-  }, [history, authDispatch]);
+  }, [navigate, authDispatch]);
 
   useEffect(() => (function cleanup() {
     isMounted.current = false;

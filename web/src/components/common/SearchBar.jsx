@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { IconButton, Grid } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import TuneIcon from '@mui/icons-material/Tune';
@@ -89,7 +89,7 @@ function SearchBar() {
   const [isSearchOptionsMenuOpen, setIsSearchOptionsMenuOpen] = useState(false);
   const [areTopicsUnique, setAreTopicsUnique] = useState(true);
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const handleTopicsNotUniqueError = (unique) => setAreTopicsUnique(unique);
@@ -136,7 +136,7 @@ function SearchBar() {
 
     hideSearchOptionsMenu();
     const data = JSON.parse(JSON.stringify(tempSearchOptions));
-    history.push(`/${FE_ROUTES.SEARCH_RESULTS}`, data);
+    navigate(`/${FE_ROUTES.SEARCH_RESULTS}`, { state: data });
   };
 
   const searchOrGiveError = () => {

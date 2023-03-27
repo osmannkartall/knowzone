@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import { TextField } from '@mui/material';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -83,7 +83,7 @@ const registerSchema = yup.object().shape({
 });
 
 function Register() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const authDispatch = useAuthDispatch();
   const isMounted = useRef(true);
   const { handleSubmit, control, formState: { errors } } = useForm({
@@ -109,7 +109,7 @@ function Register() {
       });
 
       if (response.status === 'success') {
-        history.push(FE_ROUTES.HOME);
+        navigate(`/${FE_ROUTES.HOME}`);
       } else {
         toast.error(response.message);
         console.log('Something bad happened during register!');
@@ -131,7 +131,7 @@ function Register() {
         }}
         otherFormAction={{
           title: 'Login instead',
-          handler: () => history.push(FE_ROUTES.LOGIN),
+          handler: () => navigate(`/${FE_ROUTES.LOGIN}`),
         }}
       >
         <Controller

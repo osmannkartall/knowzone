@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { TextField } from '@mui/material';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
@@ -50,7 +50,7 @@ const loginSchema = yup.object().shape({
 });
 
 function Login() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const authDispatch = useAuthDispatch();
   const isMounted = useRef(true);
   const { handleSubmit, control, formState: { errors } } = useForm({
@@ -66,7 +66,7 @@ function Login() {
       const response = await login(authDispatch, data);
       console.log(response);
       if (response.status === 'success') {
-        history.push(FE_ROUTES.HOME);
+        navigate(`/${FE_ROUTES.HOME}`);
       } else {
         toast.error(response.message);
         console.log('Something bad happened during login!');
@@ -88,7 +88,7 @@ function Login() {
         }}
         otherFormAction={{
           title: 'Create a new account',
-          handler: () => history.push(FE_ROUTES.REGISTER),
+          handler: () => navigate(`/${FE_ROUTES.REGISTER}`),
         }}
       >
         <Controller
