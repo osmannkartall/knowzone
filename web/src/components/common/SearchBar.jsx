@@ -126,17 +126,16 @@ function SearchBar() {
   };
 
   const search = () => {
-    const tempSearchOptions = { ...searchOptions };
+    const searchOptionsBodyState = { ...searchOptions };
 
     Object.entries(searchOptions).forEach(([key, value]) => {
       if (!value || (Array.isArray(value) && !value.length)) {
-        delete tempSearchOptions[key];
+        delete searchOptionsBodyState[key];
       }
     });
 
     hideSearchOptionsMenu();
-    const data = JSON.parse(JSON.stringify(tempSearchOptions));
-    navigate(`/${FE_ROUTES.SEARCH_RESULTS}`, { state: data });
+    navigate(`/${FE_ROUTES.SEARCH_RESULTS}`, { state: searchOptionsBodyState });
   };
 
   const searchOrGiveError = () => {
@@ -206,15 +205,15 @@ function SearchBar() {
         </div>
       </div>
       {isSearchOptionsMenuOpen && (
-      <SearchOptions
-        options={searchOptions}
-        setTopics={(topics) => setSearchOptions({ ...searchOptions, topics })}
-        handleOptionChange={handleOptionChange}
-        handleDateChange={handleDateChange}
-        handleSearchOnClick={handleSearchOnClick}
-        handleResetOnClick={handleResetOnClick}
-        handleTopicsNotUniqueError={handleTopicsNotUniqueError}
-      />
+        <SearchOptions
+          options={searchOptions}
+          setTopics={(topics) => setSearchOptions({ ...searchOptions, topics })}
+          handleOptionChange={handleOptionChange}
+          handleDateChange={handleDateChange}
+          handleSearchOnClick={handleSearchOnClick}
+          handleResetOnClick={handleResetOnClick}
+          handleTopicsNotUniqueError={handleTopicsNotUniqueError}
+        />
       )}
     </Root>
   );
