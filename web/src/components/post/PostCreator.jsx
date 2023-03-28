@@ -30,6 +30,7 @@ const classes = {
   fileUploaderContainer: `${PREFIX}-fileUploaderContainer`,
   bottomContainer: `${PREFIX}-bottomContainer`,
   label: `${PREFIX}-label`,
+  span: `${PREFIX}-span`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -87,6 +88,12 @@ const Root = styled('div')(({ theme }) => ({
   },
 
   [`& .${classes.label}`]: {
+    margin: theme.spacing(1, 0),
+    color: GRAY1,
+  },
+
+  [`& .${classes.span}`]: {
+    display: 'block',
     margin: theme.spacing(1, 0),
     color: GRAY1,
   },
@@ -202,16 +209,21 @@ function ListFormPart({ field }) {
       <Controller
         render={
           ({ field: { onChange, value } }) => (
-            <div title={field}>
-              <TagPicker
-                id={field}
-                tags={Array.isArray(value) ? value : []}
-                setTags={onChange}
-                placeholder="Type an item and press enter to add"
-                unique
-                border
-              />
-            </div>
+            <label>
+              <span className={classes.span}>
+                {field}
+              </span>
+              <div title={field}>
+                <TagPicker
+                  id={field}
+                  tags={Array.isArray(value) ? value : []}
+                  setTags={onChange}
+                  placeholder="Type an item and press enter to add"
+                  unique
+                  border
+                />
+              </div>
+            </label>
           )
         }
         control={control}
@@ -279,17 +291,22 @@ function TopicsFormPart({ setAreTopicsUnique }) {
       render={
         ({ field: { onChange, value } }) => (
           <FormDataRow>
-            <TagPicker
-              tags={Array.isArray(value) ? value : []}
-              setTags={onChange}
-              placeholder="Type a topic and press enter to add"
-              required
-              unique
-              border
-              showError={errors.topics !== undefined}
-              onNotUniqueError={(isUnique) => setAreTopicsUnique(isUnique)}
-              helperText={getErrorMessageOfArrayForm(errors.topics)}
-            />
+            <label>
+              <span className={classes.span} style={{ fontWeight: 'bold' }}>
+                Topics
+              </span>
+              <TagPicker
+                tags={Array.isArray(value) ? value : []}
+                setTags={onChange}
+                placeholder="Type a topic and press enter to add"
+                required
+                unique
+                border
+                showError={errors.topics !== undefined}
+                onNotUniqueError={(isUnique) => setAreTopicsUnique(isUnique)}
+                helperText={getErrorMessageOfArrayForm(errors.topics)}
+              />
+            </label>
           </FormDataRow>
         )
       }
@@ -347,14 +364,7 @@ function MiddleContainer({ form, setAreTopicsUnique, formTypes }) {
           </FormDataRow>
           )}
           <DynamicFormParts content={form?.content} />
-          <label>
-            <FormDataRow>
-              <span style={{ fontWeight: 'bold' }}>
-                Topics
-              </span>
-            </FormDataRow>
-            <TopicsFormPart setAreTopicsUnique={setAreTopicsUnique} />
-          </label>
+          <TopicsFormPart setAreTopicsUnique={setAreTopicsUnique} />
         </>
       )}
     </div>
