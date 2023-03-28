@@ -295,7 +295,7 @@ describe('PostCreator', () => {
 
     await waitFor(async () => {
       const uploader = screen.getByLabelText(/images/i);
-      const file = new File(['pixels'], 'test.png', { type: 'images/png' });
+      const file = new File(['pixels'], 'test.png', { type: 'image/png' });
 
       await fireEvent.change(uploader, { target: { files: [file] } });
 
