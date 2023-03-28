@@ -1,4 +1,5 @@
 /* eslint-env jest */
+const mongoose = require('mongoose');
 const PostRepository = require('../../src/repositories/PostRepository');
 const { POST_SCHEMA_CONFIGS, FORM_SCHEMA_CONFIGS } = require('../../src/models/schemaConfigs');
 const FormRepository = require('../../src/repositories/FormRepository');
@@ -459,5 +460,44 @@ describe('PostRepository.create() with valid records', () => {
 
   it('should create post with all the fields in form', async () => {
     await expect(await create(postWithEachTypeOfComponent)).toEqual(postWithEachTypeOfComponent);
+  });
+});
+
+describe('PostRepository.find()', () => {
+  beforeEach(async () => {
+    const postsCollection = mongoose.connection?.collections?.posts;
+
+    if (postsCollection) {
+      await postsCollection.deleteMany({});
+    }
+  });
+
+  it('should return empty list when there is no post', async () => {
+    const result = await postRepository.find();
+    expect(result).toEqual([]);
+  });
+
+  it('should return empty list when there is no post for current user', async () => {
+    await Promise.all([
+      create(postMock),
+      create(postMock),
+      create(postMock),
+    ]);
+
+    const result = await postRepository.find({ 'owner.id': '222222222222662222222222' });
+    expect(result).toEqual([]);
+  });
+
+  it('should return only posts with the given type', async () => {
+    const postWithMyType = { ...postMock, type: myType };
+    const postWithNotMyType = { ...postMock, type: notMyType, owner: notMyForm.owner };
+
+    await Promise.all([
+      create(postWithMyType),
+      create(postWithNotMyType),
+    ]);
+
+    const result = await postRepository.find({ 'owner.id': postMock.owner.id, type: myType });
+    expect(result.every((obj) => obj.type === myType)).toBe(true);
   });
 });
