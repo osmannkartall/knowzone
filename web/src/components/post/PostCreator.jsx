@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import {
@@ -346,12 +347,14 @@ function MiddleContainer({ form, setAreTopicsUnique, formTypes }) {
           </FormDataRow>
           )}
           <DynamicFormParts content={form?.content} />
-          <FormDataRow>
-            <span style={{ fontWeight: 'bold' }}>
-              Topics
-            </span>
-          </FormDataRow>
-          <TopicsFormPart setAreTopicsUnique={setAreTopicsUnique} />
+          <label>
+            <FormDataRow>
+              <span style={{ fontWeight: 'bold' }}>
+                Topics
+              </span>
+            </FormDataRow>
+            <TopicsFormPart setAreTopicsUnique={setAreTopicsUnique} />
+          </label>
         </>
       )}
     </div>

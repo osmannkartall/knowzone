@@ -1,5 +1,6 @@
 /* eslint-disable jest/no-mocks-import */
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { setupServer } from 'msw/lib/node';
 import { FormProvider, useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
@@ -23,6 +24,13 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
+function setup(jsx) {
+  return {
+    user: userEvent.setup(),
+    ...render(jsx),
+  };
+}
+
 const mockOnSubmit = jest.fn((type, content, topics) => Promise.resolve({ type, content, topics }));
 
 const mockSetForm = jest.fn((form) => Promise.resolve(form));
@@ -30,25 +38,6 @@ const mockSetForm = jest.fn((form) => Promise.resolve(form));
 describe('PostCreator', () => {
   it('should create the post', async () => {
     const type = 'bugfix';
-
-    function Component() {
-      const methods = useForm({
-        resolver: joiResolver(postCreatorSchema),
-        defaultValues: { type: '', topics: ['topic1', 'topic2'] },
-      });
-
-      return (
-        <FormProvider {...methods}>
-          <PostCreator
-            open
-            form={forms[type]}
-            setForm={mockSetForm}
-            formTypes={formTypes}
-            onSubmit={mockOnSubmit}
-          />
-        </FormProvider>
-      );
-    }
 
     const file1 = new File(['file1'], 'file1.png', { type: 'image/png' });
     const file2 = new File(['file2'], 'file2.png', { type: 'image/png' });
@@ -67,47 +56,54 @@ describe('PostCreator', () => {
 
     window.URL.createObjectURL = jest.fn();
 
-    render(<Component />);
+    function Component() {
+      const methods = useForm({
+        resolver: joiResolver(postCreatorSchema),
+        defaultValues: { type: '' },
+      });
+
+      return (
+        <FormProvider {...methods}>
+          <PostCreator
+            open
+            form={forms[type]}
+            setForm={mockSetForm}
+            formTypes={formTypes}
+            onSubmit={mockOnSubmit}
+          />
+        </FormProvider>
+      );
+    }
+
+    const { user } = setup(<Component />);
 
     onClickMuiDropdownOption(screen.getByTestId('select-post-type'), type);
 
-    fireEvent.change(screen.getByLabelText(/description/i), {
-      target: {
-        value: expectedPost.content.description,
-      },
-    });
+    // Inputs are rendered after a post type selected.
+    const descriptionInput = screen.getByLabelText(/description/i);
+    const errorInput = screen.getByLabelText(/error/i);
+    const solutionInput = screen.getByLabelText(/solution/i);
+    const topicsInput = screen.getByLabelText(/topics/i);
+    const shareButton = screen.getByText(/share/i);
+    const imageUploaderInput = screen.getByLabelText(/images/i);
+    const dragAndDropText = screen.queryByText(/Drag n drop some images here, or click to select/i);
 
-    fireEvent.change(screen.getByLabelText(/error/i), {
-      target: {
-        value: expectedPost.content.error,
-      },
-    });
+    await user.type(descriptionInput, expectedPost.content.description);
+    await user.type(errorInput, expectedPost.content.error);
+    await user.type(solutionInput, expectedPost.content.solution);
+    await user.upload(imageUploaderInput, [file1, file2]);
+    await user.type(topicsInput, 'topic1');
+    fireEvent.keyDown(topicsInput, { key: 'enter', keyCode: 13 });
+    await user.type(topicsInput, 'topic2');
+    fireEvent.keyDown(topicsInput, { key: 'enter', keyCode: 13 });
 
-    fireEvent.change(screen.getByLabelText(/solution/i), {
-      target: {
-        value: expectedPost.content.solution,
-      },
-    });
+    fireEvent.submit(shareButton);
 
-    const uploader = screen.getByLabelText(/images/i);
-
-    await waitFor(async () => {
-      await fireEvent.change(uploader, { target: { files: [file1, file2] } });
-
-      expect(uploader.files[0]).toBe(file1);
-      expect(uploader.files[1]).toBe(file2);
-
-      // no available dropzone after uploading 2 files
-      expect(
-        screen.queryByText(/Drag n drop some images here, or click to select/i),
-      ).not.toBeInTheDocument();
-
-      fireEvent.submit(screen.getByText(/share/i));
-    });
-
-    await waitFor(() => {
-      expect(mockOnSubmit).toBeCalledWith(expectedPost);
-    });
+    expect(imageUploaderInput.files[0]).toBe(file1);
+    expect(imageUploaderInput.files[1]).toBe(file2);
+    await waitFor(() => expect(dragAndDropText).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryAllByRole('alert')).toHaveLength(0));
+    expect(mockOnSubmit).toBeCalledWith(expectedPost);
 
     window.URL.createObjectURL.mockReset();
   });
@@ -162,7 +158,6 @@ describe('PostCreator', () => {
     render(<Component />);
 
     onClickMuiDropdownOption(screen.getByTestId('select-post-type'), type);
-    await expectMuiDropdownHasSelectedValue(/post type/i, type);
 
     fireEvent.submit(screen.getByText(/share/i));
 
@@ -285,32 +280,101 @@ describe('PostCreator', () => {
         </FormProvider>
       );
     }
-
-    render(<Component />);
+    const { user } = setup(<Component />);
 
     expect(screen.queryByText(/at least one content field must be filled/i)).not.toBeInTheDocument();
 
     onClickMuiDropdownOption(screen.getByTestId('select-post-type'), type);
-    await expectMuiDropdownHasSelectedValue(/post type/i, type);
 
-    await waitFor(async () => {
-      const uploader = screen.getByLabelText(/images/i);
-      const file = new File(['pixels'], 'test.png', { type: 'image/png' });
-
-      await fireEvent.change(uploader, { target: { files: [file] } });
-
-      expect(uploader.files[0]).toBe(file);
-    });
-
+    const uploader = screen.getByLabelText(/images/i);
+    const file = new File(['pixels'], 'test.png', { type: 'image/png' });
+    await user.upload(uploader, file);
     fireEvent.submit(screen.getByText(/share/i));
 
-    await waitFor(() => {
-      expect(screen.getAllByRole('alert')).toHaveLength(1);
-      screen.getByText(/at least one topic must be added/i);
-    });
-
+    await expectMuiDropdownHasSelectedValue(/post type/i, type);
+    expect(uploader.files[0]).toBe(file);
+    await waitFor(() => expect(screen.getAllByRole('alert')).toHaveLength(1));
+    screen.getByText(/at least one topic must be added/i);
     expect(mockOnSubmit).not.toBeCalled();
 
     window.URL.createObjectURL.mockReset();
+  });
+
+  it('should display error when there is an invalid topic', async () => {
+    const type = 'todo';
+
+    window.URL.createObjectURL = jest.fn();
+
+    function Component() {
+      const methods = useForm({
+        resolver: joiResolver(postCreatorSchema),
+        defaultValues: { type: '' },
+      });
+      return (
+        <FormProvider {...methods}>
+          <PostCreator
+            open
+            form={forms[type]}
+            setForm={mockSetForm}
+            formTypes={formTypes}
+            onSubmit={mockOnSubmit}
+          />
+        </FormProvider>
+      );
+    }
+
+    const { user } = setup(<Component />);
+
+    onClickMuiDropdownOption(screen.getByTestId('select-post-type'), type);
+
+    const itemInput = screen.getByLabelText(/item/i);
+    const topicsInput = screen.getByLabelText(/topics/i);
+    const shareButton = screen.getByText(/share/i);
+
+    await user.type(itemInput, 'first todo');
+    await user.type(topicsInput, 'topic_?');
+    fireEvent.keyDown(topicsInput, { key: 'enter', keyCode: 13 });
+
+    fireEvent.submit(shareButton);
+
+    await waitFor(() => expect(screen.getByText(/A topic should be at most 30 alphanumeric/i)));
+  });
+
+  it('should display error when there are duplicated topics', async () => {
+    const type = 'todo';
+    window.URL.createObjectURL = jest.fn();
+    function Component() {
+      const methods = useForm({
+        resolver: joiResolver(postCreatorSchema),
+        defaultValues: { type: '' },
+      });
+      return (
+        <FormProvider {...methods}>
+          <PostCreator
+            open
+            form={forms[type]}
+            setForm={mockSetForm}
+            formTypes={formTypes}
+            onSubmit={mockOnSubmit}
+          />
+        </FormProvider>
+      );
+    }
+    const { user } = setup(<Component />);
+
+    onClickMuiDropdownOption(screen.getByTestId('select-post-type'), type);
+
+    const itemInput = screen.getByLabelText(/item/i);
+    const topicsInput = screen.getByLabelText(/topics/i);
+    const shareButton = screen.getByText(/share/i);
+
+    await user.type(itemInput, 'first todo');
+    await user.type(topicsInput, 'duplicated-topic');
+    fireEvent.keyDown(topicsInput, { key: 'enter', keyCode: 13 });
+    await user.type(topicsInput, 'duplicated-topic');
+    fireEvent.keyDown(topicsInput, { key: 'enter', keyCode: 13 });
+    fireEvent.submit(shareButton);
+
+    await waitFor(() => expect(screen.getByText(/Tag list should contain unique items/i)));
   });
 });

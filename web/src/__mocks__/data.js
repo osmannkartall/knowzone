@@ -58,7 +58,7 @@ export const forms = {
     },
     type: 'todo',
     content: {
-      todo: FORM_COMPONENT_TYPES.TEXT,
+      item: FORM_COMPONENT_TYPES.TEXT,
     },
     createdAt: '2023-03-13T08:13:33.055Z',
     updatedAt: '2023-03-13T08:13:33.055Z',
