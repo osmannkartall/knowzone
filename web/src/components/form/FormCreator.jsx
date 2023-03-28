@@ -85,16 +85,16 @@ const { IMAGE, ...rest } = FORM_COMPONENT_TYPES;
 const defaultField = { name: '', type: '' };
 
 const defaultContent = {
-  0: defaultField,
-  1: defaultField,
-  2: defaultField,
-  3: defaultField,
-  4: defaultField,
-  5: defaultField,
-  6: defaultField,
-  7: defaultField,
-  8: defaultField,
-  9: defaultField,
+  k0: defaultField,
+  k1: defaultField,
+  k2: defaultField,
+  k3: defaultField,
+  k4: defaultField,
+  k5: defaultField,
+  k6: defaultField,
+  k7: defaultField,
+  k8: defaultField,
+  k9: defaultField,
 };
 
 function FormDataRow({ children }) {
