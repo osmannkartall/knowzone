@@ -464,44 +464,40 @@ describe('PostRepository.create() with valid records', () => {
 });
 
 describe('PostRepository.find()', () => {
-
   beforeEach(async () => {
     const postsCollection = mongoose.connection?.collections?.posts;
-  
+
     if (postsCollection) {
       await postsCollection.deleteMany({});
     }
   });
 
   it('should return empty list when there is no post', async () => {
-    const result = await postRepository.find()
+    const result = await postRepository.find();
     expect(result).toEqual([]);
   });
 
   it('should return empty list when there is no post for current user', async () => {
-
     await Promise.all([
       create(postMock),
       create(postMock),
-      create(postMock)
-    ])
+      create(postMock),
+    ]);
 
-    const result = await postRepository.find({ 'owner.id': '222222222222662222222222' })
+    const result = await postRepository.find({ 'owner.id': '222222222222662222222222' });
     expect(result).toEqual([]);
   });
 
   it('should return only posts with the given type', async () => {
-
     const postWithMyType = { ...postMock, type: myType };
     const postWithNotMyType = { ...postMock, type: notMyType, owner: notMyForm.owner };
-    
+
     await Promise.all([
       create(postWithMyType),
       create(postWithNotMyType),
-    ])
+    ]);
 
     const result = await postRepository.find({ 'owner.id': postMock.owner.id, type: myType });
-    expect(result.every(obj => obj.type === myType)).toBe(true);
+    expect(result.every((obj) => obj.type === myType)).toBe(true);
   });
-
 });
