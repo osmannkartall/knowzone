@@ -3,7 +3,8 @@ import { BE_ROUTES } from '../constants/routes';
 const getPosts = async () => {
   try {
     const response = await fetch(
-      `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}`, {
+      `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}`,
+      {
         credentials: 'include',
       },
     );

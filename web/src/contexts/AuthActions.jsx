@@ -1,7 +1,7 @@
 import { BE_ROUTES } from '../constants/routes';
 
 const saveUidForAutoLogin = (uid) => {
-  localStorage.setItem('knowzone:uid', Buffer.from(uid).toString('base64'));
+  localStorage.setItem('knowzone:uid', uid);
 };
 
 export async function login(dispatch, userCredentials) {
@@ -84,7 +84,8 @@ export async function checkUserSession(dispatch) {
     dispatch({ type: 'LOGOUT' });
     return { status: 'success', message: 'Not login' };
   }
-  const id = Buffer.from(uidValue, 'base64');
+
+  const id = uidValue;
   return fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.CHECK_USER_SESSION}/${id}`, {
     credentials: 'include',
   })

@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { makeStyles, TextField } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
+import { TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -10,8 +10,14 @@ import AuthFormWrapper from '../components/common/AuthFormWrapper';
 import { useAuthDispatch } from '../contexts/AuthContext';
 import { register } from '../contexts/AuthActions';
 
-const useStyles = makeStyles((theme) => ({
-  input: {
+const PREFIX = 'Register';
+
+const classes = {
+  input: `${PREFIX}-input`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.input}`]: {
     display: 'flex',
     width: 450,
     marginBottom: theme.spacing(3),
@@ -75,11 +81,9 @@ const registerSchema = yup.object().shape({
     .max(256),
 });
 
-const Register = () => {
-  const classes = useStyles();
-  const history = useHistory();
+function Register() {
+  const navigate = useNavigate();
   const authDispatch = useAuthDispatch();
-  const isMounted = useRef(true);
   const { handleSubmit, control, formState: { errors } } = useForm({
     resolver: yupResolver(registerSchema),
     defaultValues: {
@@ -92,43 +96,38 @@ const Register = () => {
   });
 
   const handleRegister = async (data) => {
-    if (isMounted.current) {
-      const { name, username, email, password } = data;
-      const response = await register(authDispatch, {
-        name,
-        username,
-        email,
-        password,
-        bio: 'This is a mock bio.',
-      });
+    const { name, username, email, password } = data;
+    const response = await register(authDispatch, {
+      name,
+      username,
+      email,
+      password,
+      bio: 'This is a mock bio.',
+    });
 
-      if (response.status === 'success') {
-        history.push(FE_ROUTES.HOME);
-      } else {
-        toast.error(response.message);
-        console.log('Something bad happened during register!');
-      }
+    if (response.status === 'success') {
+      navigate(`/${FE_ROUTES.HOME}`);
+    } else {
+      toast.error(response.message);
+      console.log('Something bad happened during register!');
     }
   };
 
-  useEffect(() => function cleanup() {
-    isMounted.current = false;
-  }, []);
-
   return (
-    <AuthFormWrapper
-      title="Create your Knowzone account"
-      mainFormAction={{
-        title: 'Create',
-        handler: handleSubmit(handleRegister),
-      }}
-      otherFormAction={{
-        title: 'Login instead',
-        handler: () => history.push(FE_ROUTES.LOGIN),
-      }}
-    >
-      <Controller
-        render={
+    <Root>
+      <AuthFormWrapper
+        title="Create your Knowzone account"
+        mainFormAction={{
+          title: 'Create',
+          handler: handleSubmit(handleRegister),
+        }}
+        otherFormAction={{
+          title: 'Login instead',
+          handler: () => navigate(`/${FE_ROUTES.LOGIN}`),
+        }}
+      >
+        <Controller
+          render={
           ({ field: { onChange, onBlur, value, name, ref } }) => (
             <TextField
               id="name"
@@ -146,13 +145,13 @@ const Register = () => {
             />
           )
         }
-        control={control}
-        name="name"
-        shouldUnregister
-      />
+          control={control}
+          name="name"
+          shouldUnregister
+        />
 
-      <Controller
-        render={
+        <Controller
+          render={
           ({ field: { onChange, onBlur, value, name, ref } }) => (
             <TextField
               id="username"
@@ -170,13 +169,13 @@ const Register = () => {
             />
           )
         }
-        control={control}
-        name="username"
-        shouldUnregister
-      />
+          control={control}
+          name="username"
+          shouldUnregister
+        />
 
-      <Controller
-        render={
+        <Controller
+          render={
           ({ field: { onChange, onBlur, value, name, ref } }) => (
             <TextField
               id="email"
@@ -194,13 +193,13 @@ const Register = () => {
             />
           )
         }
-        control={control}
-        name="email"
-        shouldUnregister
-      />
+          control={control}
+          name="email"
+          shouldUnregister
+        />
 
-      <Controller
-        render={
+        <Controller
+          render={
           ({ field: { onChange, onBlur, value, name, ref } }) => (
             <TextField
               id="password"
@@ -219,13 +218,13 @@ const Register = () => {
             />
           )
         }
-        control={control}
-        name="password"
-        shouldUnregister
-      />
+          control={control}
+          name="password"
+          shouldUnregister
+        />
 
-      <Controller
-        render={
+        <Controller
+          render={
           ({ field: { onChange, onBlur, value, name, ref } }) => (
             <TextField
               id="confirm-password"
@@ -244,13 +243,13 @@ const Register = () => {
             />
           )
         }
-        control={control}
-        name="confirmPassword"
-        shouldUnregister
-      />
-
-    </AuthFormWrapper>
+          control={control}
+          name="confirmPassword"
+          shouldUnregister
+        />
+      </AuthFormWrapper>
+    </Root>
   );
-};
+}
 
 export default Register;

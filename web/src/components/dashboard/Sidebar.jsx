@@ -1,16 +1,10 @@
 import { useEffect, useState } from 'react';
-import {
-  makeStyles,
-  List,
-  ListItem,
-  ListItemText,
-  Button,
-  ListItemIcon,
-} from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import { List, ListItem, ListItemText, Button, ListItemIcon } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
 import { FormProvider, useForm } from 'react-hook-form';
-import BookmarkBorder from '@material-ui/icons/BookmarkBorder';
-import Bookmark from '@material-ui/icons/Bookmark';
+import BookmarkBorder from '@mui/icons-material/BookmarkBorder';
+import Bookmark from '@mui/icons-material/Bookmark';
 import { toast } from 'react-toastify';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { GRAY2, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
@@ -24,14 +18,24 @@ import postCreatorSchema from '../../schemas/postCreatorSchema';
 import createForm from '../../api/createForm';
 import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
 
-const useStyles = makeStyles((theme) => ({
-  sidebar: {
+const PREFIX = 'Sidebar';
+
+const classes = {
+  sidebar: `${PREFIX}-sidebar`,
+  sidebarContainer: `${PREFIX}-sidebarContainer`,
+  createButton: `${PREFIX}-createButton`,
+  sidebarBottomContainer: `${PREFIX}-sidebarBottomContainer`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.sidebar}`]: {
     height: '100%',
     width: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
   },
-  sidebarContainer: {
+
+  [`& .${classes.sidebarContainer}`]: {
     display: 'flex',
     flexDirection: 'column',
     position: 'fixed',
@@ -42,17 +46,19 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: WHITE,
     borderRight: `1px solid ${GRAY3}`,
   },
-  createButton: {
+
+  [`& .${classes.createButton}`]: {
     margin: theme.spacing(1, 2),
     padding: theme.spacing(1, 0),
   },
-  sidebarBottomContainer: {
+
+  [`& .${classes.sidebarBottomContainer}`]: {
     display: 'flex',
     justifyContent: 'center',
   },
 }));
 
-const SidebarItem = ({ text }) => {
+function SidebarItem({ text }) {
   const location = useLocation();
 
   const isActiveRoute = () => location.pathname === `/posts/${text}`;
@@ -80,22 +86,22 @@ const SidebarItem = ({ text }) => {
       <ListItemText primary={text} />
     </ListItem>
   );
-};
+}
 
-const SidebarItemList = ({ sidebarItems }) => (
-  <List>
-    {(sidebarItems ?? []).map((sidebarItem) => (
-      <SidebarItem
-        key={sidebarItem.id}
-        text={sidebarItem.type}
-      />
-    ))}
-  </List>
-);
+function SidebarItemList({ sidebarItems }) {
+  return (
+    <List>
+      {(sidebarItems ?? []).map((sidebarItem) => (
+        <SidebarItem
+          key={sidebarItem.id}
+          text={sidebarItem.type}
+        />
+      ))}
+    </List>
+  );
+}
 
-const Sidebar = ({ isSidebarOpen }) => {
-  const classes = useStyles();
-
+function Sidebar({ isSidebarOpen }) {
   const [isPostCreatorOpen, setIsPostCreatorOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
@@ -215,54 +221,56 @@ const Sidebar = ({ isSidebarOpen }) => {
 
   return (
     <LinearProgressModal isOpen={isLinearProgressModalOpen}>
-      <div
-        className={classes.sidebarContainer}
-        style={
+      <Root>
+        <div
+          className={classes.sidebarContainer}
+          style={
           isSidebarOpen
             ? { display: 'flex' }
             : { display: 'none' }
         }
-      >
-        <div className={classes.sidebar}>
-          <SidebarItemList sidebarItems={sidebarItems} />
+        >
+          <div className={classes.sidebar}>
+            <SidebarItemList sidebarItems={sidebarItems} />
+          </div>
+          <div className={classes.sidebarBottomContainer}>
+            <Button
+              className={classes.createButton}
+              variant="contained"
+              color="primary"
+              fullWidth
+              onClick={onClickCreatePost}
+            >
+              Create Post
+            </Button>
+          </div>
+          <div className={classes.sidebarBottomContainer}>
+            <Button
+              className={classes.createButton}
+              variant="outlined"
+              color="primary"
+              fullWidth
+              onClick={() => setIsFormOpen(true)}
+            >
+              Create Form
+            </Button>
+          </div>
+          <FormCreator open={isFormOpen} setOpen={setIsFormOpen} create={onClickCreateForm} />
+          <FormProvider {...postCreatorMethods}>
+            <PostCreator
+              form={form}
+              setForm={setForm}
+              title="Create Post"
+              open={isPostCreatorOpen}
+              setOpen={setIsPostCreatorOpen}
+              onSubmit={handleSubmit}
+              formTypes={sidebarItems}
+            />
+          </FormProvider>
         </div>
-        <div className={classes.sidebarBottomContainer}>
-          <Button
-            className={classes.createButton}
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={onClickCreatePost}
-          >
-            Create Post
-          </Button>
-        </div>
-        <div className={classes.sidebarBottomContainer}>
-          <Button
-            className={classes.createButton}
-            variant="outlined"
-            color="primary"
-            fullWidth
-            onClick={() => setIsFormOpen(true)}
-          >
-            Create Form
-          </Button>
-        </div>
-        <FormCreator open={isFormOpen} setOpen={setIsFormOpen} create={onClickCreateForm} />
-        <FormProvider {...postCreatorMethods}>
-          <PostCreator
-            form={form}
-            setForm={setForm}
-            title="Create Post"
-            open={isPostCreatorOpen}
-            setOpen={setIsPostCreatorOpen}
-            onSubmit={handleSubmit}
-            formTypes={sidebarItems}
-          />
-        </FormProvider>
-      </div>
+      </Root>
     </LinearProgressModal>
   );
-};
+}
 
 export default Sidebar;

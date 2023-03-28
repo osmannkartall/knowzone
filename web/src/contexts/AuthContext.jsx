@@ -56,7 +56,7 @@ const useAuthDispatch = () => {
   return authDispatch;
 };
 
-const AuthProvider = ({ children }) => {
+function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   return (
@@ -66,6 +66,6 @@ const AuthProvider = ({ children }) => {
       </AuthDispatchContext.Provider>
     </AuthStateContext.Provider>
   );
-};
+}
 
 export { AuthProvider, useAuthState, useAuthDispatch, LOGIN_STATES };

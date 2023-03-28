@@ -112,16 +112,16 @@ describe('FormCreator', () => {
       expect(mockCreateForm).toHaveBeenCalledWith({
         type,
         content: {
-          0: { name: '', type: '' },
-          1: { name: '', type: '' },
-          2: { name: '', type: FORM_COMPONENT_TYPES.IMAGE },
-          3: { name: '', type: '' },
-          4: { name: '', type: '' },
-          5: { name: '', type: '' },
-          6: { name: '', type: '' },
-          7: { name: '', type: '' },
-          8: { name: '', type: '' },
-          9: { name: '', type: '' },
+          k0: { name: '', type: '' },
+          k1: { name: '', type: '' },
+          k2: { name: '', type: FORM_COMPONENT_TYPES.IMAGE },
+          k3: { name: '', type: '' },
+          k4: { name: '', type: '' },
+          k5: { name: '', type: '' },
+          k6: { name: '', type: '' },
+          k7: { name: '', type: '' },
+          k8: { name: '', type: '' },
+          k9: { name: '', type: '' },
         },
       });
     });
@@ -151,17 +151,17 @@ describe('FormCreator', () => {
       expect(mockCreateForm).toHaveBeenCalledWith({
         type,
         content: {
-          0: { name: 'my text', type: FORM_COMPONENT_TYPES.TEXT },
-          1: { name: '', type: '' },
+          k0: { name: 'my text', type: FORM_COMPONENT_TYPES.TEXT },
+          k1: { name: '', type: '' },
           // This is '' in test because of the selectedImageComponentKey internal state
-          2: { name: '', type: FORM_COMPONENT_TYPES.IMAGE },
-          3: { name: '', type: '' },
-          4: { name: 'my editor', type: FORM_COMPONENT_TYPES.EDITOR },
-          5: { name: '', type: '' },
-          6: { name: '', type: '' },
-          7: { name: '', type: '' },
-          8: { name: '', type: '' },
-          9: { name: '', type: '' },
+          k2: { name: '', type: FORM_COMPONENT_TYPES.IMAGE },
+          k3: { name: '', type: '' },
+          k4: { name: 'my editor', type: FORM_COMPONENT_TYPES.EDITOR },
+          k5: { name: '', type: '' },
+          k6: { name: '', type: '' },
+          k7: { name: '', type: '' },
+          k8: { name: '', type: '' },
+          k9: { name: '', type: '' },
         },
       });
     });

@@ -1,8 +1,16 @@
-import { makeStyles, Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
 
-const useStyles = makeStyles((theme) => ({
-  content: {
+const PREFIX = 'Content';
+
+const classes = {
+  content: `${PREFIX}-content`,
+  contentWhenNoSidebar: `${PREFIX}-contentWhenNoSidebar`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.content}`]: {
     width: `calc(100% - ${sidebarWidth}px)`,
     position: 'fixed',
     top: topbarHeight,
@@ -15,7 +23,8 @@ const useStyles = makeStyles((theme) => ({
     height: `calc(100% - ${topbarHeight}px)`,
     overflowY: 'auto',
   },
-  contentWhenNoSidebar: {
+
+  [`& .${classes.contentWhenNoSidebar}`]: {
     [theme.breakpoints.up('sm')]: {
       left: 0,
       width: '100%',
@@ -23,24 +32,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Content = ({ isSidebarOpen, children }) => {
-  const classes = useStyles();
-
+function Content({ isSidebarOpen, children }) {
   return (
-    <div className={
+    <Root>
+      <div className={
       isSidebarOpen
         ? classes.content
         : `${classes.content} ${classes.contentWhenNoSidebar}`
       }
-    >
-      <Grid container>
-        <Grid item lg={8} md={8} sm={12} xs={12}>
-          {children}
+      >
+        <Grid container>
+          <Grid item lg={8} md={8} sm={12} xs={12}>
+            {children}
+          </Grid>
+          {/* TODO: This section will be used to display data such as trending posts. */}
         </Grid>
-        {/* TODO: This section will be used to display data such as trending posts. */}
-      </Grid>
-    </div>
+      </div>
+    </Root>
   );
-};
+}
 
 export default Content;

@@ -1,15 +1,16 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import {
   TextField,
-  makeStyles,
   IconButton,
   MenuItem,
   Button,
   Modal,
   FormHelperText,
   FormControl,
-} from '@material-ui/core';
-import Close from '@material-ui/icons/Close';
+} from '@mui/material';
+import Close from '@mui/icons-material/Close';
 import { Controller, useFormContext } from 'react-hook-form';
 import { WHITE, GRAY3, PRIMARY, GRAY1 } from '../../constants/colors';
 import TagPicker from '../common/TagPicker/TagPicker';
@@ -18,22 +19,36 @@ import MarkdownEditor from '../common/MarkdownEditor';
 import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
 import getFormByType from '../../api/getFormByType';
 
-const isNewPost = (id) => id === null || id === undefined;
+const PREFIX = 'PostCreator';
 
-const useStyles = makeStyles((theme) => ({
-  modalData: {
+const classes = {
+  modalData: `${PREFIX}-modalData`,
+  form: `${PREFIX}-form`,
+  topContainer: `${PREFIX}-topContainer`,
+  middleContainer: `${PREFIX}-middleContainer`,
+  formDataRow: `${PREFIX}-formDataRow`,
+  fileUploaderContainer: `${PREFIX}-fileUploaderContainer`,
+  bottomContainer: `${PREFIX}-bottomContainer`,
+  label: `${PREFIX}-label`,
+  span: `${PREFIX}-span`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.modalData}`]: {
     position: 'fixed',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: `calc(100% - ${theme.spacing(10)}px)`,
+    width: `calc(100% - ${theme.spacing(10)})`,
   },
-  form: {
+
+  [`& .${classes.form}`]: {
     display: 'flex',
     flexDirection: 'column',
     maxHeight: '90vh',
   },
-  topContainer: {
+
+  [`& .${classes.topContainer}`]: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -44,20 +59,24 @@ const useStyles = makeStyles((theme) => ({
     borderTopRightRadius: theme.spacing(1),
     backgroundColor: PRIMARY,
   },
-  middleContainer: {
+
+  [`& .${classes.middleContainer}`]: {
     overflowY: 'auto',
     borderTop: 0,
     border: `1px solid ${GRAY3}`,
     backgroundColor: WHITE,
     padding: theme.spacing(1, 0),
   },
-  formDataRow: {
+
+  [`& .${classes.formDataRow}`]: {
     margin: theme.spacing(3, 2),
   },
-  fileUploaderContainer: {
+
+  [`& .${classes.fileUploaderContainer}`]: {
     margin: theme.spacing(0, 2),
   },
-  bottomContainer: {
+
+  [`& .${classes.bottomContainer}`]: {
     display: 'flex',
     justifyContent: 'flex-end',
     padding: theme.spacing(2),
@@ -67,11 +86,20 @@ const useStyles = makeStyles((theme) => ({
     borderTop: 0,
     backgroundColor: WHITE,
   },
-  label: {
+
+  [`& .${classes.label}`]: {
+    margin: theme.spacing(1, 0),
+    color: GRAY1,
+  },
+
+  [`& .${classes.span}`]: {
+    display: 'block',
     margin: theme.spacing(1, 0),
     color: GRAY1,
   },
 }));
+
+const isNewPost = (id) => id === null || id === undefined;
 
 const getErrorMessageOfArrayForm = (arr) => {
   if (arr) {
@@ -89,13 +117,15 @@ const getErrorMessageOfArrayForm = (arr) => {
   return null;
 };
 
-const FormDataRow = ({ children }) => (
-  <div className={useStyles().formDataRow}>
-    {children}
-  </div>
-);
+function FormDataRow({ children }) {
+  return (
+    <div className={classes.formDataRow}>
+      {children}
+    </div>
+  );
+}
 
-const TypeFormPart = ({ formTypes }) => {
+function TypeFormPart({ formTypes }) {
   const { control, formState: { errors }, getValues } = useFormContext();
 
   return (
@@ -111,7 +141,7 @@ const TypeFormPart = ({ formTypes }) => {
               label="Post Type"
               onChange={onChange}
               onBlur={onBlur}
-              value={value}
+              value={value ?? ''}
               name={name}
               variant="outlined"
               fullWidth
@@ -137,9 +167,9 @@ const TypeFormPart = ({ formTypes }) => {
     </FormDataRow>
     )
   );
-};
+}
 
-const TextFormPart = ({ field }) => {
+function TextFormPart({ field }) {
   const { control } = useFormContext();
 
   return field && (
@@ -169,9 +199,9 @@ const TextFormPart = ({ field }) => {
       />
     </FormDataRow>
   );
-};
+}
 
-const ListFormPart = ({ field }) => {
+function ListFormPart({ field }) {
   const { control } = useFormContext();
 
   return (
@@ -179,16 +209,21 @@ const ListFormPart = ({ field }) => {
       <Controller
         render={
           ({ field: { onChange, value } }) => (
-            <div title={field}>
-              <TagPicker
-                id={field}
-                tags={Array.isArray(value) ? value : []}
-                setTags={onChange}
-                placeholder="Type an item and press enter to add"
-                unique
-                border
-              />
-            </div>
+            <label>
+              <span className={classes.span}>
+                {field}
+              </span>
+              <div title={field}>
+                <TagPicker
+                  id={field}
+                  tags={Array.isArray(value) ? value : []}
+                  setTags={onChange}
+                  placeholder="Type an item and press enter to add"
+                  unique
+                  border
+                />
+              </div>
+            </label>
           )
         }
         control={control}
@@ -197,11 +232,9 @@ const ListFormPart = ({ field }) => {
       />
     </FormDataRow>
   );
-};
+}
 
-const EditorFormPart = ({ field }) => {
-  const classes = useStyles();
-
+function EditorFormPart({ field }) {
   const { control } = useFormContext();
 
   return (
@@ -226,11 +259,9 @@ const EditorFormPart = ({ field }) => {
       />
     </FormDataRow>
   );
-};
+}
 
-const ImageFormPart = ({ field }) => {
-  const classes = useStyles();
-
+function ImageFormPart({ field }) {
   const { control } = useFormContext();
 
   return (
@@ -250,9 +281,9 @@ const ImageFormPart = ({ field }) => {
       />
     </div>
   );
-};
+}
 
-const TopicsFormPart = ({ setAreTopicsUnique }) => {
+function TopicsFormPart({ setAreTopicsUnique }) {
   const { control, formState: { errors } } = useFormContext();
 
   return (
@@ -260,17 +291,22 @@ const TopicsFormPart = ({ setAreTopicsUnique }) => {
       render={
         ({ field: { onChange, value } }) => (
           <FormDataRow>
-            <TagPicker
-              tags={Array.isArray(value) ? value : []}
-              setTags={onChange}
-              placeholder="Type a topic and press enter to add"
-              required
-              unique
-              border
-              showError={errors.topics !== undefined}
-              onNotUniqueError={(isUnique) => setAreTopicsUnique(isUnique)}
-              helperText={getErrorMessageOfArrayForm(errors.topics)}
-            />
+            <label>
+              <span className={classes.span} style={{ fontWeight: 'bold' }}>
+                Topics
+              </span>
+              <TagPicker
+                tags={Array.isArray(value) ? value : []}
+                setTags={onChange}
+                placeholder="Type a topic and press enter to add"
+                required
+                unique
+                border
+                showError={errors.topics !== undefined}
+                onNotUniqueError={(isUnique) => setAreTopicsUnique(isUnique)}
+                helperText={getErrorMessageOfArrayForm(errors.topics)}
+              />
+            </label>
           </FormDataRow>
         )
       }
@@ -279,7 +315,7 @@ const TopicsFormPart = ({ setAreTopicsUnique }) => {
       shouldUnregister
     />
   );
-};
+}
 
 const DynamicFormParts = ({ content }) => Object.entries(content ?? {}).map(([k, v]) => {
   if (v === FORM_COMPONENT_TYPES.TEXT) return <TextFormPart key={k} field={k} />;
@@ -289,8 +325,7 @@ const DynamicFormParts = ({ content }) => Object.entries(content ?? {}).map(([k,
   return null;
 });
 
-const TopContainer = ({ title, handleClose }) => {
-  const classes = useStyles();
+function TopContainer({ title, handleClose }) {
   const { getValues } = useFormContext();
 
   return (
@@ -300,16 +335,15 @@ const TopContainer = ({ title, handleClose }) => {
         aria-label="close post form"
         style={{ color: WHITE }}
         onClick={handleClose}
+        size="large"
       >
         <Close style={{ color: WHITE, width: 35, height: 35 }} />
       </IconButton>
     </div>
   );
-};
+}
 
-const MiddleContainer = ({ form, setAreTopicsUnique, formTypes }) => {
-  const classes = useStyles();
-
+function MiddleContainer({ form, setAreTopicsUnique, formTypes }) {
   const { formState: { errors }, getValues } = useFormContext();
 
   return (
@@ -330,21 +364,14 @@ const MiddleContainer = ({ form, setAreTopicsUnique, formTypes }) => {
           </FormDataRow>
           )}
           <DynamicFormParts content={form?.content} />
-          <FormDataRow>
-            <span style={{ fontWeight: 'bold' }}>
-              Topics
-            </span>
-          </FormDataRow>
           <TopicsFormPart setAreTopicsUnique={setAreTopicsUnique} />
         </>
       )}
     </div>
   );
-};
+}
 
-const BottomContainer = ({ btnTitle }) => {
-  const classes = useStyles();
-
+function BottomContainer({ btnTitle }) {
   const { getValues } = useFormContext();
 
   return (
@@ -354,11 +381,9 @@ const BottomContainer = ({ btnTitle }) => {
       </Button>
     </div>
   );
-};
+}
 
-const PostCreator = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, formTypes }) => {
-  const classes = useStyles();
-
+function PostCreator({ form, setForm, title, btnTitle, open, setOpen, onSubmit, formTypes }) {
   const handleClose = () => setOpen(false);
   const [areTopicsUnique, setAreTopicsUnique] = useState(true);
 
@@ -385,24 +410,26 @@ const PostCreator = ({ form, setForm, title, btnTitle, open, setOpen, onSubmit, 
   }, [setForm, watchedPostType, reset, getValues]);
 
   const ModalData = (
-    <div className={classes.modalData}>
-      <form
-        className={classes.form}
-        onSubmit={handleSubmit((data) => areTopicsUnique && onSubmit(data))}
-      >
-        <TopContainer title={title} handleClose={handleClose} />
-        <MiddleContainer
-          form={form}
-          setAreTopicsUnique={setAreTopicsUnique}
-          formTypes={formTypes}
-        />
-        <BottomContainer btnTitle={btnTitle} onSubmit={onSubmit} />
-      </form>
-    </div>
+    <Root>
+      <div className={classes.modalData}>
+        <form
+          className={classes.form}
+          onSubmit={handleSubmit((data) => areTopicsUnique && onSubmit(data))}
+        >
+          <TopContainer title={title} handleClose={handleClose} />
+          <MiddleContainer
+            form={form}
+            setAreTopicsUnique={setAreTopicsUnique}
+            formTypes={formTypes}
+          />
+          <BottomContainer btnTitle={btnTitle} onSubmit={onSubmit} />
+        </form>
+      </div>
+    </Root>
   );
 
   return <Modal open={open} onClose={handleClose} disableRestoreFocus>{ModalData}</Modal>;
-};
+}
 
 PostCreator.defaultProps = {
   btnTitle: 'share',

@@ -1,6 +1,6 @@
-import { useRef, useEffect } from 'react';
-import { makeStyles, TextField } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
+import { TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
@@ -10,11 +10,17 @@ import AuthFormWrapper from '../components/common/AuthFormWrapper';
 import { useAuthDispatch } from '../contexts/AuthContext';
 import { login } from '../contexts/AuthActions';
 
-const useStyles = makeStyles((theme) => ({
-  input: {
+const PREFIX = 'Login';
+
+const classes = {
+  input: `${PREFIX}-input`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.input}`]: {
     display: 'flex',
     width: 450,
-    marginBottom: theme.spacing(3),
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -42,11 +48,9 @@ const loginSchema = yup.object().shape({
     ),
 });
 
-const Login = () => {
-  const classes = useStyles();
-  const history = useHistory();
+function Login() {
+  const navigate = useNavigate();
   const authDispatch = useAuthDispatch();
-  const isMounted = useRef(true);
   const { handleSubmit, control, formState: { errors } } = useForm({
     resolver: yupResolver(loginSchema),
     defaultValues: {
@@ -56,36 +60,30 @@ const Login = () => {
   });
 
   const handleLogin = async (data) => {
-    if (isMounted.current) {
-      const response = await login(authDispatch, data);
-      console.log(response);
-      if (response.status === 'success') {
-        history.push(FE_ROUTES.HOME);
-      } else {
-        toast.error(response.message);
-        console.log('Something bad happened during login!');
-      }
+    const response = await login(authDispatch, data);
+    if (response.status === 'success') {
+      navigate(`/${FE_ROUTES.HOME}`);
+    } else {
+      toast.error(response.message);
+      console.log('Something bad happened during login!');
     }
   };
 
-  useEffect(() => function cleanup() {
-    isMounted.current = false;
-  }, []);
-
   return (
-    <AuthFormWrapper
-      title="Login to your Knowzone account"
-      mainFormAction={{
-        title: 'Login',
-        handler: handleSubmit(handleLogin),
-      }}
-      otherFormAction={{
-        title: 'Create a new account',
-        handler: () => history.push(FE_ROUTES.REGISTER),
-      }}
-    >
-      <Controller
-        render={
+    <Root>
+      <AuthFormWrapper
+        title="Login to your Knowzone account"
+        mainFormAction={{
+          title: 'Login',
+          handler: handleSubmit(handleLogin),
+        }}
+        otherFormAction={{
+          title: 'Create a new account',
+          handler: () => navigate(`/${FE_ROUTES.REGISTER}`),
+        }}
+      >
+        <Controller
+          render={
           ({ field: { onChange, onBlur, value, name, ref } }) => (
             <TextField
               id="username"
@@ -103,13 +101,13 @@ const Login = () => {
             />
           )
         }
-        control={control}
-        name="username"
-        shouldUnregister
-      />
+          control={control}
+          name="username"
+          shouldUnregister
+        />
 
-      <Controller
-        render={
+        <Controller
+          render={
           ({ field: { onChange, onBlur, value, name, ref } }) => (
             <TextField
               id="password"
@@ -128,12 +126,13 @@ const Login = () => {
             />
           )
         }
-        control={control}
-        name="password"
-        shouldUnregister
-      />
-    </AuthFormWrapper>
+          control={control}
+          name="password"
+          shouldUnregister
+        />
+      </AuthFormWrapper>
+    </Root>
   );
-};
+}
 
 export default Login;

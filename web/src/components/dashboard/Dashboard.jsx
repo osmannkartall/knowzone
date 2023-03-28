@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import Topbar from './Topbar';
 import Sidebar from './Sidebar';
 import Content from './Content';
 
-const Dashboard = ({ children }) => {
+function Dashboard({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const openSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -17,6 +17,6 @@ const Dashboard = ({ children }) => {
       </Content>
     </Grid>
   );
-};
+}
 
 export default Dashboard;

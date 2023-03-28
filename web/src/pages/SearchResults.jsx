@@ -17,7 +17,7 @@ const searchResultMessage = (length) => {
   return `${length} posts`;
 };
 
-const SearchResults = () => {
+function SearchResults() {
   const location = useLocation();
   const [posts, setPosts] = useState([]);
   const [forms, setForms] = useState([]);
@@ -71,6 +71,6 @@ const SearchResults = () => {
       </ContentWrapper>
     </LinearProgressModal>
   );
-};
+}
 
 export default SearchResults;
