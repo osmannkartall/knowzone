@@ -75,14 +75,6 @@ beforeAll(async () => {
   await formRepository.create(notMyForm);
 });
 
-beforeEach(async () => {
-  const postsCollection = mongoose.connection?.collections?.posts;
-
-  if (postsCollection) {
-    await postsCollection.deleteMany({});
-  }
-});
-
 describe('PostRepository.create() with invalid records', () => {
   const postWithoutOwner = { type: myType, topics: topicsMock, content: contentMock };
 
@@ -473,6 +465,14 @@ describe('PostRepository.create() with valid records', () => {
 
 describe('PostRepository.find()', () => {
 
+  beforeEach(async () => {
+    const postsCollection = mongoose.connection?.collections?.posts;
+  
+    if (postsCollection) {
+      await postsCollection.deleteMany({});
+    }
+  });
+
   it('should return empty list when there is no post', async () => {
     const result = await postRepository.find()
     expect(result).toEqual([]);
@@ -480,26 +480,27 @@ describe('PostRepository.find()', () => {
 
   it('should return empty list when there is no post for current user', async () => {
 
-    /** following create(...) lines for creating 3 same posts(it could be different in content) */
-    await create(postMock);
-    await create(postMock);
-    await create(postMock);
+    await Promise.all([
+      create(postMock),
+      create(postMock),
+      create(postMock)
+    ])
 
     const result = await postRepository.find({ 'owner.id': '222222222222662222222222' })
     expect(result).toEqual([]);
   });
 
   it('should return only posts with the given type', async () => {
-    const postWithMyType = { ...postMock, type: myType };
-    const postWithNotMyType = { ...postMock, type: myType };
 
+    const postWithMyType = { ...postMock, type: myType };
+    const postWithNotMyType = { ...postMock, type: notMyType, owner: notMyForm.owner };
+    
     await Promise.all([
       create(postWithMyType),
       create(postWithNotMyType),
-    ]);
+    ])
 
-    const result = await postRepository.find({ type: myType });
-
+    const result = await postRepository.find({ 'owner.id': postMock.owner.id, type: myType });
     expect(result.every(obj => obj.type === myType)).toBe(true);
   });
 
