@@ -2,7 +2,6 @@
   "recommendations": [
     "christian-kohler.path-intellisense",
     "christian-kohler.npm-intellisense",
-    "eg2.vscode-npm-script",
     "dbaeumer.vscode-eslint",
     "dsznajder.es7-react-js-snippets"
   ]
