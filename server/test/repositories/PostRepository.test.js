@@ -489,11 +489,10 @@ describe('PostRepository.find()', () => {
   });
 
   it('should return only posts with the given type', async () => {
-    const postWithMyType = { ...postMock, type: myType };
     const postWithNotMyType = { ...postMock, type: notMyType, owner: notMyForm.owner };
 
     await Promise.all([
-      create(postWithMyType),
+      create(postMock),
       create(postWithNotMyType),
     ]);
 
@@ -509,45 +508,42 @@ describe('PostRepository.findOne()', () => {
   });
 
   it('should return post with given owner id', async () => {
-    const post = { ...postMock };
     const postWithDiffOwner = { ...postMock, type: notMyType, owner: notMyForm.owner };
 
     await Promise.all([
-      create(post),
+      create(postMock),
       create(postWithDiffOwner),
     ]);
 
-    const result = await postRepository.findOne({ 'owner.id': post.owner.id });
-    expect(result.owner.id.toString() === post.owner.id).toBe(true);
+    const result = await postRepository.findOne({ 'owner.id': postMock.owner.id });
+    expect(result.owner.id.toString() === postMock.owner.id).toBe(true);
   });
 
   it('should return post with given type', async () => {
-    const postWithMyType = { ...postMock, type: myType };
     const postWithNotMyType = { ...postMock, type: notMyType, owner: notMyForm.owner };
 
     await Promise.all([
-      create(postWithMyType),
+      create(postMock),
       create(postWithNotMyType),
     ]);
 
-    const result = await postRepository.findOne({ type: postWithMyType.type });
-    expect(result.type === postWithMyType.type).toBe(true);
+    const result = await postRepository.findOne({ type: postMock.type });
+    expect(result.type === postMock.type).toBe(true);
   });
 
   it('should return post with given type and owner id', async () => {
-    const postWithMyType = { ...postMock, type: myType };
     const postWithNotMyType = { ...postMock, type: notMyType, owner: notMyForm.owner };
 
     await Promise.all([
-      create(postWithMyType),
+      create(postMock),
       create(postWithNotMyType),
     ]);
 
     const result = await postRepository.findOne(
-      { 'owner.id': postWithMyType.owner.id, type: postWithMyType.type },
+      { 'owner.id': postMock.owner.id, type: postMock.type },
     );
 
-    expect(result.type === postWithMyType.type
-      && result.owner.id.toString() === postWithMyType.owner.id).toBe(true);
+    expect(result.type === postMock.type
+      && result.owner.id.toString() === postMock.owner.id).toBe(true);
   });
 });
