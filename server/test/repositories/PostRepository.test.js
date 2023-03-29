@@ -46,7 +46,7 @@ const notMyForm = {
   type: notMyType,
   owner: {
     id: '555555555555555555555555',
-    username: 'john_doe',
+    username: 'john_doe2',
     name: 'John Doe',
   },
   content: {
@@ -546,6 +546,7 @@ describe('PostRepository.findOne()', () => {
     const result = await postRepository.findOne(
       { 'owner.id': postWithMyType.owner.id, type: postWithMyType.type },
     );
+
     expect(result.type === postWithMyType.type
       && result.owner.id.toString() === postWithMyType.owner.id).toBe(true);
   });
