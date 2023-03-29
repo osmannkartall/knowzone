@@ -46,7 +46,7 @@ const notMyForm = {
   type: notMyType,
   owner: {
     id: '555555555555555555555555',
-    username: 'john_doe2',
+    username: 'john_doe',
     name: 'John Doe',
   },
   content: {
@@ -73,6 +73,14 @@ const postMock = { type: myType, owner: ownerMock, topics: topicsMock, content: 
 beforeAll(async () => {
   await formRepository.create(myForm);
   await formRepository.create(notMyForm);
+});
+
+beforeEach(async () => {
+  const postsCollection = mongoose.connection?.collections?.posts;
+
+  if (postsCollection) {
+    await postsCollection.deleteMany({});
+  }
 });
 
 describe('PostRepository.create() with invalid records', () => {
@@ -464,14 +472,6 @@ describe('PostRepository.create() with valid records', () => {
 });
 
 describe('PostRepository.find()', () => {
-  beforeEach(async () => {
-    const postsCollection = mongoose.connection?.collections?.posts;
-
-    if (postsCollection) {
-      await postsCollection.deleteMany({});
-    }
-  });
-
   it('should return empty list when there is no post', async () => {
     const result = await postRepository.find();
     expect(result).toEqual([]);
@@ -499,5 +499,54 @@ describe('PostRepository.find()', () => {
 
     const result = await postRepository.find({ 'owner.id': postMock.owner.id, type: myType });
     expect(result.every((obj) => obj.type === myType)).toBe(true);
+  });
+});
+
+describe('PostRepository.findOne()', () => {
+  it('should return empty post when there is no condition', async () => {
+    const result = await postRepository.findOne();
+    expect(result).toEqual(null);
+  });
+
+  it('should return post with given owner id', async () => {
+    const post = { ...postMock };
+    const postWithDiffOwner = { ...postMock, type: notMyType, owner: notMyForm.owner };
+
+    await Promise.all([
+      create(post),
+      create(postWithDiffOwner),
+    ]);
+
+    const result = await postRepository.findOne({ 'owner.id': post.owner.id });
+    expect(result.owner.id.toString() === post.owner.id).toBe(true);
+  });
+
+  it('should return post with given type', async () => {
+    const postWithMyType = { ...postMock, type: myType };
+    const postWithNotMyType = { ...postMock, type: notMyType, owner: notMyForm.owner };
+
+    await Promise.all([
+      create(postWithMyType),
+      create(postWithNotMyType),
+    ]);
+
+    const result = await postRepository.findOne({ type: postWithMyType.type });
+    expect(result.type === postWithMyType.type).toBe(true);
+  });
+
+  it('should return post with given type and owner id', async () => {
+    const postWithMyType = { ...postMock, type: myType };
+    const postWithNotMyType = { ...postMock, type: notMyType, owner: notMyForm.owner };
+
+    await Promise.all([
+      create(postWithMyType),
+      create(postWithNotMyType),
+    ]);
+
+    const result = await postRepository.findOne(
+      { 'owner.id': postWithMyType.owner.id, type: postWithMyType.type },
+    );
+    expect(result.type === postWithMyType.type
+      && result.owner.id.toString() === postWithMyType.owner.id).toBe(true);
   });
 });
