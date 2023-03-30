@@ -19,8 +19,11 @@ const classes = {
   topContainer: `${PREFIX}-topContainer`,
   middleContainer: `${PREFIX}-middleContainer`,
   middleInnerContainer: `${PREFIX}-middleInnerContainer`,
+  contentFieldRow: `${PREFIX}-contentFieldRow`,
   bottomContainer: `${PREFIX}-bottomContainer`,
   formDataRow: `${PREFIX}-formDataRow`,
+  preview: `${PREFIX}-preview`,
+  contentFields: `${PREFIX}-contentFields`,
 };
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
@@ -62,6 +65,33 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    [theme.breakpoints.down('md')]: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+  },
+
+  [`& .${classes.contentFields}`]: {
+    borderRight: `1px solid ${GRAY3}`,
+    width: '40%',
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+      border: 'none',
+    },
+  },
+
+  [`& .${classes.contentFieldRow}`]: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  [`& .${classes.preview}`]: {
+    width: '60%',
+    padding: 20,
+    [theme.breakpoints.down('md')]: {
+      width: 'calc(100% - 40px)',
+    },
   },
 
   [`& .${classes.bottomContainer}`]: {
@@ -139,7 +169,7 @@ function MiddleContainer({ control, errors, getValues, watch }) {
   return (
     <div className={classes.middleContainer}>
       <div className={classes.middleInnerContainer}>
-        <div style={{ borderRight: `1px solid ${GRAY3}`, width: '40%' }}>
+        <div className={classes.contentFields}>
           <FormDataRow>
             <Controller
               render={({ field: { onChange, onBlur, value, name } }) => (
@@ -179,13 +209,14 @@ function MiddleContainer({ control, errors, getValues, watch }) {
           </FormDataRow>
           {Object.keys(getValues('content') ?? {}).map((k) => (
             <FormDataRow key={k}>
-              <div className={classes.middleInnerContainer}>
+              <div className={classes.contentFieldRow}>
                 <Controller
                   render={({ field: { onChange, onBlur, value, name } }) => (
                     <TextField
                       id="outlined-basic-name"
                       data-testid="outlined-basic-name"
                       fullWidth
+                      style={{ marginRight: 10 }}
                       label="Name"
                       variant="outlined"
                       value={
@@ -210,7 +241,7 @@ function MiddleContainer({ control, errors, getValues, watch }) {
                       id="outlined-select-component-type"
                       data-testid="outlined-select-component-type"
                       select
-                      label="Select component type"
+                      label="Component type"
                       variant="outlined"
                       value={value}
                       onChange={(e) => {
@@ -224,6 +255,7 @@ function MiddleContainer({ control, errors, getValues, watch }) {
                       onBlur={onBlur}
                       name={name}
                       fullWidth
+                      style={{ marginLeft: 10 }}
                       size="small"
                     >
                       <MenuItem key="none" value="">
@@ -249,11 +281,14 @@ function MiddleContainer({ control, errors, getValues, watch }) {
             </FormDataRow>
           ))}
         </div>
-        <div style={{ width: '60%', padding: 20 }}>
+        <div className={classes.preview}>
+          <span style={{ fontWeight: 'bold' }}>
+            Your Form
+          </span>
           {Object.entries(watchedContent ?? {}).map(([k, v]) => {
             if (v.type === FORM_COMPONENT_TYPES.TEXT) {
               return (
-                <div data-testid="component-type-preview" style={{ margin: '4px 0px' }} key={k}>
+                <div data-testid="component-type-preview" style={{ margin: '16px 0px' }} key={k}>
                   <TextField
                     fullWidth
                     id="outlined-basic"
@@ -269,7 +304,7 @@ function MiddleContainer({ control, errors, getValues, watch }) {
             }
             if (v.type === FORM_COMPONENT_TYPES.LIST) {
               return (
-                <div data-testid="component-type-preview" style={{ margin: '8px 0px' }} key={k}>
+                <div data-testid="component-type-preview" style={{ margin: '16px 0px' }} key={k}>
                   <TagPicker
                     tags={['example1', 'example2']}
                     setTags={() => {}}
@@ -282,7 +317,7 @@ function MiddleContainer({ control, errors, getValues, watch }) {
             }
             if (v.type === FORM_COMPONENT_TYPES.EDITOR) {
               return (
-                <div data-testid="component-type-preview" style={{ margin: '8px 0px' }} key={k}>
+                <div data-testid="component-type-preview" style={{ margin: '16px 0px' }} key={k}>
                   {v.name && <span>{v.name}</span>}
                   <MarkdownEditor
                     text={'# This is a markdown editor\n\n```js\nconsole.log("Click to SHOW PREVIEW Button")\n```'}
@@ -294,7 +329,7 @@ function MiddleContainer({ control, errors, getValues, watch }) {
             }
             if (v.type === FORM_COMPONENT_TYPES.IMAGE) {
               return (
-                <div data-testid="component-type-preview" style={{ margin: '4px 0px' }} key={k}>
+                <div data-testid="component-type-preview" style={{ margin: '16px 0px' }} key={k}>
                   <span>images</span>
                   <FileUploader files={[]} setFiles={() => {}} />
                 </div>
