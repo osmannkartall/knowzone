@@ -13,6 +13,7 @@ const formCreatorSchema = Joi.object({
 
         Object.values(content).forEach((f) => {
           if (f.type === FORM_COMPONENT_TYPES.IMAGE) {
+            // TODO: can't we automate this process with setValue from react-hook-form
             contentKeys.push('images');
           } else if (f.name && f.type) {
             contentKeys.push(f.name);

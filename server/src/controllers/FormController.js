@@ -1,13 +1,69 @@
 const router = require('express').Router();
+const Joi = require('joi');
 const FormRepository = require('../repositories/FormRepository');
 const { createSuccessResponse } = require('../utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../knowzoneErrorHandler');
 const { checkAuthentication } = require('../middlewares/checkAuthentication');
+const { FORM_SCHEMA_CONFIGS } = require('../models/schemaConfigs');
+const { hasObjectKey, isValidMaxNumKey } = require('../validators');
+const { isAnyInvalidKeyOrValue, isValidMaxNumImageComponent } = require('../models/formValidators');
+
+const { VALIDATION_MESSAGES, FORM_VALIDATION_MESSAGES } = require('../models/validationMessages');
 
 const formRepository = new FormRepository();
 
+const createSchema = Joi.object({
+  type: Joi
+    .string()
+    .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
+    .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
+    .required(),
+  content: Joi
+    .object()
+    .unknown()
+    .custom((content, helpers) => {
+      if (!hasObjectKey(content)) {
+        return helpers.message(
+          VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_CONTENT),
+        );
+      }
+
+      if (!isValidMaxNumKey(content, FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT)) {
+        return helpers.message(
+          VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT),
+        );
+      }
+
+      if (isAnyInvalidKeyOrValue(content)) {
+        return helpers.message(
+          [
+            VALIDATION_MESSAGES.MIN_LEN('name'),
+            VALIDATION_MESSAGES.MAX_LEN('name', FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT),
+            VALIDATION_MESSAGES.MIN_LEN('component type'),
+            FORM_VALIDATION_MESSAGES.INVALID_COMPONENT,
+          ].join('. '),
+        );
+      }
+
+      if (!isValidMaxNumImageComponent(content)) {
+        return helpers.message(FORM_VALIDATION_MESSAGES.MAX_IMAGE_COMPONENT);
+      }
+
+      return content;
+    })
+    .required(),
+}).required();
+
+const filterSchema = Joi.object({
+  fields: Joi.object(),
+  projection: [Joi.object(), Joi.string(), Joi.array().items(Joi.string())],
+  single: Joi.boolean(),
+});
+
 const create = async (req, res, next) => {
   try {
+    await createSchema.validateAsync(req.body);
+
     const form = req.body;
     form.owner = {
       id: req.session.userId,
@@ -61,6 +117,8 @@ const findById = async (req, res, next) => {
 
 const filter = async (req, res, next) => {
   try {
+    await filterSchema.validateAsync(req.body);
+
     let fields = { 'owner.id': req.session.userId };
 
     if (req.body?.fields) {
