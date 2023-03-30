@@ -586,7 +586,7 @@ describe('PostRepository.deleteMany()', () => {
   });
 
   it('should return empty array after delete for given filter values', async () => {
-    const postWithNotMyType = { ...postMock,
+    const postWithDiffContent = { ...postMock,
       content: { ...contentMock, textInput: 'b text',
       } };
 
@@ -594,17 +594,17 @@ describe('PostRepository.deleteMany()', () => {
       create(postMock),
       create(postMock),
       create(postMock),
-      create(postWithNotMyType),
-      create(postWithNotMyType),
-      create(postWithNotMyType),
+      create(postWithDiffContent),
+      create(postWithDiffContent),
+      create(postWithDiffContent),
     ]);
 
     await postRepository.deleteMany({ 'content.textInput': 'a text' });
 
-    const myTypePostsAfterDeletion = await postRepository.find({ 'content.textInput': postMock.content.textInput });
-    const notMyTypePostsAfterDeletion = await postRepository.find({ 'content.textInput': postWithNotMyType.content.textInput });
+    const myPostsAfterDeletion = await postRepository.find({ 'content.textInput': postMock.content.textInput });
+    const myPostsWithDiffContentAfterDeletion = await postRepository.find({ 'content.textInput': postWithDiffContent.content.textInput });
 
-    expect(myTypePostsAfterDeletion).toHaveLength(0);
-    expect(notMyTypePostsAfterDeletion).toHaveLength(3);
+    expect(myPostsAfterDeletion).toHaveLength(0);
+    expect(myPostsWithDiffContentAfterDeletion).toHaveLength(3);
   });
 });
