@@ -17,6 +17,8 @@ import {
   expectMuiDropdownHasSelectedValue,
 } from '../../utils';
 import postCreatorSchema from '../../../schemas/postCreatorSchema';
+import { VALIDATION_MESSAGES } from '../../../schemas/validationMessages';
+import { POST_SCHEMA_CONFIGS } from '../../../schemas/schemaConfigs';
 
 const server = setupServer(...api);
 
@@ -294,7 +296,7 @@ describe('PostCreator', () => {
     await expectMuiDropdownHasSelectedValue(/post type/i, type);
     expect(uploader.files[0]).toBe(file);
     await waitFor(() => expect(screen.getAllByRole('alert')).toHaveLength(1));
-    screen.getByText(/at least one topic must be added/i);
+    screen.getByText(VALIDATION_MESSAGES.MIN_NUM('topics', POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS));
     expect(mockOnSubmit).not.toBeCalled();
 
     window.URL.createObjectURL.mockReset();

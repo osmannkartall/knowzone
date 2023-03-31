@@ -10,6 +10,7 @@ import FileUploader from '../common/FileUploader';
 import MarkdownEditor from '../common/MarkdownEditor';
 import TagPicker from '../common/TagPicker/TagPicker';
 import formCreatorSchema from '../../schemas/formCreatorSchema';
+import { FORM_SCHEMA_CONFIGS } from '../../schemas/schemaConfigs';
 
 const PREFIX = 'FormCreator';
 
@@ -229,6 +230,7 @@ function MiddleContainer({ control, errors, getValues, watch }) {
                       size="small"
                       disabled={selectedImageComponentKey && selectedImageComponentKey === k}
                       name={name}
+                      inputProps={{ maxLength: FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT }}
                     />
                   )}
                   control={control}

@@ -1,12 +1,11 @@
 const { Schema, model } = require('mongoose');
-const FORM_COMPONENT_TYPES = require('../constants/formComponentTypes');
 const { transformToJSON } = require('../utils');
 const owner = require('./Owner');
 const type = require('./Type');
 const { FORM_SCHEMA_CONFIGS } = require('./schemaConfigs');
 const { VALIDATION_MESSAGES, FORM_VALIDATION_MESSAGES } = require('./validationMessages');
-
-let numImageComponent = 0;
+const validators = require('../validators');
+const formValidators = require('./formValidators');
 
 const FormSchema = Schema(
   {
@@ -20,39 +19,26 @@ const FormSchema = Schema(
       required: true,
       validate: [
         {
-          validator(v) {
-            return v !== null && typeof v === 'object' && !Array.isArray(v);
+          validator(content) {
+            return validators.isObject(content);
           },
           message: VALIDATION_MESSAGES.TYPE('content', 'object'),
         },
         {
-          validator(v) {
-            return Object.keys(v).length;
+          validator(content) {
+            return validators.hasObjectMinNumKey(content);
           },
           message: VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_CONTENT),
         },
         {
-          validator(v) {
-            return Object.keys(v).length <= FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT;
+          validator(content) {
+            return validators.isValidMaxNumKey(content, FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT);
           },
           message: VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT),
         },
         {
-          validator(v) {
-            numImageComponent = 0;
-            const isAnyInvalidKeyOrValue = Object.entries(v).some(([key, value]) => {
-              if (value === 'image') {
-                numImageComponent += 1;
-              }
-
-              return (
-                (typeof value !== 'string' || value.length === 0)
-                || (!Object.values(FORM_COMPONENT_TYPES).includes(value)
-                || (key.length > FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT))
-              );
-            });
-
-            return !isAnyInvalidKeyOrValue;
+          validator(content) {
+            return formValidators.isAllValidKeyValue(content);
           },
           message: [
             VALIDATION_MESSAGES.MIN_LEN('name'),
@@ -62,8 +48,8 @@ const FormSchema = Schema(
           ].join('. '),
         },
         {
-          validator() {
-            return numImageComponent <= FORM_SCHEMA_CONFIGS.MAX_IMAGE_COMP;
+          validator(content) {
+            return formValidators.isValidMaxNumImageComponent(content);
           },
           message: FORM_VALIDATION_MESSAGES.MAX_IMAGE_COMPONENT,
         },
