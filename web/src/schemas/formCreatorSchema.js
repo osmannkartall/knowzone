@@ -1,10 +1,17 @@
 import Joi from 'joi';
 import FORM_COMPONENT_TYPES from '../constants/form-components-types';
+import { FORM_SCHEMA_CONFIGS } from './schemaConfigs';
+import { VALIDATION_MESSAGES } from './validationMessages';
 
 const formCreatorSchema = Joi.object({
-  type:
+  type: (
     Joi.string()
-      .required(),
+      .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
+      .message(VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE))
+      .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
+      .message(VALIDATION_MESSAGES.MIN_LEN('type', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE))
+      .required()
+  ),
   content:
     Joi.object()
       .unknown()

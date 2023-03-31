@@ -54,6 +54,15 @@ const updateSchema = Joi.object({
           );
         }
 
+        if (!validators.isValidMaxLenKeys(content, FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT)) {
+          return helper.message(
+            VALIDATION_MESSAGES.MAX_LEN(
+              'content field name',
+              FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT,
+            ),
+          );
+        }
+
         if (!validators.isAnyFieldFilled(content)) {
           return helper.message('at least one content field must be filled');
         }

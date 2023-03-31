@@ -40,6 +40,10 @@ function isAnyFieldFilled(object) {
   );
 }
 
+function isValidMaxLenKeys(object, max = 0) {
+  return Object.keys(object).every((k) => k?.length <= max);
+}
+
 module.exports = {
   isObject,
   hasObjectMinNumKey,
@@ -48,4 +52,5 @@ module.exports = {
   validateMaxNum,
   validateArrayUniqueness,
   isAnyFieldFilled,
+  isValidMaxLenKeys,
 };

@@ -1,40 +1,49 @@
 import Joi from 'joi';
-import { POST_SCHEMA_CONFIGS } from './schemaConfigs';
+import { FORM_SCHEMA_CONFIGS, POST_SCHEMA_CONFIGS } from './schemaConfigs';
+import { POST_VALIDATION_MESSAGES, VALIDATION_MESSAGES } from './validationMessages';
+import validators from './validators';
 
 const postCreatorSchema = Joi.object({
   id: Joi.string(),
   createdAt: Joi.string(),
   updatedAt: Joi.string(),
   owner: Joi.object(),
-  type:
+  type: (
     Joi.string()
-      .required(),
-  topics:
+      .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
+      .message(VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE))
+      .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
+      .message(VALIDATION_MESSAGES.MIN_LEN('type', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE))
+      .required()
+  ),
+  topics: (
     Joi.array()
       .items(
         Joi.string()
           .regex(new RegExp(`^@?([a-z0-9-]){1,${POST_SCHEMA_CONFIGS.MAX_LEN_TOPIC}}$`))
-          .message(
-            [
-              `A topic should be at most ${POST_SCHEMA_CONFIGS.MAX_LEN_TOPIC}`,
-              'alphanumeric characters and it may also contain hyphen.',
-            ].join(' '),
-          ),
+          .message(POST_VALIDATION_MESSAGES.INVALID_TOPIC),
       )
       .required()
       .min(POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS)
-      .message('at least one topic must be added')
-      .max(POST_SCHEMA_CONFIGS.MAX_NUM_TOPICS),
+      .message(VALIDATION_MESSAGES.MIN_NUM('topics', POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS))
+      .max(POST_SCHEMA_CONFIGS.MAX_NUM_TOPICS)
+      .message(VALIDATION_MESSAGES.MAX_NUM('topics', POST_SCHEMA_CONFIGS.MAX_NUM_TOPICS))
+  ),
   content:
     Joi.object()
       .unknown()
       .custom((content, helper) => {
-        const isAnyFieldFilled = Object.values(content).some(
-          (field) => (Array.isArray(field) ? field.length : field || false),
-        );
-
-        if (!isAnyFieldFilled) {
+        if (!validators.isAnyFieldFilled(content)) {
           return helper.message('at least one content field must be filled');
+        }
+
+        if (!validators.isValidMaxLenKeys(content, FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT)) {
+          return helper.message(
+            VALIDATION_MESSAGES.MAX_LEN(
+              'content field name',
+              FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT,
+            ),
+          );
         }
 
         return content;
