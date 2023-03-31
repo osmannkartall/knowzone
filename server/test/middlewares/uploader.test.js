@@ -33,7 +33,6 @@ describe('uploader - preparePostForCreate', () => {
       content: {
         name: 'brown',
         surname: 'fox',
-        images: [],
       },
       owner: {
         id: '1',
@@ -53,9 +52,7 @@ describe('uploader - preparePostForCreate', () => {
     const result = {
       type: 'test type',
       topics: ['topic1', 'topic2'],
-      content: {
-        images: [],
-      },
+      content: {},
       owner: {
         id: '1',
         name: 'jack',

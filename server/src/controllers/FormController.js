@@ -5,9 +5,8 @@ const { createSuccessResponse } = require('../utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../knowzoneErrorHandler');
 const { checkAuthentication } = require('../middlewares/checkAuthentication');
 const { FORM_SCHEMA_CONFIGS } = require('../models/schemaConfigs');
-const { hasObjectKey, isValidMaxNumKey } = require('../validators');
-const { isAnyInvalidKeyOrValue, isValidMaxNumImageComponent } = require('../models/formValidators');
-
+const validators = require('../validators');
+const formValidators = require('../models/formValidators');
 const { VALIDATION_MESSAGES, FORM_VALIDATION_MESSAGES } = require('../models/validationMessages');
 
 const formRepository = new FormRepository();
@@ -22,19 +21,19 @@ const createSchema = Joi.object({
     .object()
     .unknown()
     .custom((content, helpers) => {
-      if (!hasObjectKey(content)) {
+      if (!validators.hasObjectMinNumKey(content)) {
         return helpers.message(
           VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_CONTENT),
         );
       }
 
-      if (!isValidMaxNumKey(content, FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT)) {
+      if (!validators.isValidMaxNumKey(content, FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT)) {
         return helpers.message(
           VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT),
         );
       }
 
-      if (isAnyInvalidKeyOrValue(content)) {
+      if (formValidators.isAnyInvalidKeyOrValue(content)) {
         return helpers.message(
           [
             VALIDATION_MESSAGES.MIN_LEN('name'),
@@ -45,7 +44,7 @@ const createSchema = Joi.object({
         );
       }
 
-      if (!isValidMaxNumImageComponent(content)) {
+      if (!formValidators.isValidMaxNumImageComponent(content)) {
         return helpers.message(FORM_VALIDATION_MESSAGES.MAX_IMAGE_COMPONENT);
       }
 

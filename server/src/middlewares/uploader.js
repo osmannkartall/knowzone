@@ -67,16 +67,14 @@ const createPostBody = (body, session) => {
 const getPathsOfUploadedFiles = (files) => {
   const images = [];
 
-  if (isAnyFileUploaded(files)) {
-    files.forEach((f) => {
-      const segments = f.path.split(path.sep);
+  files.forEach((f) => {
+    const segments = f.path.split(path.sep);
 
-      images.push({
-        name: f.originalname,
-        path: `${process.env.IMAGE_UPLOAD_SUBPATH}/${segments[segments.length - 1]}`,
-      });
+    images.push({
+      name: f.originalname,
+      path: `${process.env.IMAGE_UPLOAD_SUBPATH}/${segments[segments.length - 1]}`,
     });
-  }
+  });
 
   return images;
 };
@@ -86,7 +84,11 @@ const preparePostForCreate = (req, res, next) => {
   if (!data.content) {
     data.content = {};
   }
-  data.content.images = getPathsOfUploadedFiles(req.files);
+
+  if (isAnyFileUploaded(req.files)) {
+    data.content.images = getPathsOfUploadedFiles(req.files);
+  }
+
   res.locals.data = data;
 
   next();
@@ -94,9 +96,12 @@ const preparePostForCreate = (req, res, next) => {
 
 const mergeImages = (oldImages, newImageFiles) => {
   const oldImagePaths = oldImages ? JSON.parse(oldImages) : [];
-  const newImagePaths = getPathsOfUploadedFiles(newImageFiles);
 
-  return oldImagePaths.concat(newImagePaths);
+  if (isAnyFileUploaded(newImageFiles)) {
+    return oldImagePaths.concat(getPathsOfUploadedFiles(newImageFiles));
+  }
+
+  return oldImagePaths;
 };
 
 const isNoImageAfterUpdate = (oldImages) => (

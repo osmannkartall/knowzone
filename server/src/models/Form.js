@@ -4,8 +4,8 @@ const owner = require('./Owner');
 const type = require('./Type');
 const { FORM_SCHEMA_CONFIGS } = require('./schemaConfigs');
 const { VALIDATION_MESSAGES, FORM_VALIDATION_MESSAGES } = require('./validationMessages');
-const { isObject, hasObjectKey, isValidMaxNumKey } = require('../validators');
-const { isAnyInvalidKeyOrValue, isValidMaxNumImageComponent } = require('./formValidators');
+const validators = require('../validators');
+const formValidators = require('./formValidators');
 
 const FormSchema = Schema(
   {
@@ -20,25 +20,25 @@ const FormSchema = Schema(
       validate: [
         {
           validator(content) {
-            return isObject(content);
+            return validators.isObject(content);
           },
           message: VALIDATION_MESSAGES.TYPE('content', 'object'),
         },
         {
           validator(content) {
-            return hasObjectKey(content);
+            return validators.hasObjectMinNumKey(content);
           },
           message: VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_CONTENT),
         },
         {
           validator(content) {
-            return isValidMaxNumKey(content, FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT);
+            return validators.isValidMaxNumKey(content, FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT);
           },
           message: VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT),
         },
         {
           validator(content) {
-            return !isAnyInvalidKeyOrValue(content);
+            return !formValidators.isAnyInvalidKeyOrValue(content);
           },
           message: [
             VALIDATION_MESSAGES.MIN_LEN('name'),
@@ -49,7 +49,7 @@ const FormSchema = Schema(
         },
         {
           validator(content) {
-            return isValidMaxNumImageComponent(content);
+            return formValidators.isValidMaxNumImageComponent(content);
           },
           message: FORM_VALIDATION_MESSAGES.MAX_IMAGE_COMPONENT,
         },
