@@ -38,7 +38,7 @@ const FormSchema = Schema(
         },
         {
           validator(content) {
-            return !formValidators.isAnyInvalidKeyOrValue(content);
+            return formValidators.isAllValidKeyValue(content);
           },
           message: [
             VALIDATION_MESSAGES.MIN_LEN('name'),

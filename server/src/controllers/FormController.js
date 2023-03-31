@@ -33,7 +33,7 @@ const createSchema = Joi.object({
         );
       }
 
-      if (formValidators.isAnyInvalidKeyOrValue(content)) {
+      if (!formValidators.isAllValidKeyValue(content)) {
         return helpers.message(
           [
             VALIDATION_MESSAGES.MIN_LEN('name'),

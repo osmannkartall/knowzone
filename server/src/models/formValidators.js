@@ -1,11 +1,13 @@
 const FORM_COMPONENT_TYPES = require('../constants/formComponentTypes');
 const { FORM_SCHEMA_CONFIGS } = require('./schemaConfigs');
 
-function isAnyInvalidKeyOrValue(content) {
-  return Object.entries(content).some(([key, value]) => (
-    (typeof value !== 'string' || value.length === 0)
-      || (!Object.values(FORM_COMPONENT_TYPES).includes(value)
-      || (key.length > FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT))
+function isAllValidKeyValue(content) {
+  return Object.entries(content).every(([key, value]) => (
+    typeof value === 'string'
+      && value.length > 0
+      && Object.values(FORM_COMPONENT_TYPES).includes(value)
+      && key.length > 0
+      && key.length <= FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT
   ));
 }
 
@@ -27,6 +29,6 @@ function isValidMaxNumImageComponent(content) {
 }
 
 module.exports = {
-  isAnyInvalidKeyOrValue,
+  isAllValidKeyValue,
   isValidMaxNumImageComponent,
 };
