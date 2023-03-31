@@ -547,3 +547,64 @@ describe('PostRepository.findOne()', () => {
       && result.owner.id.toString() === postMock.owner.id).toBe(true);
   });
 });
+
+describe('PostRepository.deleteMany()', () => {
+  it('should return empty after delete for given owner id', async () => {
+    const postWithNotMyType = { ...postMock, type: notMyType, owner: notMyForm.owner };
+
+    await Promise.all([
+      create(postMock),
+      create(postMock),
+      create(postMock),
+      create(postWithNotMyType),
+      create(postWithNotMyType),
+    ]);
+
+    await postRepository.deleteMany({ 'owner.id': postMock.owner.id });
+
+    await expect(await postRepository.find({ 'owner.id': postMock.owner.id })).toEqual([]);
+  });
+
+  it('should return empty array after delete for given owner id', async () => {
+    const postWithNotMyType = { ...postMock, type: notMyType, owner: notMyForm.owner };
+
+    await Promise.all([
+      create(postMock),
+      create(postMock),
+      create(postMock),
+      create(postWithNotMyType),
+      create(postWithNotMyType),
+    ]);
+
+    await postRepository.deleteMany({ 'owner.id': postMock.owner.id });
+
+    const myTypePostsAfterDeletion = await postRepository.find({ 'owner.id': postMock.owner.id });
+    const notMyTypePostsAfterDeletion = await postRepository.find({ 'owner.id': postWithNotMyType.owner.id });
+
+    expect(myTypePostsAfterDeletion).toHaveLength(0);
+    expect(notMyTypePostsAfterDeletion).toHaveLength(2);
+  });
+
+  it('should return empty array after delete for given filter values', async () => {
+    const postWithDiffContent = { ...postMock,
+      content: { ...contentMock, textInput: 'b text',
+      } };
+
+    await Promise.all([
+      create(postMock),
+      create(postMock),
+      create(postMock),
+      create(postWithDiffContent),
+      create(postWithDiffContent),
+      create(postWithDiffContent),
+    ]);
+
+    await postRepository.deleteMany({ 'content.textInput': 'a text' });
+
+    const myPostsAfterDeletion = await postRepository.find({ 'content.textInput': postMock.content.textInput });
+    const myPostsWithDiffContentAfterDeletion = await postRepository.find({ 'content.textInput': postWithDiffContent.content.textInput });
+
+    expect(myPostsAfterDeletion).toHaveLength(0);
+    expect(myPostsWithDiffContentAfterDeletion).toHaveLength(3);
+  });
+});
