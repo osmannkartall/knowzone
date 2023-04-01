@@ -1,7 +1,7 @@
 import Joi from 'joi';
-import FORM_COMPONENT_TYPES from '../constants/form-components-types';
-import { FORM_SCHEMA_CONFIGS } from './schemaConfigs';
-import { VALIDATION_MESSAGES } from './validationMessages';
+import FORM_COMPONENT_TYPES from './formComponentTypes';
+import FORM_SCHEMA_CONFIGS from './formSchemaConfigs';
+import VALIDATION_MESSAGES from '../../common/validationMessages';
 
 const formCreatorSchema = Joi.object({
   type: (

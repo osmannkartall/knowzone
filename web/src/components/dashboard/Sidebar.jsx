@@ -14,9 +14,9 @@ import LinearProgressModal from '../common/LinearProgressModal';
 import { BE_ROUTES } from '../../constants/routes';
 import getFormTypes from '../../api/getFormTypes';
 import FormCreator from '../form/FormCreator';
-import postCreatorSchema from '../../schemas/postCreatorSchema';
+import postCreatorSchema from '../post/postCreatorSchema';
 import createForm from '../../api/createForm';
-import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
+import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
 
 const PREFIX = 'Sidebar';
 

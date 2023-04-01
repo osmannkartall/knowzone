@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
 import { GRAY1, GRAY3 } from '../../constants/colors';
-import LinearProgressModal from './LinearProgressModal';
+import LinearProgressModal from '../common/LinearProgressModal';
 
 const PREFIX = 'AuthFormContainer';
 

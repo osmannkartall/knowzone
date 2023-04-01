@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import TagPicker from './TagPicker/TagPicker';
+import TagPicker from '../common/TagPicker/TagPicker';
 import { searchBarHeight } from '../../constants/styles';
 import { WHITE } from '../../constants/colors';
 

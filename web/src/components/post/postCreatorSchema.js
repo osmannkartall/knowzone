@@ -1,7 +1,9 @@
 import Joi from 'joi';
-import { FORM_SCHEMA_CONFIGS, POST_SCHEMA_CONFIGS } from './schemaConfigs';
-import { POST_VALIDATION_MESSAGES, VALIDATION_MESSAGES } from './validationMessages';
-import validators from './validators';
+import FORM_SCHEMA_CONFIGS from '../form/formSchemaConfigs';
+import POST_SCHEMA_CONFIGS from './postSchemaConfigs';
+import POST_VALIDATION_MESSAGES from './postValidationMessages';
+import VALIDATION_MESSAGES from '../../common/validationMessages';
+import validators from '../../common/validators';
 
 const postCreatorSchema = Joi.object({
   id: Joi.string(),

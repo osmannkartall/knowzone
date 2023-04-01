@@ -9,7 +9,7 @@ import ContentWrapper from '../common/ContentWrapper';
 import { IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../../constants/colors';
 import LinearProgressModal from '../common/LinearProgressModal';
 import { BE_ROUTES } from '../../constants/routes';
-import postCreatorSchema from '../../schemas/postCreatorSchema';
+import postCreatorSchema from './postCreatorSchema';
 
 const isNewImage = (image) => image instanceof File;
 

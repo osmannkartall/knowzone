@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { toast } from 'react-toastify';
 import { FE_ROUTES } from '../constants/routes';
-import AuthFormWrapper from '../components/common/AuthFormWrapper';
+import AuthFormWrapper from '../components/auth/AuthFormWrapper';
 import { useAuthDispatch } from '../contexts/AuthContext';
 import { register } from '../contexts/AuthActions';
 

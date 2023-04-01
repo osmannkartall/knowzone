@@ -1,4 +1,4 @@
-import FORM_COMPONENT_TYPES from '../constants/form-components-types';
+import FORM_COMPONENT_TYPES from '../components/form/formComponentTypes';
 
 export const formTypes = [
   {
