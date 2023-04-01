@@ -1,4 +1,4 @@
-import { BE_ROUTES } from '../constants/routes';
+import { BE_ROUTES } from '../../constants/routes';
 
 const getPosts = async () => {
   try {

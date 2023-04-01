@@ -1,9 +1,10 @@
-import { BE_ROUTES } from '../constants/routes';
+import { BE_ROUTES } from '../../constants/routes';
 
-const getFormTypes = async () => {
+const getFormByType = async (type) => {
   try {
     const body = {
-      projection: { type: 1 },
+      fields: { type },
+      single: true,
     };
 
     const response = await fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.FORMS}/filter`, {
@@ -22,4 +23,4 @@ const getFormTypes = async () => {
   }
 };
 
-export default getFormTypes;
+export default getFormByType;

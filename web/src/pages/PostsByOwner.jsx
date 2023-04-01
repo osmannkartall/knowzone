@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import getForms from '../api/getForms';
-import getPosts from '../api/getPosts';
+import getForms from '../api/forms/getForms';
+import getPosts from '../api/posts/getPosts';
 import { useAuthState } from '../contexts/AuthContext';
 import Posts from '../components/post/Posts';
 

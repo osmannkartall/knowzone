@@ -1,4 +1,4 @@
-import { BE_ROUTES } from '../constants/routes';
+import { BE_ROUTES } from '../../constants/routes';
 
 const createForm = async (newForm) => {
   const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.FORMS}`;

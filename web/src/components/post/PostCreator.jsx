@@ -17,7 +17,7 @@ import TagPicker from '../common/TagPicker/TagPicker';
 import FileUploader from '../common/FileUploader';
 import MarkdownEditor from '../common/MarkdownEditor';
 import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
-import getFormByType from '../../api/getFormByType';
+import getFormByType from '../../api/forms/getFormByType';
 
 const PREFIX = 'PostCreator';
 

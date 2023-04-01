@@ -12,10 +12,10 @@ import { sidebarWidth, topbarHeight } from '../../constants/styles';
 import PostCreator from '../post/PostCreator';
 import LinearProgressModal from '../common/LinearProgressModal';
 import { BE_ROUTES } from '../../constants/routes';
-import getFormTypes from '../../api/getFormTypes';
+import getFormTypes from '../../api/forms/getFormTypes';
 import FormCreator from '../form/FormCreator';
 import postCreatorSchema from '../post/postCreatorSchema';
-import createForm from '../../api/createForm';
+import createForm from '../../api/forms/createForm';
 import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
 
 const PREFIX = 'Sidebar';
