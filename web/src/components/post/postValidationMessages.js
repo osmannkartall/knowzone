@@ -9,4 +9,4 @@ const POST_VALIDATION_MESSAGES = Object.freeze({
   ].join(' '),
 });
 
-module.exports = POST_VALIDATION_MESSAGES;
+export default POST_VALIDATION_MESSAGES;
