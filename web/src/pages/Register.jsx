@@ -2,8 +2,8 @@ import { styled } from '@mui/material/styles';
 import { TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
+import Joi from 'joi';
+import { joiResolver } from '@hookform/resolvers/joi';
 import { toast } from 'react-toastify';
 import { FE_ROUTES } from '../constants/routes';
 import AuthFormWrapper from '../components/auth/AuthFormWrapper';
@@ -24,68 +24,54 @@ const Root = styled('div')(({ theme }) => ({
   },
 }));
 
-const registerSchema = yup.object().shape({
-  name: yup
-    .string()
+const registerSchema = Joi.object({
+  username: Joi.string()
+    .required()
+    .min(1)
+    .max(15)
+    .lowercase()
+    .regex(/^@?([a-z0-9_])*$/)
+    .messages({
+      'string.pattern.base': 'Username should start with alphanumeric characters and can include underscore.',
+    }),
+
+  password: Joi.string()
+    .required()
+    .min(8)
+    .max(128)
+    .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&_.,][\S]*$/)
+    .messages({
+      'string.pattern.base': 'Password should be at least 8 characters and contain at least one '
+        + 'letter, one special character "@$!%*#?&_." and one integer.',
+    }),
+
+  confirmPassword: Joi.string()
+    .valid(Joi.ref('password'))
+    .required()
+    .messages({ 'any.only': 'Passwords are not the same!' }),
+
+  name: Joi.string()
     .required()
     .trim()
     .min(3)
     .max(50),
 
-  username: yup
-    .string()
-    .required()
-    .lowercase()
-    .min(1)
-    .max(15)
-    .matches(
-      /^@?([a-z0-9_])*$/,
-      'Username should start with alphanumeric characters and can include underscore.',
-    ),
-
-  email: yup
-    .string()
-    .required()
+  email: Joi.string()
+    .email({ tlds: { allow: false } })
     .lowercase()
     .min(3)
     .max(254)
-    .email('Invalid email format.'),
-
-  password: yup
-    .string()
     .required()
-    .min(8)
-    .max(128)
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&_.,][\S]*$/,
-      'Password should be at least 8 characters and contain at least one '
-      + 'letter, one special character "@$!%*#?&_." and one integer.',
-    ),
+    .messages({ 'string.email': 'Invalid email format.' }),
 
-  confirmPassword: yup
-    .string()
-    .required()
-    .min(8)
-    .max(128)
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&_.,][\S]*$/,
-      'Password should be at least 8 characters and contain at least one '
-      + 'letter, one special character "@$!%*#?&_." and one integer.',
-    )
-    .test('passwords-match', 'Passwords are not the same!', function compare(value) {
-      return this.parent.password === value;
-    }),
-
-  bio: yup
-    .string()
-    .max(256),
+  bio: Joi.string().max(256),
 });
 
 function Register() {
   const navigate = useNavigate();
   const authDispatch = useAuthDispatch();
   const { handleSubmit, control, formState: { errors } } = useForm({
-    resolver: yupResolver(registerSchema),
+    resolver: joiResolver(registerSchema),
     defaultValues: {
       name: '',
       username: '',

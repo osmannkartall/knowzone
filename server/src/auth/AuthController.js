@@ -13,9 +13,8 @@ const { createSuccessResponse } = require('../common/utils');
 
 const auth = new AuthService(UserModel);
 
-const loginApiSchema = Joi.object({
-  username: Joi
-    .string()
+const loginSchema = Joi.object({
+  username: Joi.string()
     .required()
     .min(1)
     .max(15)
@@ -25,8 +24,7 @@ const loginApiSchema = Joi.object({
       'string.pattern.base': 'Username should start with alphanumeric characters and can include underscore.',
     }),
 
-  password: Joi
-    .string()
+  password: Joi.string()
     .required()
     .min(8)
     .max(128)
@@ -37,9 +35,8 @@ const loginApiSchema = Joi.object({
     }),
 });
 
-const registerApiSchema = Joi.object({
-  username: Joi
-    .string()
+const registerSchema = Joi.object({
+  username: Joi.string()
     .required()
     .min(1)
     .max(15)
@@ -49,8 +46,7 @@ const registerApiSchema = Joi.object({
       'string.pattern.base': 'Username should start with alphanumeric characters and can include underscore.',
     }),
 
-  password: Joi
-    .string()
+  password: Joi.string()
     .required()
     .min(8)
     .max(128)
@@ -60,29 +56,26 @@ const registerApiSchema = Joi.object({
         + 'letter, one special character "@$!%*#?&_." and one integer.',
     }),
 
-  name: Joi
-    .string()
+  name: Joi.string()
     .required()
     .trim()
     .min(3)
     .max(50),
 
-  email: Joi
-    .string()
-    .required()
-    .email()
+  email: Joi.string()
+    .email({ tlds: { allow: false } })
+    .lowercase()
     .min(3)
     .max(254)
-    .lowercase(),
+    .required()
+    .messages({ 'string.email': 'Invalid email format.' }),
 
-  bio: Joi
-    .string()
-    .max(256),
+  bio: Joi.string().max(256),
 });
 
 const login = async (req, res, next) => {
   try {
-    await loginApiSchema.validateAsync(req.body);
+    await loginSchema.validateAsync(req.body);
     const result = await auth.login(req.body);
 
     req.session.userId = result.id;
@@ -107,7 +100,7 @@ const login = async (req, res, next) => {
 
 const register = async (req, res, next) => {
   try {
-    await registerApiSchema.validateAsync(req.body);
+    await registerSchema.validateAsync(req.body);
     const result = await auth.register(req.body);
 
     req.session.userId = result.id;

@@ -4,40 +4,38 @@ import FORM_SCHEMA_CONFIGS from './formSchemaConfigs';
 import VALIDATION_MESSAGES from '../../common/validationMessages';
 
 const formCreatorSchema = Joi.object({
-  type: (
-    Joi.string()
-      .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
-      .message(VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE))
-      .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
-      .message(VALIDATION_MESSAGES.MIN_LEN('type', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE))
-      .required()
-  ),
-  content:
-    Joi.object()
-      .unknown()
-      .custom((content, helper) => {
-        const contentKeys = [];
+  type: Joi.string()
+    .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
+    .message(VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE))
+    .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
+    .message(VALIDATION_MESSAGES.MIN_LEN('type', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE))
+    .required(),
 
-        Object.values(content).forEach((f) => {
-          if (f.type === FORM_COMPONENT_TYPES.IMAGE) {
-            // TODO: can't we automate this process with setValue from react-hook-form
-            contentKeys.push('images');
-          } else if (f.name && f.type) {
-            contentKeys.push(f.name);
-          }
-        });
+  content: Joi.object()
+    .unknown()
+    .custom((content, helper) => {
+      const contentKeys = [];
 
-        if (!contentKeys.length) {
-          return helper.message('At least one name and type required.');
+      Object.values(content).forEach((f) => {
+        if (f.type === FORM_COMPONENT_TYPES.IMAGE) {
+          // TODO: can't we automate this process with setValue from react-hook-form
+          contentKeys.push('images');
+        } else if (f.name && f.type) {
+          contentKeys.push(f.name);
         }
+      });
 
-        if (contentKeys.length !== new Set(contentKeys).size) {
-          return helper.message('Each name of form field must be unique');
-        }
+      if (!contentKeys.length) {
+        return helper.message('At least one name and type required.');
+      }
 
-        return content;
-      })
-      .required(),
+      if (contentKeys.length !== new Set(contentKeys).size) {
+        return helper.message('Each name of form field must be unique');
+      }
+
+      return content;
+    })
+    .required(),
 }).required();
 
 export default formCreatorSchema;
