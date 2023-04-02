@@ -175,7 +175,7 @@ function Posts({ title, forms, form, setForm, posts, setPosts }) {
           form={getFormByType(getValues('type'))}
           setForm={setForm}
           title="Update Post"
-          btnTitle="update"
+          submitButtonTitle="update"
           open={openForm}
           setOpen={setOpenForm}
           onSubmit={() => setOpenDialog(true)}

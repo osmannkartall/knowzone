@@ -1,119 +1,14 @@
-import { Button, Dialog, FormHelperText, IconButton, MenuItem, TextField } from '@mui/material';
+import { FormHelperText, MenuItem, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Close from '@mui/icons-material/Close';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
-import { GRAY1, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
+import { GRAY1, GRAY3 } from '../../constants/colors';
 import FORM_COMPONENT_TYPES from './formComponentTypes';
 import FORM_SCHEMA_CONFIGS from './formSchemaConfigs';
 import formCreatorSchema from './formCreatorSchema';
 import getContentPreview from './contentPreviews/getContentPreview';
-
-const PREFIX = 'FormCreator';
-
-const classes = {
-  modalData: `${PREFIX}-modalData`,
-  form: `${PREFIX}-form`,
-  topContainer: `${PREFIX}-topContainer`,
-  middleContainer: `${PREFIX}-middleContainer`,
-  middleInnerContainer: `${PREFIX}-middleInnerContainer`,
-  contentFieldRow: `${PREFIX}-contentFieldRow`,
-  bottomContainer: `${PREFIX}-bottomContainer`,
-  formDataRow: `${PREFIX}-formDataRow`,
-  preview: `${PREFIX}-preview`,
-  contentFields: `${PREFIX}-contentFields`,
-  label: `${PREFIX}-label`,
-};
-
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-  [`& .${classes.modalData}`]: {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: `calc(100% - ${theme.spacing(10)})`,
-  },
-
-  [`& .${classes.form}`]: {
-    display: 'flex',
-    flexDirection: 'column',
-    maxHeight: '90vh',
-  },
-
-  [`& .${classes.topContainer}`]: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    color: WHITE,
-    padding: theme.spacing(0, 2),
-    borderTopLeftRadius: theme.spacing(1),
-    borderTopRightRadius: theme.spacing(1),
-    backgroundColor: PRIMARY,
-  },
-
-  [`& .${classes.middleContainer}`]: {
-    overflowY: 'auto',
-    borderTop: 0,
-    border: `1px solid ${GRAY3}`,
-    backgroundColor: WHITE,
-    padding: theme.spacing(1, 0),
-  },
-
-  [`& .${classes.middleInnerContainer}`]: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    [theme.breakpoints.down('md')]: {
-      display: 'flex',
-      flexDirection: 'column',
-    },
-  },
-
-  [`& .${classes.contentFields}`]: {
-    borderRight: `1px solid ${GRAY3}`,
-    width: '40%',
-    [theme.breakpoints.down('md')]: {
-      width: '100%',
-      border: 'none',
-    },
-  },
-
-  [`& .${classes.contentFieldRow}`]: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-
-  [`& .${classes.preview}`]: {
-    width: '60%',
-    padding: 20,
-    [theme.breakpoints.down('md')]: {
-      width: 'calc(100% - 40px)',
-    },
-  },
-
-  [`& .${classes.bottomContainer}`]: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    padding: theme.spacing(2),
-    borderBottomLeftRadius: theme.spacing(1),
-    borderBottomRightRadius: theme.spacing(1),
-    border: `1px solid ${GRAY3}`,
-    borderTop: 0,
-    backgroundColor: WHITE,
-  },
-
-  [`& .${classes.formDataRow}`]: {
-    margin: theme.spacing(2),
-  },
-
-  [`& .${classes.label}`]: {
-    marginBottom: theme.spacing(2),
-    color: GRAY1,
-  },
-}));
+import Creator from '../common/Creator';
 
 const { IMAGE, ...rest } = FORM_COMPONENT_TYPES;
 
@@ -132,49 +27,74 @@ const defaultContent = {
   k9: defaultField,
 };
 
-function FormDataRow({ children }) {
-  return (
-    <div className={classes.formDataRow}>
-      {children}
-    </div>
-  );
-}
+const FormDataRow = styled('div')(({ theme }) => ({
+  margin: theme.spacing(2),
+}));
 
-function TopContainer({ title, handleClose }) {
-  return (
-    <div className={classes.topContainer}>
-      <h1>{title}</h1>
-      <IconButton
-        aria-label="close post form"
-        style={{ color: WHITE }}
-        onClick={handleClose}
-        size="large"
-      >
-        <Close style={{ color: WHITE, width: 35, height: 35 }} />
-      </IconButton>
-    </div>
-  );
-}
+const MiddleContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  [theme.breakpoints.down('md')]: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+}));
 
-function BottomContainer() {
-  return (
-    <div className={classes.bottomContainer}>
-      <Button variant="contained" color="primary" type="submit">
-        Create
-      </Button>
-    </div>
-  );
-}
+const ContentFieldsContainer = styled('div')(({ theme }) => ({
+  borderRight: `1px solid ${GRAY3}`,
+  width: '40%',
+  [theme.breakpoints.down('md')]: {
+    width: '100%',
+    border: 'none',
+  },
+}));
 
-function MiddleContainer({ control, errors, getValues, watch }) {
+const PreviewContainer = styled('div')(({ theme }) => ({
+  width: '60%',
+  padding: 20,
+  [theme.breakpoints.down('md')]: {
+    width: 'calc(100% - 40px)',
+  },
+}));
+
+const ContentFieldRow = styled('div')(() => ({
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+}));
+
+const ContentPreviewLabel = styled('div')(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+  color: GRAY1,
+}));
+
+function FormCreator({ open, setOpen, create }) {
   const [selectedImageComponentKey, setSelectedImageComponentKey] = useState(null);
+
+  const { getValues, formState: { errors }, control, handleSubmit, watch, reset } = useForm({
+    resolver: joiResolver(formCreatorSchema),
+    defaultValues: { type: '', content: defaultContent },
+  });
 
   const watchedContent = watch('content');
 
+  const onSubmit = async () => {
+    const isSuccessful = await create(getValues());
+    if (isSuccessful) {
+      reset();
+    }
+  };
+
   return (
-    <div className={classes.middleContainer}>
-      <div className={classes.middleInnerContainer}>
-        <div className={classes.contentFields}>
+    <Creator
+      title="Create Form"
+      open={open}
+      setOpen={setOpen}
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <MiddleContainer>
+        <ContentFieldsContainer>
           <FormDataRow>
             <Controller
               render={({ field: { onChange, onBlur, value, name } }) => (
@@ -214,7 +134,7 @@ function MiddleContainer({ control, errors, getValues, watch }) {
           </FormDataRow>
           {Object.keys(getValues('content') ?? {}).map((k) => (
             <FormDataRow key={k}>
-              <div className={classes.contentFieldRow}>
+              <ContentFieldRow>
                 <Controller
                   render={({ field: { onChange, onBlur, value, name } }) => (
                     <TextField
@@ -283,11 +203,11 @@ function MiddleContainer({ control, errors, getValues, watch }) {
                   name={`content.${k}.type`}
                   shouldUnregister
                 />
-              </div>
+              </ContentFieldRow>
             </FormDataRow>
           ))}
-        </div>
-        <div className={classes.preview}>
+        </ContentFieldsContainer>
+        <PreviewContainer>
           <span style={{ fontWeight: 'bold' }}>
             Your Form
           </span>
@@ -297,7 +217,7 @@ function MiddleContainer({ control, errors, getValues, watch }) {
             if (ContentPreview) {
               return (
                 <div data-testid="component-type-preview" style={{ margin: '16px 0px' }} key={k}>
-                  {v.name && <div className={classes.label}>{v.name}</div>}
+                  {v.name && <ContentPreviewLabel>{v.name}</ContentPreviewLabel>}
                   <ContentPreview />
                 </div>
               );
@@ -305,51 +225,9 @@ function MiddleContainer({ control, errors, getValues, watch }) {
 
             return null;
           })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DialogData({ create, handleClose }) {
-  const { getValues, formState: { errors }, control, handleSubmit, watch, reset } = useForm({
-    resolver: joiResolver(formCreatorSchema),
-    defaultValues: { type: '', content: defaultContent },
-  });
-
-  const onSubmit = async () => {
-    const isSuccessful = await create(getValues());
-    if (isSuccessful) {
-      reset();
-    }
-  };
-
-  return (
-    <div className={classes.modalData}>
-      <form
-        className={classes.form}
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <TopContainer title="Create Form" handleClose={handleClose} />
-        <MiddleContainer
-          control={control}
-          errors={errors}
-          getValues={getValues}
-          watch={watch}
-        />
-        <BottomContainer />
-      </form>
-    </div>
-  );
-}
-
-function FormCreator({ open, setOpen, create }) {
-  const handleClose = () => setOpen(false);
-
-  return (
-    <StyledDialog onClose={handleClose} open={open}>
-      <DialogData create={create} handleClose={handleClose} />
-    </StyledDialog>
+        </PreviewContainer>
+      </MiddleContainer>
+    </Creator>
   );
 }
 
