@@ -3,8 +3,8 @@ import { TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useForm, Controller } from 'react-hook-form';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
+import Joi from 'joi';
+import { joiResolver } from '@hookform/resolvers/joi';
 import { FE_ROUTES } from '../constants/routes';
 import AuthFormWrapper from '../components/auth/AuthFormWrapper';
 import { useAuthDispatch } from '../contexts/AuthContext';
@@ -24,35 +24,33 @@ const Root = styled('div')(({ theme }) => ({
   },
 }));
 
-const loginSchema = yup.object().shape({
-  username: yup
-    .string()
+const loginSchema = Joi.object({
+  username: Joi.string()
     .required()
-    .lowercase()
     .min(1)
     .max(15)
-    .matches(
-      /^@?([a-z0-9_])*$/,
-      'Username should start with alphanumeric characters and can include underscore.',
-    ),
+    .lowercase()
+    .regex(/^@?([a-z0-9_])*$/)
+    .messages({
+      'string.pattern.base': 'Username should start with alphanumeric characters and can include underscore.',
+    }),
 
-  password: yup
-    .string()
+  password: Joi.string()
     .required()
     .min(8)
     .max(128)
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&_.,][\S]*$/,
-      'Password should be at least 8 characters and contain at least one '
-      + 'letter, one special character "@$!%*#?&_." and one integer.',
-    ),
+    .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&_.,][\S]*$/)
+    .messages({
+      'string.pattern.base': 'Password should be at least 8 characters and contain at least one '
+        + 'letter, one special character "@$!%*#?&_." and one integer.',
+    }),
 });
 
 function Login() {
   const navigate = useNavigate();
   const authDispatch = useAuthDispatch();
   const { handleSubmit, control, formState: { errors } } = useForm({
-    resolver: yupResolver(loginSchema),
+    resolver: joiResolver(loginSchema),
     defaultValues: {
       username: '',
       password: '',

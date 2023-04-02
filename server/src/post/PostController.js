@@ -23,52 +23,50 @@ const typeSchemaPart = (
 );
 
 const updateSchema = Joi.object({
-  topics: (
-    Joi.array()
-      .items(
-        Joi.string()
-          .regex(new RegExp(`^@?([a-z0-9-]){1,${POST_SCHEMA_CONFIGS.MAX_LEN_TOPIC}}$`))
-          .message(POST_VALIDATION_MESSAGES.INVALID_TOPIC),
-      )
-      .required()
-      .min(POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS)
-      .message(VALIDATION_MESSAGES.MIN_NUM('topics', POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS))
-      .max(POST_SCHEMA_CONFIGS.MAX_NUM_TOPICS)
-      .message(VALIDATION_MESSAGES.MAX_NUM('topics', POST_SCHEMA_CONFIGS.MAX_NUM_TOPICS))
-  ),
-  content: (
-    Joi.object()
-      .unknown()
-      .custom((content, helper) => {
-        if (!validators.hasObjectMinNumKey(content)) {
-          return helper.message(
-            VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_CONTENT),
-          );
-        }
+  topics: Joi.array()
+    .items(
+      Joi.string()
+        .regex(new RegExp(`^@?([a-z0-9-]){1,${POST_SCHEMA_CONFIGS.MAX_LEN_TOPIC}}$`))
+        .message(POST_VALIDATION_MESSAGES.INVALID_TOPIC),
+    )
+    .required()
+    .min(POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS)
+    .message(VALIDATION_MESSAGES.MIN_NUM('topics', POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS))
+    .max(POST_SCHEMA_CONFIGS.MAX_NUM_TOPICS)
+    .message(VALIDATION_MESSAGES.MAX_NUM('topics', POST_SCHEMA_CONFIGS.MAX_NUM_TOPICS)),
 
-        if (!validators.isValidMaxNumKey(content, FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT)) {
-          return helper.message(
-            VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT),
-          );
-        }
+  content: Joi.object()
+    .unknown()
+    .custom((content, helper) => {
+      if (!validators.hasObjectMinNumKey(content)) {
+        return helper.message(
+          VALIDATION_MESSAGES.MIN_KEY('content', FORM_SCHEMA_CONFIGS.MIN_NUM_CONTENT),
+        );
+      }
 
-        if (!validators.isValidMaxLenKeys(content, FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT)) {
-          return helper.message(
-            VALIDATION_MESSAGES.MAX_LEN(
-              'content field name',
-              FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT,
-            ),
-          );
-        }
+      if (!validators.isValidMaxNumKey(content, FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT)) {
+        return helper.message(
+          VALIDATION_MESSAGES.MAX_KEY('content', FORM_SCHEMA_CONFIGS.MAX_NUM_CONTENT),
+        );
+      }
 
-        if (!validators.isAnyFieldFilled(content)) {
-          return helper.message('at least one content field must be filled');
-        }
+      if (!validators.isValidMaxLenKeys(content, FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT)) {
+        return helper.message(
+          VALIDATION_MESSAGES.MAX_LEN(
+            'content field name',
+            FORM_SCHEMA_CONFIGS.MAX_LEN_KEY_OF_CONTENT,
+          ),
+        );
+      }
 
-        return content;
-      })
-      .required()
-  ),
+      if (!validators.isAnyFieldFilled(content)) {
+        return helper.message('at least one content field must be filled');
+      }
+
+      return content;
+    })
+    .required(),
+
   // This should not be validated. owner is added by the middleware.
   owner: Joi.object(),
 }).required();

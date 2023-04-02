@@ -13,13 +13,12 @@ const FORM_VALIDATION_MESSAGES = require('./formValidationMessages');
 const formRepository = new FormRepository();
 
 const createSchema = Joi.object({
-  type: Joi
-    .string()
+  type: Joi.string()
     .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
     .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
     .required(),
-  content: Joi
-    .object()
+
+  content: Joi.object()
     .unknown()
     .custom((content, helpers) => {
       if (!validators.hasObjectMinNumKey(content)) {
@@ -56,7 +55,13 @@ const createSchema = Joi.object({
 
 const filterSchema = Joi.object({
   fields: Joi.object(),
-  projection: [Joi.object(), Joi.string(), Joi.array().items(Joi.string())],
+
+  projection: [
+    Joi.object(),
+    Joi.string(),
+    Joi.array().items(Joi.string()),
+  ],
+
   single: Joi.boolean(),
 });
 

@@ -27,8 +27,7 @@
     "react-syntax-highlighter": "^15.5.0",
     "react-toastify": "^9.1.2",
     "remark-gfm": "^3.0.1",
-    "web-vitals": "^3.3.0",
-    "yup": "^1.0.2"
+    "web-vitals": "^3.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
