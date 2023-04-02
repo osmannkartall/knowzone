@@ -35,6 +35,6 @@ export function expectFormInputsAreNotInDocument(keys) {
   });
 }
 
-export async function expectMuiDropdownHasSelectedValue(buttonName, content) {
-  expect(await screen.findByRole('button', { name: buttonName })).toHaveTextContent(content);
+export async function expectMuiDropdownHasSelectedValue(dropdown, content) {
+  expect(await within(dropdown).findByRole('button')).toHaveTextContent(content);
 }

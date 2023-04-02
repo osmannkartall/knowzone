@@ -20,7 +20,6 @@ const PREFIX = 'FileUploader';
 
 const classes = {
   container: `${PREFIX}-container`,
-  dragAndDropArea: `${PREFIX}-dragAndDropArea`,
   thumbnailsContainer: `${PREFIX}-thumbnailsContainer`,
   thumbnails: `${PREFIX}-thumbnails`,
   thumbnail: `${PREFIX}-thumbnail`,
@@ -35,10 +34,6 @@ const Root = styled('section')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-  },
-
-  [`& .${classes.dragAndDropArea}`]: {
-    margin: theme.spacing(2, 0),
   },
 
   [`& .${classes.thumbnailsContainer}`]: {
@@ -218,7 +213,7 @@ function FileUploader({ files, setFiles }) {
   return (
     <Root className={classes.container}>
       {Array.isArray(files) && files.length < NUM_MAX_FILES ? (
-        <div {...getRootProps({ style })} className={classes.dragAndDropArea}>
+        <div {...getRootProps({ style })}>
           <input id="images" {...getInputProps()} />
           <CloudUploadIcon />
           <p>{infoTitle}</p>

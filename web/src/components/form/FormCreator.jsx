@@ -4,13 +4,11 @@ import Close from '@mui/icons-material/Close';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
-import { GRAY3, PRIMARY, WHITE } from '../../constants/colors';
-import FileUploader from '../common/FileUploader';
-import MarkdownEditor from '../common/MarkdownEditor';
-import TagPicker from '../common/TagPicker/TagPicker';
+import { GRAY1, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
 import FORM_COMPONENT_TYPES from './formComponentTypes';
 import FORM_SCHEMA_CONFIGS from './formSchemaConfigs';
 import formCreatorSchema from './formCreatorSchema';
+import getContentPreview from './contentPreviews/getContentPreview';
 
 const PREFIX = 'FormCreator';
 
@@ -25,6 +23,7 @@ const classes = {
   formDataRow: `${PREFIX}-formDataRow`,
   preview: `${PREFIX}-preview`,
   contentFields: `${PREFIX}-contentFields`,
+  label: `${PREFIX}-label`,
 };
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
@@ -108,6 +107,11 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 
   [`& .${classes.formDataRow}`]: {
     margin: theme.spacing(2),
+  },
+
+  [`& .${classes.label}`]: {
+    marginBottom: theme.spacing(2),
+    color: GRAY1,
   },
 }));
 
@@ -288,55 +292,17 @@ function MiddleContainer({ control, errors, getValues, watch }) {
             Your Form
           </span>
           {Object.entries(watchedContent ?? {}).map(([k, v]) => {
-            if (v.type === FORM_COMPONENT_TYPES.TEXT) {
+            const ContentPreview = getContentPreview(v.type);
+
+            if (ContentPreview) {
               return (
                 <div data-testid="component-type-preview" style={{ margin: '16px 0px' }} key={k}>
-                  <TextField
-                    fullWidth
-                    id="outlined-basic"
-                    label={v.name}
-                    variant="outlined"
-                    value="This is a text"
-                    multiline
-                    minRows={4}
-                    maxRows={4}
-                  />
+                  {v.name && <div className={classes.label}>{v.name}</div>}
+                  <ContentPreview />
                 </div>
               );
             }
-            if (v.type === FORM_COMPONENT_TYPES.LIST) {
-              return (
-                <div data-testid="component-type-preview" style={{ margin: '16px 0px' }} key={k}>
-                  <TagPicker
-                    tags={['example1', 'example2']}
-                    setTags={() => {}}
-                    placeholder={`Type a '${v.name}' and press enter to add`}
-                    unique
-                    border
-                  />
-                </div>
-              );
-            }
-            if (v.type === FORM_COMPONENT_TYPES.EDITOR) {
-              return (
-                <div data-testid="component-type-preview" style={{ margin: '16px 0px' }} key={k}>
-                  {v.name && <span>{v.name}</span>}
-                  <MarkdownEditor
-                    text={'# This is a markdown editor\n\n```js\nconsole.log("Click to SHOW PREVIEW Button")\n```'}
-                    onChangeText={() => {}}
-                    containerMaxHeight="50vh"
-                  />
-                </div>
-              );
-            }
-            if (v.type === FORM_COMPONENT_TYPES.IMAGE) {
-              return (
-                <div data-testid="component-type-preview" style={{ margin: '16px 0px' }} key={k}>
-                  <span>images</span>
-                  <FileUploader files={[]} setFiles={() => {}} />
-                </div>
-              );
-            }
+
             return null;
           })}
         </div>

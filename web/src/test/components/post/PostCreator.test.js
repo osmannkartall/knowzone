@@ -293,7 +293,8 @@ describe('PostCreator', () => {
     await user.upload(uploader, file);
     fireEvent.submit(screen.getByText(/share/i));
 
-    await expectMuiDropdownHasSelectedValue(/post type/i, type);
+    await expectMuiDropdownHasSelectedValue(screen.getByTestId('select-post-type'), type);
+
     expect(uploader.files[0]).toBe(file);
     await waitFor(() => expect(screen.getAllByRole('alert')).toHaveLength(1));
     screen.getByText(VALIDATION_MESSAGES.MIN_NUM('topics', POST_SCHEMA_CONFIGS.MIN_NUM_TOPICS));
