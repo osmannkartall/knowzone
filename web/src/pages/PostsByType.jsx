@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Posts from '../components/post/Posts';
-import getFormByType from '../api/getFormByType';
+import getFormByType from '../api/forms/getFormByType';
 import { useAuthState } from '../contexts/AuthContext';
-import getPostsByType from '../api/getPostsByType';
+import getPostsByType from '../api/posts/getPostsByType';
 
 function PostsByType() {
   const [form, setForm] = useState({});

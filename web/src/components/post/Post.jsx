@@ -5,7 +5,7 @@ import MoreHoriz from '@mui/icons-material/MoreHoriz';
 import { GRAY3, GRAY4, PRIMARY } from '../../constants/colors';
 import TagPicker from '../common/TagPicker/TagPicker';
 import MarkdownPreview from '../common/MarkdownPreview';
-import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
+import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
 
 const PREFIX = 'Post';
 

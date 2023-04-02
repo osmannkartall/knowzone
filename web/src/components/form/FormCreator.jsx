@@ -5,12 +5,12 @@ import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { GRAY3, PRIMARY, WHITE } from '../../constants/colors';
-import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
 import FileUploader from '../common/FileUploader';
 import MarkdownEditor from '../common/MarkdownEditor';
 import TagPicker from '../common/TagPicker/TagPicker';
-import formCreatorSchema from '../../schemas/formCreatorSchema';
-import { FORM_SCHEMA_CONFIGS } from '../../schemas/schemaConfigs';
+import FORM_COMPONENT_TYPES from './formComponentTypes';
+import FORM_SCHEMA_CONFIGS from './formSchemaConfigs';
+import formCreatorSchema from './formCreatorSchema';
 
 const PREFIX = 'FormCreator';
 

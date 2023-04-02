@@ -2,7 +2,7 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { setupServer } from 'msw/node';
 import FormCreator from '../../../components/form/FormCreator';
-import FORM_COMPONENT_TYPES from '../../../constants/form-components-types';
+import FORM_COMPONENT_TYPES from '../../../components/form/formComponentTypes';
 import api from '../../../__mocks__/api';
 import {
   getMuiDropdownByTestId,

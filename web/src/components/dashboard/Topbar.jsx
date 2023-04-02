@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { IconButton, MenuItem, Menu } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchBar from '../common/SearchBar';
+import SearchBar from '../search/SearchBar';
 import { GRAY1, GRAY3, PRIMARY } from '../../constants/colors';
 import { FE_ROUTES } from '../../constants/routes';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';

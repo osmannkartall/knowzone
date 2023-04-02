@@ -16,8 +16,8 @@ import { WHITE, GRAY3, PRIMARY, GRAY1 } from '../../constants/colors';
 import TagPicker from '../common/TagPicker/TagPicker';
 import FileUploader from '../common/FileUploader';
 import MarkdownEditor from '../common/MarkdownEditor';
-import FORM_COMPONENT_TYPES from '../../constants/form-components-types';
-import getFormByType from '../../api/getFormByType';
+import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
+import getFormByType from '../../api/forms/getFormByType';
 
 const PREFIX = 'PostCreator';
 

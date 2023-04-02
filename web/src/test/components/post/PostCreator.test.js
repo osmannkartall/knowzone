@@ -16,9 +16,9 @@ import {
   expectFormInputsAreNotInDocument,
   expectMuiDropdownHasSelectedValue,
 } from '../../utils';
-import postCreatorSchema from '../../../schemas/postCreatorSchema';
-import { VALIDATION_MESSAGES } from '../../../schemas/validationMessages';
-import { POST_SCHEMA_CONFIGS } from '../../../schemas/schemaConfigs';
+import postCreatorSchema from '../../../components/post/postCreatorSchema';
+import VALIDATION_MESSAGES from '../../../common/validationMessages';
+import POST_SCHEMA_CONFIGS from '../../../components/post/postSchemaConfigs';
 
 const server = setupServer(...api);
 
