@@ -51,7 +51,7 @@ describe('PostCreator', () => {
     function Component() {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
-        defaultValues: { type: '' },
+        defaultValues: { type, topics: [], content: {} },
       });
 
       return (
