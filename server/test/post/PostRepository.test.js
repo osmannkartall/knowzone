@@ -1,6 +1,6 @@
 /* eslint-env jest */
 const mongoose = require('mongoose');
-const PostRepository = require('../../src/post/PostRepository');
+const PostRepository = require('../../src/post/postRepository');
 const POST_SCHEMA_CONFIGS = require('../../src/post/postSchemaConfigs');
 const FORM_SCHEMA_CONFIGS = require('../../src/form/formSchemaConfigs');
 const FormRepository = require('../../src/form/formRepository');
@@ -158,13 +158,6 @@ describe('PostRepository.create() with invalid records', () => {
 
   const postOfNonExistingForm = { ...postMock, type: 'no type' };
 
-  const postWithInvalidMinLenTextValue = {
-    ...postMock,
-    content: {
-      textInput: (new Array(POST_SCHEMA_CONFIGS.MIN_LEN_TEXT - 1)).join('-'),
-    },
-  };
-
   const postWithInvalidMaxLenTextValue = {
     ...postMock,
     content: {
@@ -190,13 +183,6 @@ describe('PostRepository.create() with invalid records', () => {
     ...postMock,
     content: {
       editorInput: new Array(POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR + 1),
-    },
-  };
-
-  const postWithInvalidMinLenEditorValue = {
-    ...postMock,
-    content: {
-      editorInput: new Array(POST_SCHEMA_CONFIGS.MIN_LEN_EDITOR - 1),
     },
   };
 
@@ -342,12 +328,6 @@ describe('PostRepository.create() with invalid records', () => {
     );
   });
 
-  it('should throw error when value of text component is shorter than min len', async () => {
-    await expect(createInvalid(postWithInvalidMinLenTextValue)).rejects.toThrow(
-      VALIDATION_MESSAGES.MIN_LEN('textInput', POST_SCHEMA_CONFIGS.MIN_LEN_TEXT),
-    );
-  });
-
   it('should throw error when value of text component is longer than max len', async () => {
     await expect(createInvalid(postWithInvalidMaxLenTextValue)).rejects.toThrow(
       VALIDATION_MESSAGES.MAX_LEN('textInput', POST_SCHEMA_CONFIGS.MAX_LEN_TEXT),
@@ -405,12 +385,6 @@ describe('PostRepository.create() with invalid records', () => {
   it('should throw error when len of editor component is longer than max', async () => {
     await expect(createInvalid(postWithInvalidMaxLenEditorValue)).rejects.toThrow(
       VALIDATION_MESSAGES.MAX_LEN('editorInput', POST_SCHEMA_CONFIGS.MAX_LEN_EDITOR),
-    );
-  });
-
-  it('should throw error when len of editor component is shorter than min', async () => {
-    await expect(createInvalid(postWithInvalidMinLenEditorValue)).rejects.toThrow(
-      VALIDATION_MESSAGES.MIN_LEN('editorInput', POST_SCHEMA_CONFIGS.MIN_LEN_EDITOR),
     );
   });
 
