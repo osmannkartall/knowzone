@@ -61,9 +61,6 @@ function Posts({ title, form, posts, setPosts }) {
         if (idx !== -1) {
           const fd = new FormData();
           const { images, ...rest } = content;
-          const filledContentFields = {};
-
-          Object.entries(rest).forEach(([k, v]) => { if (v) filledContentFields[k] = v; });
 
           if (images) {
             const oldImages = [];
@@ -80,7 +77,7 @@ function Posts({ title, form, posts, setPosts }) {
             fd.append('oldImages', JSON.stringify(oldImages));
           }
 
-          fd.append('content', JSON.stringify(filledContentFields));
+          fd.append('content', JSON.stringify(rest));
           fd.append('topics', JSON.stringify(topics));
 
           const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}/${id}`;
