@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const Joi = require('joi');
-const PostRepository = require('./PostRepository');
+const PostRepository = require('./postRepository');
 const { uploadImages, preparePostForCreate, preparePostForUpdate } = require('./uploader');
 const { createSuccessResponse } = require('../common/utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../common/knowzoneErrorHandler');

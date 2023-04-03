@@ -1,8 +1,8 @@
 const { Schema, model, Error } = require('mongoose');
 const { transformToJSON } = require('../common/utils');
-const Form = require('../form/Form');
-const owner = require('../form/Owner');
-const type = require('../form/Type');
+const Form = require('../form/form');
+const owner = require('../form/owner');
+const type = require('../form/type');
 const FORM_SCHEMA_CONFIGS = require('../form/formSchemaConfigs');
 const POST_SCHEMA_CONFIGS = require('./postSchemaConfigs');
 const VALIDATION_MESSAGES = require('../common/validationMessages');
@@ -23,7 +23,7 @@ async function getFormOfPostOrInvalidate(post) {
   return formRecord;
 }
 
-const PostSchema = new Schema(
+const postSchema = new Schema(
   {
     owner,
     type,
@@ -97,12 +97,10 @@ const PostSchema = new Schema(
   { timestamps: true },
 );
 
-PostSchema.index({ '$**': 'text' });
-PostSchema.index({ type: 1 });
-PostSchema.index({ topics: 1 });
+postSchema.index({ '$**': 'text' });
+postSchema.index({ type: 1 });
+postSchema.index({ topics: 1 });
 
-transformToJSON(PostSchema);
+transformToJSON(postSchema);
 
-const Post = model('Post', PostSchema);
-
-module.exports = Post;
+module.exports = model('post', postSchema);

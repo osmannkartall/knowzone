@@ -1,8 +1,8 @@
 /* eslint-env jest */
-const SearchService = require('../../src/search/SearchService');
-const PostModel = require('../../src/post/Post');
+const SearchService = require('../../src/search/searchService');
+const PostModel = require('../../src/post/post');
 
-jest.mock('../../src/post/Post');
+jest.mock('../../src/post/post');
 
 beforeEach(() => { PostModel.find.mockReturnValueOnce([]); });
 

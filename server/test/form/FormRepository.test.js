@@ -1,6 +1,6 @@
 /* eslint-env jest */
 const mongoose = require('mongoose');
-const FormRepository = require('../../src/form/FormRepository');
+const FormRepository = require('../../src/form/formRepository');
 const FORM_SCHEMA_CONFIGS = require('../../src/form/formSchemaConfigs');
 const FORM_VALIDATION_MESSAGES = require('../../src/form/formValidationMessages');
 const VALIDATION_MESSAGES = require('../../src/common/validationMessages');
@@ -114,7 +114,7 @@ describe('FormRepository.create() with invalid records', () => {
   };
 
   it('should throw error when model is empty', async () => {
-    await expect(createInvalid({})).rejects.toThrow(MONGOOSE_DEFAULT_MESSAGES.INVALID('Form'));
+    await expect(createInvalid({})).rejects.toThrow(MONGOOSE_DEFAULT_MESSAGES.INVALID('form'));
   });
 
   it('should throw error when there is no owner', async () => {

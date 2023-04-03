@@ -1,14 +1,14 @@
 const { Schema, model } = require('mongoose');
 const { transformToJSON } = require('../common/utils');
-const owner = require('./Owner');
-const type = require('./Type');
+const owner = require('./owner');
+const type = require('./type');
 const FORM_SCHEMA_CONFIGS = require('./formSchemaConfigs');
 const VALIDATION_MESSAGES = require('../common/validationMessages');
 const FORM_VALIDATION_MESSAGES = require('./formValidationMessages');
 const validators = require('../common/validators');
 const formValidators = require('./formValidators');
 
-const FormSchema = Schema(
+const formSchema = Schema(
   {
     owner,
     type: {
@@ -60,8 +60,6 @@ const FormSchema = Schema(
   { timestamps: true },
 );
 
-transformToJSON(FormSchema);
+transformToJSON(formSchema);
 
-const Form = model('Form', FormSchema);
-
-module.exports = Form;
+module.exports = model('form', formSchema);
