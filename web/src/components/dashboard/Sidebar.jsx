@@ -52,7 +52,9 @@ const Root = styled('div')(({ theme }) => ({
 function SidebarItem({ text }) {
   const location = useLocation();
 
-  const isActiveRoute = () => location.pathname === `/posts/${text}`;
+  const isActiveRoute = () => (
+    decodeURIComponent(location.pathname.replace(/\+/g, ' ')) === `/posts/${text}`
+  );
 
   return (
     <ListItem
