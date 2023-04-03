@@ -63,7 +63,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 function TopContainer({ title, handleClose }) {
   return (
     <div className={classes.topContainer}>
-      <h1>{title}</h1>
+      <h1>{title ?? 'Create'}</h1>
       <IconButton
         aria-label="close post form"
         style={{ color: WHITE }}
@@ -86,24 +86,17 @@ function MiddleContainer({ children }) {
   );
 }
 
-function BottomContainer({ submitButtonTitle, submitButtonDisabled }) {
+function BottomContainer({ buttonTitle, isButtonDisabled }) {
   return (
     <div className={classes.bottomContainer}>
-      <Button variant="contained" color="primary" type="submit" disabled={submitButtonDisabled}>
-        {submitButtonTitle ?? 'Create'}
+      <Button variant="contained" color="primary" type="submit" disabled={isButtonDisabled}>
+        {buttonTitle ?? 'Create'}
       </Button>
     </div>
   );
 }
 
-function DialogData({
-  title,
-  submitButtonTitle,
-  handleClose,
-  onSubmit,
-  submitButtonDisabled,
-  children,
-}) {
+function DialogData({ title, buttonTitle, handleClose, onSubmit, isButtonDisabled, children }) {
   return (
     <div className={classes.modalData}>
       <form
@@ -115,33 +108,25 @@ function DialogData({
           {children}
         </MiddleContainer>
         <BottomContainer
-          submitButtonTitle={submitButtonTitle}
-          submitButtonDisabled={submitButtonDisabled}
+          buttonTitle={buttonTitle}
+          isButtonDisabled={isButtonDisabled}
         />
       </form>
     </div>
   );
 }
 
-function Creator({
-  title,
-  submitButtonTitle,
-  open,
-  setOpen,
-  onSubmit,
-  submitButtonDisabled,
-  children,
-}) {
-  const handleClose = () => setOpen(false);
+function Creator({ title, buttonTitle, isButtonDisabled, isOpen, setIsOpen, onSubmit, children }) {
+  const handleClose = () => setIsOpen(false);
 
   return (
-    <StyledDialog onClose={handleClose} open={open}>
+    <StyledDialog onClose={handleClose} open={isOpen}>
       <DialogData
         title={title}
-        submitButtonTitle={submitButtonTitle}
+        buttonTitle={buttonTitle}
         handleClose={handleClose}
         onSubmit={onSubmit}
-        submitButtonDisabled={submitButtonDisabled}
+        isButtonDisabled={isButtonDisabled}
       >
         {children}
       </DialogData>

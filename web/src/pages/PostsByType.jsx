@@ -2,14 +2,11 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Posts from '../components/post/Posts';
 import getFormByType from '../api/forms/getFormByType';
-import { useAuthState } from '../contexts/AuthContext';
 import getPostsByType from '../api/posts/getPostsByType';
 
 function PostsByType() {
   const [form, setForm] = useState({});
   const [posts, setPosts] = useState([]);
-
-  const user = useAuthState();
 
   const { type } = useParams();
 
@@ -30,9 +27,9 @@ function PostsByType() {
   }, [type]);
 
   useEffect(() => {
-    let mounted = true;
+    let isMounted = true;
 
-    if (mounted) {
+    if (isMounted) {
       const initializePosts = async () => {
         const data = await getPostsByType(type);
         setPosts(data);
@@ -41,19 +38,11 @@ function PostsByType() {
     }
 
     return function cleanup() {
-      mounted = false;
+      isMounted = false;
     };
-  }, [user.id, type]);
+  }, [type]);
 
-  return (
-    <Posts
-      title={type}
-      form={form}
-      setForm={setForm}
-      posts={posts}
-      setPosts={setPosts}
-    />
-  );
+  return <Posts title={type} form={form} posts={posts} setPosts={setPosts} />;
 }
 
 export default PostsByType;

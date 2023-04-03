@@ -1,5 +1,5 @@
 export const FE_ROUTES = Object.freeze({
-  HOME: 'posts',
+  HOME: '',
   POSTS: 'posts',
   SEARCH_RESULTS: 'results',
   NOT_FOUND: '404',

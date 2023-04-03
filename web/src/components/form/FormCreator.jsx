@@ -69,7 +69,7 @@ const ContentPreviewLabel = styled('div')(({ theme }) => ({
   color: GRAY1,
 }));
 
-function FormCreator({ open, setOpen, create }) {
+function FormCreator({ open, setOpen, handler }) {
   const [selectedImageComponentKey, setSelectedImageComponentKey] = useState(null);
 
   const { getValues, formState: { errors }, control, handleSubmit, watch, reset } = useForm({
@@ -80,7 +80,7 @@ function FormCreator({ open, setOpen, create }) {
   const watchedContent = watch('content');
 
   const onSubmit = async () => {
-    const isSuccessful = await create(getValues());
+    const isSuccessful = await handler(getValues());
     if (isSuccessful) {
       reset();
     }
@@ -89,8 +89,8 @@ function FormCreator({ open, setOpen, create }) {
   return (
     <Creator
       title="Create Form"
-      open={open}
-      setOpen={setOpen}
+      isOpen={open}
+      setIsOpen={setOpen}
       onSubmit={handleSubmit(onSubmit)}
     >
       <MiddleContainer>
