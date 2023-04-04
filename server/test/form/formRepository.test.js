@@ -1,4 +1,3 @@
-/* eslint-env jest */
 import mongoose from 'mongoose';
 import FormRepository from '../../src/form/formRepository.js';
 import FORM_SCHEMA_CONFIGS from '../../src/form/formSchemaConfigs.js';

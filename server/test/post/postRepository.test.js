@@ -1,4 +1,3 @@
-/* eslint-env jest */
 import mongoose from 'mongoose';
 import PostRepository from '../../src/post/postRepository.js';
 import POST_SCHEMA_CONFIGS from '../../src/post/postSchemaConfigs.js';

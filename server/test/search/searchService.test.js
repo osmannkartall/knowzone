@@ -1,5 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-/* eslint-env jest */
 import { jest } from '@jest/globals';
 import SearchService from '../../src/search/searchService.js';
 import PostModel from '../../src/post/post.js';
