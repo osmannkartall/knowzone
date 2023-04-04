@@ -9,6 +9,7 @@ import getContentPart from './contentParts/getContentPart';
 import Topics from './defaultParts/Topics';
 import Creator from '../common/Creator';
 import postCreatorSchema from './postCreatorSchema';
+import { NUMERIC_KEY_PREFIX, addNumericKeyPrefix } from './postCreatorUtils';
 
 const Title = styled('span')(({ theme }) => ({
   display: 'block',
@@ -73,7 +74,7 @@ const ContentParts = ({ content }) => {
               )
             }
               control={control}
-              name={`content.${k}`}
+              name={`content.${NUMERIC_KEY_PREFIX}${k}`}
               shouldUnregister
             />
           </FormDataRow>
@@ -94,7 +95,7 @@ const oldPostDefaultValues = (oldPost) => ({
   id: oldPost?.id ?? '',
   type: oldPost?.type ?? '',
   topics: oldPost?.topics ?? [],
-  content: oldPost?.content ?? {},
+  content: addNumericKeyPrefix(oldPost?.content) ?? {},
 });
 
 function PostCreator({ buttonTitle, open, setOpen, handler, form, oldPost }) {

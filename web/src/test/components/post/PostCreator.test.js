@@ -11,6 +11,7 @@ import { expectFormInputsAreInDocument, expectFormInputsAreNotInDocument } from 
 import postCreatorSchema from '../../../components/post/postCreatorSchema';
 import VALIDATION_MESSAGES from '../../../common/validationMessages';
 import POST_SCHEMA_CONFIGS from '../../../components/post/postSchemaConfigs';
+import { NUMERIC_KEY_PREFIX, addNumericKeyPrefix } from '../../../components/post/postCreatorUtils';
 
 const server = setupServer(...api);
 
@@ -36,13 +37,15 @@ describe('PostCreator', () => {
 
     const expectedPost = {
       type,
-      content: {
-        description: 'This is the description of the error',
-        links: undefined,
-        error: '## Error: ...',
-        solution: '## solution for the error',
-        images: [file1, file2],
-      },
+      content: addNumericKeyPrefix(
+        {
+          description: 'This is the description of the error',
+          links: undefined,
+          error: '## Error: ...',
+          solution: '## solution for the error',
+          images: [file1, file2],
+        },
+      ),
       topics: ['topic1', 'topic2'],
     };
 
@@ -75,9 +78,9 @@ describe('PostCreator', () => {
     const imageUploaderInput = screen.getByLabelText(/images/i);
     const dragAndDropText = screen.queryByText(/Drag n drop some images here, or click to select/i);
 
-    await user.type(descriptionInput, expectedPost.content.description);
-    await user.type(errorInput, expectedPost.content.error);
-    await user.type(solutionInput, expectedPost.content.solution);
+    await user.type(descriptionInput, expectedPost.content[`${NUMERIC_KEY_PREFIX}description`]);
+    await user.type(errorInput, expectedPost.content[`${NUMERIC_KEY_PREFIX}error`]);
+    await user.type(solutionInput, expectedPost.content[`${NUMERIC_KEY_PREFIX}solution`]);
     await user.upload(imageUploaderInput, [file1, file2]);
     await user.type(topicsInput, 'topic1');
     fireEvent.keyDown(topicsInput, { key: 'enter', keyCode: 13 });

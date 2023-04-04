@@ -7,6 +7,7 @@ import ContentWrapper from '../common/ContentWrapper';
 import { GRAY3, IRREVERSIBLE_ACTION, WHITE } from '../../constants/colors';
 import LinearProgressModal from '../common/LinearProgressModal';
 import { BE_ROUTES } from '../../constants/routes';
+import { removeNumericKeyPrefix } from './postCreatorUtils';
 
 const isNewImage = (image) => image instanceof File;
 
@@ -60,7 +61,7 @@ function Posts({ title, form, posts, setPosts }) {
 
         if (idx !== -1) {
           const fd = new FormData();
-          const { images, ...rest } = content;
+          const { images, ...rest } = removeNumericKeyPrefix(content);
 
           if (images) {
             const oldImages = [];
@@ -146,7 +147,7 @@ function Posts({ title, form, posts, setPosts }) {
       if (values?.type !== '') {
         const fd = new FormData();
         const { type, topics, content } = values;
-        const { images, ...rest } = content ?? {};
+        const { images, ...rest } = removeNumericKeyPrefix(content);
         const filledContentFields = {};
 
         Object.entries(rest).forEach(([k, v]) => { if (v) filledContentFields[k] = v; });
