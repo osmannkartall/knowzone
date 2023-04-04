@@ -6,8 +6,8 @@ import bcrypt from 'bcryptjs';
 import FORM_COMPONENT_TYPES from '../form/formComponentTypes.js';
 import Form from '../form/form.js';
 import Post from '../post/post.js';
-import { FORM_SCHEMA_CONFIGS } from '../form/formSchemaConfigs.js';
-import { POST_SCHEMA_CONFIGS } from '../post/postSchemaConfigs.js';
+import FORM_SCHEMA_CONFIGS from '../form/formSchemaConfigs.js';
+import POST_SCHEMA_CONFIGS from '../post/postSchemaConfigs.js';
 import User from '../auth/user.js';
 
 const MAX_NUM_USERS = 10;
