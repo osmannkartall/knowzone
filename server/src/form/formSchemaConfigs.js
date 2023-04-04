@@ -7,4 +7,4 @@ const FORM_SCHEMA_CONFIGS = Object.freeze({
   MAX_LEN_KEY_OF_CONTENT: 100,
 });
 
-module.exports = FORM_SCHEMA_CONFIGS;
+export default FORM_SCHEMA_CONFIGS;

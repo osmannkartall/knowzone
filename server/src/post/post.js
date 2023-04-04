@@ -1,14 +1,14 @@
-const { Schema, model, Error } = require('mongoose');
-const { transformToJSON } = require('../common/utils');
-const Form = require('../form/form');
-const owner = require('../form/owner');
-const type = require('../form/type');
-const FORM_SCHEMA_CONFIGS = require('../form/formSchemaConfigs');
-const POST_SCHEMA_CONFIGS = require('./postSchemaConfigs');
-const VALIDATION_MESSAGES = require('../common/validationMessages');
-const POST_VALIDATION_MESSAGES = require('./postValidationMessages');
-const validators = require('../common/validators');
-const postValidators = require('./postValidators');
+import { Schema, model } from 'mongoose';
+import { transformToJSON } from '../common/utils.js';
+import Form from '../form/form.js';
+import owner from '../form/owner.js';
+import type from '../form/type.js';
+import FORM_SCHEMA_CONFIGS from '../form/formSchemaConfigs.js';
+import POST_SCHEMA_CONFIGS from './postSchemaConfigs.js';
+import VALIDATION_MESSAGES from '../common/validationMessages.js';
+import POST_VALIDATION_MESSAGES from './postValidationMessages.js';
+import validators from '../common/validators.js';
+import postValidators from './postValidators.js';
 
 async function getFormOfPostOrInvalidate(post) {
   const formRecord = await Form.findOne(
@@ -103,4 +103,4 @@ postSchema.index({ topics: 1 });
 
 transformToJSON(postSchema);
 
-module.exports = model('post', postSchema);
+export default model('post', postSchema);

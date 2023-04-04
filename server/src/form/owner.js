@@ -1,4 +1,4 @@
-const { Schema } = require('mongoose');
+import { Schema } from 'mongoose';
 
 const owner = {
   id: {
@@ -19,4 +19,4 @@ const owner = {
   },
 };
 
-module.exports = owner;
+export default owner;

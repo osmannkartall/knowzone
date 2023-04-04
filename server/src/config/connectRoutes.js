@@ -1,7 +1,7 @@
-const formController = require('../form/FormController');
-const postController = require('../post/PostController');
-const searchController = require('../search/SearchController');
-const authController = require('../auth/AuthController');
+import formController from '../form/formController.js';
+import postController from '../post/postController.js';
+import searchController from '../search/searchController.js';
+import authController from '../auth/authController.js';
 
 function connectRoutes(app) {
   app.get('/', (req, res) => {
@@ -18,4 +18,4 @@ function connectRoutes(app) {
   Object.entries(controllers).forEach(([k, v]) => app.use(k, v));
 }
 
-module.exports = connectRoutes;
+export default connectRoutes;

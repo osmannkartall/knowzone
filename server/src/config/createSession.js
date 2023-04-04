@@ -1,6 +1,6 @@
-const crypto = require('crypto');
-const MongoStore = require('connect-mongo');
-const session = require('express-session');
+import crypto from 'crypto';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 function createSession() {
   const sessionOptions = {
@@ -20,4 +20,4 @@ function createSession() {
   return session(sessionOptions);
 }
 
-module.exports = createSession;
+export default createSession;

@@ -1,13 +1,15 @@
-const router = require('express').Router();
-const Joi = require('joi');
-const SearchService = require('./searchService');
-const checkAuthentication = require('../auth/checkAuthentication');
-const {
+import { Router } from 'express';
+import Joi from 'joi';
+import SearchService from './searchService.js';
+import checkAuthentication from '../auth/checkAuthentication.js';
+import {
   KNOWZONE_ERROR_TYPES,
   hasLowerLayerCustomError,
   createCustomError,
-} = require('../common/knowzoneErrorHandler');
-const { isObjectEmpty } = require('../common/utils');
+} from '../common/knowzoneErrorHandler.js';
+import { isObjectEmpty } from '../common/utils.js';
+
+const router = Router();
 
 const searchSchema = Joi.object({
   createdAtStartDate: Joi.date(),
@@ -65,4 +67,4 @@ const search = async (req, res, next) => {
 
 router.post('/', checkAuthentication, search);
 
-module.exports = router;
+export default router;

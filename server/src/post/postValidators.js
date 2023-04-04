@@ -1,7 +1,7 @@
-const FORM_COMPONENT_TYPES = require('../form/formComponentTypes');
-const POST_SCHEMA_CONFIGS = require('./postSchemaConfigs');
-const VALIDATION_MESSAGES = require('../common/validationMessages');
-const POST_VALIDATION_MESSAGES = require('./postValidationMessages');
+import FORM_COMPONENT_TYPES from '../form/formComponentTypes.js';
+import POST_SCHEMA_CONFIGS from './postSchemaConfigs.js';
+import VALIDATION_MESSAGES from '../common/validationMessages.js';
+import POST_VALIDATION_MESSAGES from './postValidationMessages.js';
 
 function validateContentFields(content, formRecord) {
   const formContent = Object.keys(formRecord.content);
@@ -91,7 +91,7 @@ function validateValueOfContentFields(content, formRecord) {
   }
 }
 
-module.exports = {
+export default {
   validateContentFields,
   validateValueOfContentFields,
 };

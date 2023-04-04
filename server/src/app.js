@@ -1,13 +1,13 @@
-const express = require('express');
+import express from 'express';
 
-const enableEnvs = require('./config/enableEnvs');
-const enableCors = require('./config/enableCors');
-const addStaticServer = require('./config/addStaticServer');
-const createSession = require('./config/createSession');
-const connectRoutes = require('./config/connectRoutes');
-const handleNotFound = require('./config/handleNotFound');
-const handleError = require('./config/handleError');
-const startDB = require('./config/startDB');
+import enableEnvs from './config/enableEnvs.js';
+import enableCors from './config/enableCors.js';
+import addStaticServer from './config/addStaticServer.js';
+import createSession from './config/createSession.js';
+import connectRoutes from './config/connectRoutes.js';
+import handleNotFound from './config/handleNotFound.js';
+import handleError from './config/handleError.js';
+import startDB from './config/startDB.js';
 
 async function startExpress() {
   const app = express();

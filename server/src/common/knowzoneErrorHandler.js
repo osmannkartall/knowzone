@@ -1,4 +1,4 @@
-const multer = require('multer');
+import multer from 'multer';
 
 const KNOWZONE_ERROR_TYPES = Object.freeze({
   AUTH: 'AUTH',
@@ -71,7 +71,7 @@ function createErrorResponse(message) {
   return { status: 'fail', message };
 }
 
-module.exports = {
+export {
   KNOWZONE_ERROR_TYPES,
   isApiSchemaError,
   isMulterError,

@@ -1,10 +1,16 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-env jest */
-const SearchService = require('../../src/search/searchService');
-const PostModel = require('../../src/post/post');
+import { jest } from '@jest/globals';
+import SearchService from '../../src/search/searchService.js';
+import PostModel from '../../src/post/post.js';
 
 jest.mock('../../src/post/post');
 
-beforeEach(() => { PostModel.find.mockReturnValueOnce([]); });
+beforeEach(
+  () => {
+    jest.spyOn(PostModel, 'find').mockReturnValueOnce([]);
+  },
+);
 
 describe('SearchService - filter()', () => {
   const searchText = 'search this words';

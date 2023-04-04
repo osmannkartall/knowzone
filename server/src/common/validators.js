@@ -1,5 +1,5 @@
-const VALIDATION_MESSAGES = require('./validationMessages');
-const { isArrayUnique } = require('./utils');
+import VALIDATION_MESSAGES from './validationMessages.js';
+import { isArrayUnique } from './utils.js';
 
 function isObject(v) {
   return v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -44,7 +44,7 @@ function isValidMaxLenKeys(object, max = 0) {
   return Object.keys(object).every((k) => k?.length <= max);
 }
 
-module.exports = {
+export default {
   isObject,
   hasObjectMinNumKey,
   isValidMaxNumKey,

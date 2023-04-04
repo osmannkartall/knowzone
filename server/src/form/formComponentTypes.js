@@ -5,4 +5,4 @@ const FORM_COMPONENT_TYPES = Object.freeze({
   IMAGE: 'image',
 });
 
-module.exports = FORM_COMPONENT_TYPES;
+export default FORM_COMPONENT_TYPES;

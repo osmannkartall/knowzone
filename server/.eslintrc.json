@@ -12,8 +12,23 @@
     },
     "rules": {
         "no-console": "off",
-        "no-underscore-dangle": ["error", { "allow": ["_id", "__v"] }],
+        "no-underscore-dangle": [
+            "error",
+            {
+                "allow": [
+                    "_id",
+                    "__v"
+                ]
+            }
+        ],
         "object-curly-newline": "off",
-        "no-param-reassign": "off"
+        "no-param-reassign": "off",
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "js": "always"
+            }
+        ]
     }
 }

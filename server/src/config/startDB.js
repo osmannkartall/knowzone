@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 async function startDB() {
   try {
@@ -16,4 +16,4 @@ async function startDB() {
   }
 }
 
-module.exports = startDB;
+export default startDB;

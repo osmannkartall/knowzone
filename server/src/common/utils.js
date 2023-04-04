@@ -22,7 +22,7 @@ function isObjectEmpty(obj) {
     || Object.keys(obj).length === 0;
 }
 
-module.exports = {
+export {
   transformToJSON,
   isArrayUnique,
   createSuccessResponse,

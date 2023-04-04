@@ -1,4 +1,4 @@
-const { createErrorResponse } = require('../common/knowzoneErrorHandler');
+import { createErrorResponse } from '../common/knowzoneErrorHandler.js';
 
 const checkAuthentication = (req, res, next) => {
   if (!('userId' in req.session)) {
@@ -8,4 +8,4 @@ const checkAuthentication = (req, res, next) => {
   }
 };
 
-module.exports = checkAuthentication;
+export default checkAuthentication;

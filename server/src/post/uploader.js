@@ -1,7 +1,7 @@
-const fs = require('fs');
-const multer = require('multer');
-const path = require('path');
-const { createCustomError, KNOWZONE_ERROR_TYPES } = require('../common/knowzoneErrorHandler');
+import fs from 'fs';
+import multer from 'multer';
+import path from 'path';
+import { createCustomError, KNOWZONE_ERROR_TYPES } from '../common/knowzoneErrorHandler.js';
 
 const imageStorage = multer.diskStorage({
   destination(_req, _file, cb) {
@@ -132,7 +132,7 @@ const preparePostForUpdate = (req, res, next) => {
   next();
 };
 
-module.exports = {
+export {
   uploadImages,
   preparePostForCreate,
   preparePostForUpdate,

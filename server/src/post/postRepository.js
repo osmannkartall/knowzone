@@ -1,10 +1,8 @@
-const PostModel = require('./post');
-const BaseRepository = require('../common/baseRepository');
+import BaseRepository from '../common/baseRepository.js';
+import PostModel from './post.js';
 
-class PostRepository extends BaseRepository {
+export default class PostRepository extends BaseRepository {
   constructor() {
     super(PostModel);
   }
 }
-
-module.exports = PostRepository;

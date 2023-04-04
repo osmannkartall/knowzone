@@ -1,5 +1,7 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-env jest */
-const { preparePostForCreate, preparePostForUpdate } = require('../../src/post/uploader');
+import { jest } from '@jest/globals';
+import { preparePostForCreate, preparePostForUpdate } from '../../src/post/uploader.js';
 
 describe('uploader - preparePostForCreate', () => {
   let req;

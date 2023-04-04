@@ -1,4 +1,4 @@
-const POST_SCHEMA_CONFIGS = require('./postSchemaConfigs');
+import POST_SCHEMA_CONFIGS from './postSchemaConfigs.js';
 
 const POST_VALIDATION_MESSAGES = Object.freeze({
   VALUE: (field, comp, type) => `value of ${field} ${comp} must be ${type}`,
@@ -9,4 +9,4 @@ const POST_VALIDATION_MESSAGES = Object.freeze({
   ].join(' '),
 });
 
-module.exports = POST_VALIDATION_MESSAGES;
+export default POST_VALIDATION_MESSAGES;

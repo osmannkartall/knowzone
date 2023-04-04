@@ -1,5 +1,5 @@
-const FORM_COMPONENT_TYPES = require('./formComponentTypes');
-const FORM_SCHEMA_CONFIGS = require('./formSchemaConfigs');
+import FORM_COMPONENT_TYPES from './formComponentTypes.js';
+import FORM_SCHEMA_CONFIGS from './formSchemaConfigs.js';
 
 function isAllValidKeyValue(content) {
   return Object.entries(content).every(([key, value]) => (
@@ -28,7 +28,7 @@ function isValidMaxNumImageComponent(content) {
   return true;
 }
 
-module.exports = {
+export default {
   isAllValidKeyValue,
   isValidMaxNumImageComponent,
 };

@@ -10,4 +10,4 @@ const POST_SCHEMA_CONFIGS = Object.freeze({
   MAX_LEN_TOPIC: 30,
 });
 
-module.exports = POST_SCHEMA_CONFIGS;
+export default POST_SCHEMA_CONFIGS;

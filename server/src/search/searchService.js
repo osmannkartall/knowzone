@@ -1,5 +1,5 @@
-const PostModel = require('../post/post');
-const FormModel = require('../form/form');
+import PostModel from '../post/post.js';
+import FormModel from '../form/form.js';
 
 function prepareFilterQuery(info) {
   const filterQuery = { 'owner.id': info.ownerId };
@@ -81,4 +81,4 @@ async function search(info) {
   return { posts, forms };
 }
 
-module.exports = { search };
+export default { search };

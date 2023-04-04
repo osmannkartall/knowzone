@@ -1,15 +1,17 @@
-const router = require('express').Router();
-const Joi = require('joi');
-const UserModel = require('./user');
-const AuthService = require('./authService');
-const checkAuthentication = require('./checkAuthentication');
-const {
+import { Router } from 'express';
+import Joi from 'joi';
+import UserModel from './user.js';
+import AuthService from './authService.js';
+import checkAuthentication from './checkAuthentication.js';
+import {
   hasLowerLayerCustomError,
   changeToCustomError,
   KNOWZONE_ERROR_TYPES,
   createErrorResponse,
-} = require('../common/knowzoneErrorHandler');
-const { createSuccessResponse } = require('../common/utils');
+} from '../common/knowzoneErrorHandler.js';
+import { createSuccessResponse } from '../common/utils.js';
+
+const router = Router();
 
 const auth = new AuthService(UserModel);
 
@@ -155,4 +157,4 @@ router.post('/logout', checkAuthentication, logout);
 
 router.get('/checkUserSession/:id', checkUserSession);
 
-module.exports = router;
+export default router;

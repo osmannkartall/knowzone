@@ -1,15 +1,17 @@
-const router = require('express').Router();
-const Joi = require('joi');
-const PostRepository = require('./postRepository');
-const { uploadImages, preparePostForCreate, preparePostForUpdate } = require('./uploader');
-const { createSuccessResponse } = require('../common/utils');
-const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../common/knowzoneErrorHandler');
-const checkAuthentication = require('../auth/checkAuthentication');
-const FORM_SCHEMA_CONFIGS = require('../form/formSchemaConfigs');
-const POST_SCHEMA_CONFIGS = require('./postSchemaConfigs');
-const VALIDATION_MESSAGES = require('../common/validationMessages');
-const POST_VALIDATION_MESSAGES = require('./postValidationMessages');
-const validators = require('../common/validators');
+import express from 'express';
+import Joi from 'joi';
+import { uploadImages, preparePostForCreate, preparePostForUpdate } from './uploader.js';
+import { createSuccessResponse } from '../common/utils.js';
+import { KNOWZONE_ERROR_TYPES, changeToCustomError } from '../common/knowzoneErrorHandler.js';
+import checkAuthentication from '../auth/checkAuthentication.js';
+import FORM_SCHEMA_CONFIGS from '../form/formSchemaConfigs.js';
+import POST_SCHEMA_CONFIGS from './postSchemaConfigs.js';
+import VALIDATION_MESSAGES from '../common/validationMessages.js';
+import POST_VALIDATION_MESSAGES from './postValidationMessages.js';
+import validators from '../common/validators.js';
+import PostRepository from './postRepository.js';
+
+const router = express.Router();
 
 const postRepository = new PostRepository();
 
@@ -219,4 +221,4 @@ router.delete('/:id', checkAuthentication, deleteById);
 
 router.delete('/', checkAuthentication, deleteAll);
 
-module.exports = router;
+export default router;
