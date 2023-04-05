@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/app.js",
+  "type": "module",
   "scripts": {
-    "test": "jest",
+    "test": "node --experimental-vm-modules ./node_modules/.bin/jest",
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
     "data-generator": "node src/scripts/dataGenerator.js"

@@ -4,4 +4,4 @@ const MONGOOSE_DEFAULT_MESSAGES = Object.freeze({
   CAST: (type) => `Cast to ${type} failed for value`,
 });
 
-module.exports = MONGOOSE_DEFAULT_MESSAGES;
+export default MONGOOSE_DEFAULT_MESSAGES;

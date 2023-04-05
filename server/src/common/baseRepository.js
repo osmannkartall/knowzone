@@ -1,4 +1,4 @@
-class BaseRepository {
+export default class BaseRepository {
   constructor(model) {
     this.model = model;
   }
@@ -35,5 +35,3 @@ class BaseRepository {
     return this.model.deleteMany(conditions);
   }
 }
-
-module.exports = BaseRepository;

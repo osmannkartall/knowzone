@@ -1,8 +1,8 @@
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const mongoose = require('mongoose');
-const mockMongo = require('./mockMongo');
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose from 'mongoose';
+import mockMongo from './mockMongo.js';
 
-module.exports = async function globalSetup() {
+export default async function globalSetup() {
   if (mockMongo.Memory) { // Config to decided if an mongodb-memory-server instance should be used
     // it's needed in global space, because we don't want to create a new instance every test-suite
     const instance = await MongoMemoryServer.create();
@@ -18,4 +18,4 @@ module.exports = async function globalSetup() {
   await mongoose.connect(`${process.env.MONGO_URI}/${mockMongo.Database}`);
   await mongoose.connection.db.dropDatabase();
   await mongoose.disconnect();
-};
+}

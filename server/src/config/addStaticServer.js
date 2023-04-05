@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
 
 function addStaticServer() {
   return express.static(process.env.PUBLIC_UPLOAD_PATH);
 }
 
-module.exports = addStaticServer;
+export default addStaticServer;

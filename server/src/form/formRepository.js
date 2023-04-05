@@ -1,10 +1,8 @@
-const BaseRepository = require('../common/baseRepository');
-const FormModel = require('./form');
+import BaseRepository from '../common/baseRepository.js';
+import FormModel from './form.js';
 
-class FormRepository extends BaseRepository {
+export default class FormRepository extends BaseRepository {
   constructor() {
     super(FormModel);
   }
 }
-
-module.exports = FormRepository;

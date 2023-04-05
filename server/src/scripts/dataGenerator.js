@@ -1,14 +1,14 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
-const { faker } = require('@faker-js/faker');
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const FORM_COMPONENT_TYPES = require('../form/formComponentTypes');
-const Form = require('../form/Form');
-const Post = require('../post/Post');
-const FORM_SCHEMA_CONFIGS = require('../form/formSchemaConfigs');
-const POST_SCHEMA_CONFIGS = require('../post/postSchemaConfigs');
-const User = require('../auth/User');
+import { faker } from '@faker-js/faker';
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import FORM_COMPONENT_TYPES from '../form/formComponentTypes.js';
+import Form from '../form/form.js';
+import Post from '../post/post.js';
+import FORM_SCHEMA_CONFIGS from '../form/formSchemaConfigs.js';
+import POST_SCHEMA_CONFIGS from '../post/postSchemaConfigs.js';
+import User from '../auth/user.js';
 
 const MAX_NUM_USERS = 10;
 const MAX_NUM_FORMS_PER_USER = 5;

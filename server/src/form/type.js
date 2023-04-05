@@ -1,5 +1,5 @@
-const FORM_SCHEMA_CONFIGS = require('./formSchemaConfigs');
-const VALIDATION_MESSAGES = require('../common/validationMessages');
+import FORM_SCHEMA_CONFIGS from './formSchemaConfigs.js';
+import VALIDATION_MESSAGES from '../common/validationMessages.js';
 
 const type = {
   type: String,
@@ -14,4 +14,4 @@ const type = {
   ],
 };
 
-module.exports = type;
+export default type;

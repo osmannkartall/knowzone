@@ -1,4 +1,4 @@
-const cors = require('cors');
+import cors from 'cors';
 
 function enableCors() {
   const CORS_OPTIONS = { origin: process.env.REACT_URL, credentials: true };
@@ -6,4 +6,4 @@ function enableCors() {
   return cors(CORS_OPTIONS);
 }
 
-module.exports = enableCors;
+export default enableCors;

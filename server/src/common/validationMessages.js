@@ -10,4 +10,4 @@ const VALIDATION_MESSAGES = Object.freeze({
   DUPLICATED_ITEMS: 'Array cannot have duplicated items',
 });
 
-module.exports = VALIDATION_MESSAGES;
+export default VALIDATION_MESSAGES;

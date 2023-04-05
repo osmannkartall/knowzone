@@ -1,15 +1,16 @@
-const router = require('express').Router();
-const Joi = require('joi');
-const FormRepository = require('./formRepository');
-const { createSuccessResponse } = require('../common/utils');
-const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../common/knowzoneErrorHandler');
-const checkAuthentication = require('../auth/checkAuthentication');
-const FORM_SCHEMA_CONFIGS = require('./formSchemaConfigs');
-const validators = require('../common/validators');
-const formValidators = require('./formValidators');
-const VALIDATION_MESSAGES = require('../common/validationMessages');
-const FORM_VALIDATION_MESSAGES = require('./formValidationMessages');
+import { Router } from 'express';
+import Joi from 'joi';
+import FormRepository from './formRepository.js';
+import { createSuccessResponse } from '../common/utils.js';
+import { KNOWZONE_ERROR_TYPES, changeToCustomError } from '../common/knowzoneErrorHandler.js';
+import checkAuthentication from '../auth/checkAuthentication.js';
+import FORM_SCHEMA_CONFIGS from './formSchemaConfigs.js';
+import validators from '../common/validators.js';
+import formValidators from './formValidators.js';
+import VALIDATION_MESSAGES from '../common/validationMessages.js';
+import FORM_VALIDATION_MESSAGES from './formValidationMessages.js';
 
+const router = Router();
 const formRepository = new FormRepository();
 
 const createSchema = Joi.object({
@@ -201,4 +202,4 @@ router.delete('/:id', checkAuthentication, deleteById);
 
 router.delete('/', checkAuthentication, deleteAll);
 
-module.exports = router;
+export default router;

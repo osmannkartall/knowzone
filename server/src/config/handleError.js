@@ -1,4 +1,4 @@
-const {
+import {
   createErrorResponse,
   isApiSchemaError,
   isCustomError,
@@ -6,7 +6,7 @@ const {
   isSchemaError,
   isMongoError,
   setMongoErrorDescription,
-} = require('../common/knowzoneErrorHandler');
+} from '../common/knowzoneErrorHandler.js';
 
 function getCustomFieldsByErrorType(err) {
   let statusCode = 500;
@@ -52,4 +52,4 @@ function handleError(err, _req, res, next) {
   res.status(statusCode).json(createErrorResponse(description));
 }
 
-module.exports = handleError;
+export default handleError;

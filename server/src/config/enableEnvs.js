@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 
 function enableEnvs() {
   const result = dotenv.config();
@@ -37,4 +37,4 @@ function enableEnvs() {
   }
 }
 
-module.exports = enableEnvs;
+export default enableEnvs;

@@ -1,12 +1,12 @@
-const { Schema, model } = require('mongoose');
-const { transformToJSON } = require('../common/utils');
-const owner = require('./owner');
-const type = require('./type');
-const FORM_SCHEMA_CONFIGS = require('./formSchemaConfigs');
-const VALIDATION_MESSAGES = require('../common/validationMessages');
-const FORM_VALIDATION_MESSAGES = require('./formValidationMessages');
-const validators = require('../common/validators');
-const formValidators = require('./formValidators');
+import { Schema, model } from 'mongoose';
+import { transformToJSON } from '../common/utils.js';
+import owner from './owner.js';
+import type from './type.js';
+import FORM_SCHEMA_CONFIGS from './formSchemaConfigs.js';
+import VALIDATION_MESSAGES from '../common/validationMessages.js';
+import FORM_VALIDATION_MESSAGES from './formValidationMessages.js';
+import validators from '../common/validators.js';
+import formValidators from './formValidators.js';
 
 const formSchema = Schema(
   {
@@ -62,4 +62,4 @@ const formSchema = Schema(
 
 transformToJSON(formSchema);
 
-module.exports = model('form', formSchema);
+export default model('form', formSchema);

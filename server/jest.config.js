@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   collectCoverage: true,
   coverageReporters: ['json', 'html'],
   globalSetup: '<rootDir>/test/globalSetup.js',
@@ -9,4 +9,5 @@ module.exports = {
   maxWorkers: 4,
   verbose: true,
   detectOpenHandles: true,
+  transform: {},
 };

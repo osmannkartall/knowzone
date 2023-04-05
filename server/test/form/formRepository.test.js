@@ -1,11 +1,10 @@
-/* eslint-env jest */
-const mongoose = require('mongoose');
-const FormRepository = require('../../src/form/formRepository');
-const FORM_SCHEMA_CONFIGS = require('../../src/form/formSchemaConfigs');
-const FORM_VALIDATION_MESSAGES = require('../../src/form/formValidationMessages');
-const VALIDATION_MESSAGES = require('../../src/common/validationMessages');
-const MONGOOSE_DEFAULT_MESSAGES = require('../../src/common/mongooseDefaultMessages');
-const FORM_COMPONENT_TYPES = require('../../src/form/formComponentTypes');
+import mongoose from 'mongoose';
+import FormRepository from '../../src/form/formRepository.js';
+import FORM_SCHEMA_CONFIGS from '../../src/form/formSchemaConfigs.js';
+import FORM_VALIDATION_MESSAGES from '../../src/form/formValidationMessages.js';
+import VALIDATION_MESSAGES from '../../src/common/validationMessages.js';
+import MONGOOSE_DEFAULT_MESSAGES from '../../src/common/mongooseDefaultMessages.js';
+import FORM_COMPONENT_TYPES from '../../src/form/formComponentTypes.js';
 
 const formRepository = new FormRepository();
 

@@ -1,7 +1,7 @@
-const bcrypt = require('bcryptjs');
-const { createCustomError, KNOWZONE_ERROR_TYPES } = require('../common/knowzoneErrorHandler');
+import bcrypt from 'bcryptjs';
+import { createCustomError, KNOWZONE_ERROR_TYPES } from '../common/knowzoneErrorHandler.js';
 
-class AuthService {
+export default class AuthService {
   constructor(userModel) {
     this.userModel = userModel;
   }
@@ -85,5 +85,3 @@ class AuthService {
     }
   }
 }
-
-module.exports = AuthService;
