@@ -2,19 +2,14 @@ import { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { List, ListItem, ListItemText, Button, ListItemIcon } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
-import { FormProvider, useForm } from 'react-hook-form';
 import BookmarkBorder from '@mui/icons-material/BookmarkBorder';
 import Bookmark from '@mui/icons-material/Bookmark';
 import { toast } from 'react-toastify';
-import { joiResolver } from '@hookform/resolvers/joi';
 import { GRAY2, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
-import PostCreator from '../post/PostCreator';
 import LinearProgressModal from '../common/LinearProgressModal';
-import { BE_ROUTES } from '../../constants/routes';
 import getFormTypes from '../../api/forms/getFormTypes';
 import FormCreator from '../form/FormCreator';
-import postCreatorSchema from '../post/postCreatorSchema';
 import createForm from '../../api/forms/createForm';
 import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
 
@@ -23,7 +18,6 @@ const PREFIX = 'Sidebar';
 const classes = {
   sidebar: `${PREFIX}-sidebar`,
   sidebarContainer: `${PREFIX}-sidebarContainer`,
-  createButton: `${PREFIX}-createButton`,
   sidebarBottomContainer: `${PREFIX}-sidebarBottomContainer`,
 };
 
@@ -47,21 +41,20 @@ const Root = styled('div')(({ theme }) => ({
     borderRight: `1px solid ${GRAY3}`,
   },
 
-  [`& .${classes.createButton}`]: {
-    margin: theme.spacing(1, 2),
-    padding: theme.spacing(1, 0),
-  },
-
   [`& .${classes.sidebarBottomContainer}`]: {
     display: 'flex',
     justifyContent: 'center',
+    margin: theme.spacing(1, 2),
+    padding: theme.spacing(1, 0),
   },
 }));
 
 function SidebarItem({ text }) {
   const location = useLocation();
 
-  const isActiveRoute = () => location.pathname === `/posts/${text}`;
+  const isActiveRoute = () => (
+    decodeURIComponent(location.pathname.replace(/\+/g, ' ')) === `/posts/${text}`
+  );
 
   return (
     <ListItem
@@ -102,20 +95,8 @@ function SidebarItemList({ sidebarItems }) {
 }
 
 function Sidebar({ isSidebarOpen }) {
-  const [isPostCreatorOpen, setIsPostCreatorOpen] = useState(false);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isFormCreatorOpen, setIsFormCreatorOpen] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
-  const [form, setForm] = useState({});
-
-  const postCreatorMethods = useForm({
-    resolver: joiResolver(postCreatorSchema),
-    defaultValues: { type: '' },
-  });
-
-  const watchedPostType = postCreatorMethods.watch('type');
-
-  const onClickCreatePost = () => setIsPostCreatorOpen(true);
-
   const [sidebarItems, setSidebarItems] = useState([]);
 
   useEffect(() => {
@@ -134,89 +115,40 @@ function Sidebar({ isSidebarOpen }) {
     };
   }, []);
 
-  const onClickCreateForm = async (formValues) => {
+  const addForm = async (values) => {
+    let isAddFormSuccessful = false;
+
     try {
       setIsLinearProgressModalOpen(true);
 
-      const { type, content } = formValues;
+      const { type, content } = values;
       const newForm = { type, content: {} };
 
       Object.values(content).forEach((fs) => {
         if (fs.type === FORM_COMPONENT_TYPES.IMAGE) {
           newForm.content.images = FORM_COMPONENT_TYPES.IMAGE;
         } else if (fs.name && fs.type) {
-          newForm.content[fs.name] = fs.type;
+          newForm.content[fs.name.toString()] = fs.type;
         }
       });
 
       const result = await createForm(newForm);
 
-      if (result.status === 'success') {
-        setIsFormOpen(false);
-        setSidebarItems((prev) => [{ id: type, type }, ...prev]);
-      } else {
-        toast.error(result.message);
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message);
-      return false;
-    } finally {
-      setIsLinearProgressModalOpen(false);
-    }
-  };
-
-  const addPost = async () => {
-    try {
-      setIsLinearProgressModalOpen(true);
-      const fd = new FormData();
-      const { type, topics, content } = postCreatorMethods.getValues();
-      const { images, ...rest } = content ?? {};
-      const filledContentFields = {};
-
-      Object.entries(rest).forEach(([k, v]) => { if (v) filledContentFields[k] = v; });
-
-      if (images) {
-        (Array.isArray(images) ? images : []).forEach((image) => {
-          if (image.preview) {
-            URL.revokeObjectURL(image.preview);
-          }
-          fd.append('image', image);
-        });
-      }
-
-      fd.append('content', JSON.stringify(filledContentFields));
-      fd.append('type', JSON.stringify(type));
-      fd.append('topics', JSON.stringify(topics));
-
-      const response = await fetch(`${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}`, {
-        method: 'POST',
-        body: fd,
-        credentials: 'include',
-      });
-      const result = await response.json();
-
       if (result?.status === 'fail') {
-        toast.error(result.message);
+        toast.error(result?.message);
       } else {
-        toast.success(result.message);
-        setIsPostCreatorOpen(false);
-        postCreatorMethods.reset();
+        setIsFormCreatorOpen(false);
+        setSidebarItems((prev) => [{ id: type, type }, ...prev]);
+        isAddFormSuccessful = true;
       }
     } catch (error) {
       console.log(error);
+      toast.error(error?.message);
     } finally {
       setIsLinearProgressModalOpen(false);
     }
-  };
 
-  const handleSubmit = () => {
-    if (watchedPostType !== '') {
-      addPost();
-    }
+    return isAddFormSuccessful;
   };
 
   return (
@@ -236,37 +168,21 @@ function Sidebar({ isSidebarOpen }) {
           <div className={classes.sidebarBottomContainer}>
             <Button
               className={classes.createButton}
-              variant="contained"
-              color="primary"
-              fullWidth
-              onClick={onClickCreatePost}
-            >
-              Create Post
-            </Button>
-          </div>
-          <div className={classes.sidebarBottomContainer}>
-            <Button
-              className={classes.createButton}
               variant="outlined"
               color="primary"
               fullWidth
-              onClick={() => setIsFormOpen(true)}
+              onClick={() => setIsFormCreatorOpen(true)}
             >
               Create Form
             </Button>
           </div>
-          <FormCreator open={isFormOpen} setOpen={setIsFormOpen} create={onClickCreateForm} />
-          <FormProvider {...postCreatorMethods}>
-            <PostCreator
-              form={form}
-              setForm={setForm}
-              title="Create Post"
-              open={isPostCreatorOpen}
-              setOpen={setIsPostCreatorOpen}
-              onSubmit={handleSubmit}
-              formTypes={sidebarItems}
+          {isFormCreatorOpen && (
+            <FormCreator
+              open={isFormCreatorOpen}
+              setOpen={setIsFormCreatorOpen}
+              handler={addForm}
             />
-          </FormProvider>
+          )}
         </div>
       </Root>
     </LinearProgressModal>

@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const Joi = require('joi');
-const UserModel = require('./User');
-const AuthService = require('./AuthService');
+const UserModel = require('./user');
+const AuthService = require('./authService');
 const checkAuthentication = require('./checkAuthentication');
 const {
   hasLowerLayerCustomError,

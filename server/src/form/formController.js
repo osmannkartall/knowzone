@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const Joi = require('joi');
-const FormRepository = require('./FormRepository');
+const FormRepository = require('./formRepository');
 const { createSuccessResponse } = require('../common/utils');
 const { KNOWZONE_ERROR_TYPES, changeToCustomError } = require('../common/knowzoneErrorHandler');
 const checkAuthentication = require('../auth/checkAuthentication');

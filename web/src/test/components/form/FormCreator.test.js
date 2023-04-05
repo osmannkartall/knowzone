@@ -34,7 +34,7 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-const mockCreateForm = jest.fn((type, content) => Promise.resolve({ type, content }));
+const mockHandler = jest.fn((type, content) => Promise.resolve({ type, content }));
 
 describe('FormCreator', () => {
   it('should render the create form header', () => {
@@ -96,7 +96,7 @@ describe('FormCreator', () => {
   });
 
   it('should submit form with only image field and form type name', async () => {
-    render(<FormCreator open create={mockCreateForm} />);
+    render(<FormCreator open handler={mockHandler} />);
 
     const type = 'test form';
 
@@ -109,7 +109,7 @@ describe('FormCreator', () => {
     fireEvent.click(screen.getByText('Create'));
 
     await waitFor(() => {
-      expect(mockCreateForm).toHaveBeenCalledWith({
+      expect(mockHandler).toHaveBeenCalledWith({
         type,
         content: {
           k0: { name: '', type: '' },
@@ -128,7 +128,7 @@ describe('FormCreator', () => {
   });
 
   it('should submit form', async () => {
-    render(<FormCreator open create={mockCreateForm} />);
+    render(<FormCreator open handler={mockHandler} />);
 
     const type = 'test form';
 
@@ -148,7 +148,7 @@ describe('FormCreator', () => {
     fireEvent.click(screen.getByText('Create'));
 
     await waitFor(() => {
-      expect(mockCreateForm).toHaveBeenCalledWith({
+      expect(mockHandler).toHaveBeenCalledWith({
         type,
         content: {
           k0: { name: 'my text', type: FORM_COMPONENT_TYPES.TEXT },
@@ -168,7 +168,7 @@ describe('FormCreator', () => {
   });
 
   it('should throw error when trying to create form without the form type name', async () => {
-    render(<FormCreator open create={mockCreateForm} />);
+    render(<FormCreator open handler={mockHandler} />);
 
     fireEvent.click(screen.getByText('Create'));
 
@@ -179,7 +179,7 @@ describe('FormCreator', () => {
   });
 
   it('should throw error when trying to create form with the same form field name', async () => {
-    render(<FormCreator open create={mockCreateForm} />);
+    render(<FormCreator open handler={mockHandler} />);
 
     const formTypeNameInput = screen.getByRole('textbox', { name: /form type name/i });
     fireEvent.change(formTypeNameInput, { target: { value: 'test form' } });
@@ -209,14 +209,14 @@ describe('FormCreator', () => {
     const componentTypePreviews = getComponentTypePreviews();
 
     expect(componentTypePreviews.length).toBe(2);
-    await within(componentTypePreviews[0]).findByText(/this is a markdown editor/i);
+    await within(componentTypePreviews[0]).findByText(/this is an editor/i);
     await within(componentTypePreviews[1]).findByText(/this is a text/i);
 
     onClickMuiDropdownOption(componentTypeDropdowns[1], FORM_COMPONENT_TYPES.LIST);
     const newComponentTypePreviews = getComponentTypePreviews();
 
     expect(newComponentTypePreviews.length).toBe(3);
-    await within(newComponentTypePreviews[0]).findByText(/this is a markdown editor/i);
+    await within(newComponentTypePreviews[0]).findByText(/this is an editor/i);
     await within(newComponentTypePreviews[1]).findByText(/example1/i);
     await within(newComponentTypePreviews[2]).findByText(/this is a text/i);
   });

@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const Joi = require('joi');
-const SearchService = require('./SearchService');
+const SearchService = require('./searchService');
 const checkAuthentication = require('../auth/checkAuthentication');
 const {
   KNOWZONE_ERROR_TYPES,

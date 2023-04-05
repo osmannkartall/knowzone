@@ -1,4 +1,4 @@
-const POST_SCHEMA_CONFIGS = require('./postSchemaConfigs');
+import POST_SCHEMA_CONFIGS from './postSchemaConfigs';
 
 const POST_VALIDATION_MESSAGES = Object.freeze({
   VALUE: (field, comp, type) => `value of ${field} ${comp} must be ${type}`,

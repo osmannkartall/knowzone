@@ -4,7 +4,6 @@ import { ThemeProvider, createTheme, StyledEngineProvider } from '@mui/material/
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Dashboard from './components/dashboard/Dashboard';
-import PostsByOwner from './pages/PostsByOwner';
 import SearchResults from './pages/SearchResults';
 import NotFound from './pages/NotFound';
 import { PRIMARY, WHITE } from './constants/colors';
@@ -15,6 +14,7 @@ import Register from './pages/Register';
 import { checkUserSession } from './contexts/AuthActions';
 import PostsByType from './pages/PostsByType';
 import LinearProgressModal from './components/common/LinearProgressModal';
+import Home from './pages/Home';
 
 const theme = createTheme(({
   palette: {
@@ -53,7 +53,15 @@ function Wrapper() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to={`/${FE_ROUTES.HOME}`} />} />
+          <Route
+            path="/"
+            element={(
+              <AuthRouteComponent
+                Success={<Dashboard><Home /></Dashboard>}
+                Terminated={<Login />}
+              />
+              )}
+          />
           <Route
             path={`/${FE_ROUTES.LOGIN}`}
             element={(
@@ -69,15 +77,6 @@ function Wrapper() {
               <AuthRouteComponent
                 Success={<Navigate to={`/${FE_ROUTES.HOME}`} />}
                 Terminated={<Register />}
-              />
-            )}
-          />
-          <Route
-            path={`/${FE_ROUTES.POSTS}`}
-            element={(
-              <AuthRouteComponent
-                Success={<Dashboard><PostsByOwner /></Dashboard>}
-                Terminated={<Navigate to={`/${FE_ROUTES.LOGIN}`} />}
               />
             )}
           />

@@ -103,11 +103,6 @@ function Topbar({ openSidebar }) {
 
   const closeMenu = () => setAnchorMenu(null);
 
-  const onClickPosts = () => {
-    closeMenu();
-    navigate(`/${FE_ROUTES.POSTS}`);
-  };
-
   const onClickAccount = () => {
     closeMenu();
     console.log('account');
@@ -181,7 +176,6 @@ function Topbar({ openSidebar }) {
             open={isMenuOpen}
             onClose={closeMenu}
           >
-            <MenuItem onClick={onClickPosts}>Your Posts</MenuItem>
             <MenuItem onClick={onClickAccount}>Account</MenuItem>
             <MenuItem onClick={onClickLogout}>Logout</MenuItem>
           </Menu>

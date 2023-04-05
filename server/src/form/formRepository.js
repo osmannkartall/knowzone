@@ -1,5 +1,5 @@
-const FormModel = require('./Form');
-const BaseRepository = require('../common/BaseRepository');
+const BaseRepository = require('../common/baseRepository');
+const FormModel = require('./form');
 
 class FormRepository extends BaseRepository {
   constructor() {

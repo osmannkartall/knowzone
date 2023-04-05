@@ -57,7 +57,7 @@ function SearchResults() {
 
   return (
     <LinearProgressModal isOpen={isLinearProgressModalOpen}>
-      <ContentWrapper title="Search Results">
+      <ContentWrapper Header={<h2>Search Results</h2>}>
         <p>{searchResultMessage(posts?.length)}</p>
         {Array.isArray(posts) && posts.length ? (
           posts.map((p) => (

@@ -1,5 +1,5 @@
-const PostModel = require('../post/Post');
-const FormModel = require('../form/Form');
+const PostModel = require('../post/post');
+const FormModel = require('../form/form');
 
 function prepareFilterQuery(info) {
   const filterQuery = { 'owner.id': info.ownerId };

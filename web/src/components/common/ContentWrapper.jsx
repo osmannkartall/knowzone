@@ -12,10 +12,10 @@ const Root = styled('div')(({ theme }) => ({
   },
 }));
 
-function ContentWrapper({ title, children }) {
+function ContentWrapper({ Header, children }) {
   return (
     <Root className={classes.wrapper}>
-      <h2>{title}</h2>
+      {Header}
       {children}
     </Root>
   );

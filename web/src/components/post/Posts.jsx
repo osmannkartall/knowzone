@@ -1,67 +1,67 @@
 import { useState } from 'react';
-import { Dialog, DialogActions, DialogTitle, Button } from '@mui/material';
-import { FormProvider, useForm } from 'react-hook-form';
+import { Dialog, DialogActions, DialogTitle, Button, styled } from '@mui/material';
 import { toast } from 'react-toastify';
-import { joiResolver } from '@hookform/resolvers/joi';
 import Post from './Post';
 import PostCreator from './PostCreator';
 import ContentWrapper from '../common/ContentWrapper';
-import { IRREVERSIBLE_ACTION, PRIMARY, WHITE } from '../../constants/colors';
+import { GRAY3, IRREVERSIBLE_ACTION, WHITE } from '../../constants/colors';
 import LinearProgressModal from '../common/LinearProgressModal';
 import { BE_ROUTES } from '../../constants/routes';
-import postCreatorSchema from './postCreatorSchema';
+import { removeNumericKeyPrefix } from './postCreatorUtils';
 
 const isNewImage = (image) => image instanceof File;
 
-function Posts({ title, forms, form, setForm, posts, setPosts }) {
-  const [openForm, setOpenForm] = useState(false);
-  const [action, setAction] = useState('update');
+const ContentWrapperHeaderContainer = styled('div')(({ theme }) => ({
+  position: 'sticky',
+  top: 0,
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: theme.spacing(1, 2),
+  margin: theme.spacing(1, 0),
+  border: `1px solid ${GRAY3}`,
+  borderRadius: 4,
+  backgroundColor: WHITE,
+  zIndex: 100,
+}));
+
+function Posts({ title, form, posts, setPosts }) {
+  const [openForUpdate, setOpenForUpdate] = useState(false);
+  const [openForAdd, setOpenForAdd] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState();
 
   const handleClose = () => setOpenDialog(false);
 
-  const { setValue, getValues, reset, ...methods } = useForm({
-    resolver: joiResolver(postCreatorSchema),
-    defaultValues: { type: '' },
-  });
-
-  const setFormValues = (post) => {
-    Object.entries(post).forEach(([k, v]) => {
-      setValue(k, v);
-    });
-  };
-
   const setForUpdate = (post) => {
-    setAction('update');
     if (post) {
-      setFormValues(post);
-      setOpenForm(true);
+      setSelectedPost(post);
+      setOpenForUpdate(true);
     }
   };
 
   const setForDelete = (post) => {
-    setAction('delete');
     if (post) {
-      setFormValues(post);
+      setSelectedPost(post);
       setOpenDialog(true);
     }
   };
 
-  const updatePost = async () => {
-    try {
-      setIsLinearProgressModalOpen(true);
-      const updatedPost = getValues();
+  const updatePost = async (values) => {
+    let isUpdatePostSuccessful = false;
+    setIsLinearProgressModalOpen(true);
 
-      if (updatedPost && updatedPost.id) {
-        const idx = posts.findIndex((p) => p.id === updatedPost.id);
+    try {
+      const { id, content, topics, type } = values ?? {};
+
+      if (id) {
+        const idx = posts.findIndex((p) => p.id === id);
 
         if (idx !== -1) {
           const fd = new FormData();
-          const { images, ...rest } = updatedPost.content;
-          const filledContentFields = {};
-
-          Object.entries(rest).forEach(([k, v]) => { if (v) filledContentFields[k] = v; });
+          const { images, ...rest } = removeNumericKeyPrefix(content);
 
           if (images) {
             const oldImages = [];
@@ -78,10 +78,10 @@ function Posts({ title, forms, form, setForm, posts, setPosts }) {
             fd.append('oldImages', JSON.stringify(oldImages));
           }
 
-          fd.append('content', JSON.stringify(filledContentFields));
-          fd.append('topics', JSON.stringify(updatedPost.topics));
+          fd.append('content', JSON.stringify(rest));
+          fd.append('topics', JSON.stringify(topics));
 
-          const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}/${updatedPost.id}`;
+          const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}/${id}`;
           const response = await fetch(url, { method: 'PUT', body: fd, credentials: 'include' });
           const result = await response.json();
 
@@ -89,10 +89,11 @@ function Posts({ title, forms, form, setForm, posts, setPosts }) {
             toast.error(result.message);
           } else {
             const newPosts = [...posts];
-            newPosts[idx] = { ...result, type: updatedPost.type };
+            newPosts[idx] = { ...result, type };
             setPosts(newPosts);
-            setOpenForm(false);
-            reset();
+            setOpenForUpdate(false);
+
+            isUpdatePostSuccessful = true;
           }
         }
       }
@@ -102,24 +103,26 @@ function Posts({ title, forms, form, setForm, posts, setPosts }) {
       setOpenDialog(false);
       setIsLinearProgressModalOpen(false);
     }
+
+    return isUpdatePostSuccessful;
   };
 
   const deletePost = async () => {
-    try {
-      const selectedPost = getValues();
+    setIsLinearProgressModalOpen(true);
 
-      if (selectedPost && selectedPost.type && selectedPost.id) {
-        setIsLinearProgressModalOpen(true);
+    try {
+      if (selectedPost?.id) {
         const idx = posts.findIndex((p) => p.id === selectedPost.id);
 
         if (idx !== -1) {
-          const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}/${selectedPost.id}`;
-
-          const response = await fetch(url, {
-            headers: { 'Content-Type': 'application/json' },
-            method: 'DELETE',
-            credentials: 'include',
-          });
+          const response = await fetch(
+            `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}/${selectedPost?.id}`,
+            {
+              headers: { 'Content-Type': 'application/json' },
+              method: 'DELETE',
+              credentials: 'include',
+            },
+          );
           const result = response.json();
 
           console.log(result.message);
@@ -136,51 +139,112 @@ function Posts({ title, forms, form, setForm, posts, setPosts }) {
     }
   };
 
-  const handleConfirm = () => {
-    if (action === 'update') {
-      updatePost();
-    } else if (action === 'delete') {
-      deletePost();
+  const addPost = async (values) => {
+    let isAddPostSuccessful = false;
+    setIsLinearProgressModalOpen(true);
+
+    try {
+      if (values?.type !== '') {
+        const fd = new FormData();
+        const { type, topics, content } = values;
+        const { images, ...rest } = removeNumericKeyPrefix(content);
+        const filledContentFields = {};
+
+        Object.entries(rest).forEach(([k, v]) => { if (v) filledContentFields[k] = v; });
+
+        if (images) {
+          (Array.isArray(images) ? images : []).forEach((image) => {
+            if (image.preview) {
+              URL.revokeObjectURL(image.preview);
+            }
+            fd.append('image', image);
+          });
+        }
+
+        fd.append('content', JSON.stringify(filledContentFields));
+        fd.append('type', JSON.stringify(type));
+        fd.append('topics', JSON.stringify(topics));
+
+        const response = await fetch(
+          `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}`,
+          {
+            method: 'POST',
+            body: fd,
+            credentials: 'include',
+          },
+        );
+        const result = await response.json();
+
+        if (result?.status === 'fail') {
+          toast.error(result?.message);
+        } else {
+          toast.success(result?.message);
+          setOpenForAdd(false);
+          isAddPostSuccessful = true;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.message);
+    } finally {
+      setIsLinearProgressModalOpen(false);
     }
+
+    return isAddPostSuccessful;
   };
 
-  const getFormByType = (selectedType) => {
-    if (forms && Array.isArray(forms) && forms.length) {
-      return forms.find((f) => f.type === selectedType);
-    }
-    if (form) {
-      return form;
-    }
-    return {};
-  };
+  const handleConfirm = () => deletePost();
 
   return (
     <LinearProgressModal isOpen={isLinearProgressModalOpen}>
-      <ContentWrapper title={title}>
+      <ContentWrapper
+        Header={(
+          <ContentWrapperHeaderContainer>
+            <h2>{title}</h2>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => setOpenForAdd(true)}
+              size="small"
+              style={{ height: 40 }}
+            >
+              Create Post
+            </Button>
+          </ContentWrapperHeaderContainer>
+        )}
+      >
         {Array.isArray(posts) && posts.length ? (
           posts.map((p) => (
             <Post
               key={p.id}
               showType
               editable
-              content={getFormByType(p.type)?.content ?? {}}
+              content={form?.content ?? {}}
               post={p}
               onClickUpdate={() => setForUpdate(p)}
               onClickDelete={() => setForDelete(p)}
             />
           ))) : null}
       </ContentWrapper>
-      <FormProvider {...methods} getValues={getValues}>
+      {openForUpdate && (
         <PostCreator
-          form={getFormByType(getValues('type'))}
-          setForm={setForm}
-          title="Update Post"
-          btnTitle="update"
-          open={openForm}
-          setOpen={setOpenForm}
-          onSubmit={() => setOpenDialog(true)}
+          buttonTitle="update"
+          open={openForUpdate}
+          setOpen={setOpenForUpdate}
+          handler={updatePost}
+          form={form}
+          oldPost={selectedPost}
         />
-      </FormProvider>
+      )}
+      {openForAdd && (
+        <PostCreator
+          buttonTitle="create"
+          open={openForAdd}
+          setOpen={setOpenForAdd}
+          handler={addPost}
+          form={form}
+        />
+      )}
       <Dialog
         open={openDialog}
         onClose={handleClose}
@@ -188,7 +252,7 @@ function Posts({ title, forms, form, setForm, posts, setPosts }) {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {`Are you sure you want to ${action} the post?`}
+          Are you sure you want to delete the post?
         </DialogTitle>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
@@ -198,12 +262,12 @@ function Posts({ title, forms, form, setForm, posts, setPosts }) {
             variant="contained"
             onClick={handleConfirm}
             style={{
-              backgroundColor: action === 'update' ? PRIMARY : IRREVERSIBLE_ACTION,
+              backgroundColor: IRREVERSIBLE_ACTION,
               color: WHITE,
             }}
             autoFocus
           >
-            {action}
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
