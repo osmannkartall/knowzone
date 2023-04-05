@@ -5,8 +5,11 @@ import getFormByType from '../api/forms/getFormByType';
 import getPostsByType from '../api/posts/getPostsByType';
 
 function PostsByType() {
-  const [form, setForm] = useState({});
-  const [posts, setPosts] = useState([]);
+  const [formAndPosts, setFormAndPosts] = useState({ form: {}, posts: [] });
+
+  const setPosts = (newPosts) => {
+    setFormAndPosts((prevState) => ({ ...prevState, posts: newPosts }));
+  };
 
   const { type } = useParams();
 
@@ -14,11 +17,14 @@ function PostsByType() {
     let isMounted = true;
 
     if (isMounted) {
-      const initializeForm = async () => {
-        const result = await getFormByType(type);
-        setForm(result);
+      const initialize = async () => {
+        const [formResult, postsResult] = await Promise.all([
+          getFormByType(type),
+          getPostsByType(type),
+        ]);
+        setFormAndPosts({ form: formResult, posts: postsResult });
       };
-      initializeForm();
+      initialize();
     }
 
     return function cleanup() {
@@ -26,23 +32,7 @@ function PostsByType() {
     };
   }, [type]);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    if (isMounted) {
-      const initializePosts = async () => {
-        const data = await getPostsByType(type);
-        setPosts(data);
-      };
-      initializePosts();
-    }
-
-    return function cleanup() {
-      isMounted = false;
-    };
-  }, [type]);
-
-  return <Posts title={type} form={form} posts={posts} setPosts={setPosts} />;
+  return <Posts title={type} formAndPosts={formAndPosts} setPosts={setPosts} />;
 }
 
 export default PostsByType;

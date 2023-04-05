@@ -158,7 +158,7 @@ function ListPart({ title, listItems }) {
   return (
     <PostBodySection title={title ?? 'List'}>
       <ul className={classes.list}>
-        {listItems.map((listItem) => (
+        {(listItems ?? []).map((listItem) => (
           <li key={listItem} className={classes.listItem}>{listItem}</li>
         ))}
       </ul>
