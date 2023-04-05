@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 
 async function startDB() {
   try {
+    console.log('knowzone - mongodb\n----');
+    console.log('> trying to connect to the database...');
     await mongoose.connect(
       process.env.MONGODB_URI,
       {
@@ -9,9 +11,9 @@ async function startDB() {
         useUnifiedTopology: true,
       },
     );
-    console.log('Connected to the database!');
+    console.log('> connected to the database');
   } catch (err) {
-    console.log('Cannot connect to the database!', err);
+    console.log('> cannot connect to the database:', err.message);
     process.exit();
   }
 }
