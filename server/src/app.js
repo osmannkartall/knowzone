@@ -1,4 +1,6 @@
 import express from 'express';
+import process from 'node:process';
+import mongoose from 'mongoose';
 
 import enableEnvs from './config/enableEnvs.js';
 import enableCors from './config/enableCors.js';
@@ -9,7 +11,22 @@ import handleNotFound from './config/handleNotFound.js';
 import handleError from './config/handleError.js';
 import startDB from './config/startDB.js';
 
-async function startExpress() {
+let server;
+
+function createServer(app) {
+  const port = process.env.port ?? 8000;
+
+  console.log('> creating the http server...');
+  try {
+    server = app.listen(port, () => {
+      console.log(`> http server is listening at http://localhost:${port}`);
+    });
+  } catch (err) {
+    console.log('> cannot create the http server');
+  }
+}
+
+function startExpress() {
   const app = express();
 
   app.use(enableCors());
@@ -21,15 +38,35 @@ async function startExpress() {
   app.use(handleNotFound);
   app.use(handleError);
 
-  app.listen(process.env.port ?? 8000, () => {
-    console.log(`Knowzone backend listening at http://localhost:${process.env.port ?? 8000}`);
-  });
+  console.log('knowzone - backend\n----');
+  createServer(app);
 }
 
 async function start() {
   enableEnvs();
   await startDB();
-  await startExpress();
+  startExpress();
 }
 
 start();
+
+function handleShutdown() {
+  console.log('\n> exiting backend...');
+
+  if (server && server.close) {
+    server.close(() => {
+      console.log('> http server is closed');
+    });
+  }
+
+  console.log('> closing mongodb connections...');
+  mongoose.disconnect();
+  console.log('> closed mongodb connections');
+  console.log('\ndone');
+
+  process.exit();
+}
+
+process.on('SIGINT', handleShutdown);
+
+process.on('SIGTERM', handleShutdown);
