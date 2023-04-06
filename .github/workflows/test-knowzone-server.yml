@@ -1,0 +1,46 @@
+name: test-knowzone-server-actions
+
+run-name: Test - Knowzone Server
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'server/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
+    steps:
+
+    - name: checkout repository
+      uses: actions/checkout@v3
+
+    - name: setup node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.15.0
+
+    - name: get npm cache directory
+      id: npm-cache-dir
+      shell: bash
+      run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+
+    - name: cache dependencies
+      uses: actions/cache@v3
+      id: npm-cache
+      with:
+        path: ${{ steps.npm-cache-dir.outputs.dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: install depedencies
+      run: npm ci
+
+    - name: run the tests
+      run: npm test
