@@ -26,12 +26,14 @@ const ContentWrapperHeaderContainer = styled('div')(({ theme }) => ({
   zIndex: 100,
 }));
 
-function Posts({ title, form, posts, setPosts }) {
+function Posts({ title, formAndPosts, setPosts }) {
   const [openForUpdate, setOpenForUpdate] = useState(false);
   const [openForAdd, setOpenForAdd] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState();
+
+  const { form, posts } = formAndPosts ?? {};
 
   const handleClose = () => setOpenDialog(false);
 
