@@ -1,6 +1,6 @@
 import { BE_ROUTES } from '../../constants/routes';
 
-const getFormTypes = async (cursor) => {
+const getFormTypes = async ({ cursor }) => {
   try {
     const body = {
       projection: { type: 1 },

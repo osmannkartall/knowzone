@@ -5,6 +5,7 @@ import ContentWrapper from '../components/common/ContentWrapper';
 import LinearProgressModal from '../components/common/LinearProgressModal';
 import getSearchResults from '../api/search/getSearchResults';
 import ShowMore from '../components/common/ShowMore';
+import usePagination from '../hooks/usePagination';
 
 const searchResultMessage = (posts) => {
   if (!posts) {
@@ -26,9 +27,13 @@ function SearchResults() {
   const location = useLocation();
   const [formsAndPosts, setFormsAndPosts] = useState({});
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
-  const [page, setPage] = useState({ hasNext: true, cursor: null });
   const { forms, posts } = formsAndPosts;
-  const { from, ...body } = location.state ?? {};
+
+  const {
+    page,
+    getFirstPage,
+    getNextPage,
+  } = usePagination(getSearchResults, { body: location.state });
 
   useEffect(() => {
     let mounted = true;
@@ -36,15 +41,12 @@ function SearchResults() {
     const fetchResults = async () => {
       if (mounted) {
         setIsLinearProgressModalOpen(true);
-        const searchResults = await getSearchResults(body);
+
+        const searchResults = await getFirstPage();
 
         setFormsAndPosts({
           forms: searchResults?.forms ?? {},
-          posts: searchResults?.postsResult?.records ?? [],
-        });
-        setPage({
-          hasNext: searchResults?.postsResult?.hasNext,
-          cursor: searchResults?.postsResult?.next,
+          posts: searchResults?.records ?? [],
         });
 
         setIsLinearProgressModalOpen(false);
@@ -58,15 +60,14 @@ function SearchResults() {
     };
   }, [location.state]);
 
-  const getNextPage = async () => {
-    const nextPage = await getSearchResults(body, page?.cursor);
+  const handleOnClickShowMore = async () => {
+    const nextPage = await getNextPage();
     setFormsAndPosts(
       {
-        posts: [...posts, ...(nextPage?.postsResult?.records ?? [])],
+        posts: [...posts, ...(nextPage?.records ?? [])],
         forms: { ...forms, ...nextPage?.forms },
       },
     );
-    setPage({ hasNext: nextPage?.postsResult?.hasNext, cursor: nextPage?.postsResult?.cursor });
   };
 
   return (
@@ -84,7 +85,7 @@ function SearchResults() {
           ))) : null}
         <ShowMore
           hasNext={page?.hasNext && posts}
-          onClickShowMore={getNextPage}
+          onClickShowMore={handleOnClickShowMore}
           showNoNextText={posts?.length && !page?.hasNext}
           noNextText="Retrieved all the posts"
         />

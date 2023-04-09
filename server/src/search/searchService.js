@@ -85,7 +85,7 @@ async function search(info, cursor) {
   );
 
   return {
-    postsResult,
+    ...postsResult,
     forms: forms.reduce((result, item) => ({ ...result, [item.type]: item }), {}),
   };
 }

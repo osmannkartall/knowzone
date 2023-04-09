@@ -1,6 +1,6 @@
 import { BE_ROUTES } from '../../constants/routes';
 
-export default async function getSearchResults(body, cursor) {
+export default async function getSearchResults({ cursor, body }) {
   try {
     const response = await fetch(
       `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}?cursor=${cursor}`,
@@ -11,9 +11,8 @@ export default async function getSearchResults(body, cursor) {
         credentials: 'include',
       },
     );
-    const result = await response.json();
 
-    return result;
+    return await response.json();
   } catch (error) {
     console.log(error);
     return [];

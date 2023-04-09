@@ -12,6 +12,7 @@ import { removeNumericKeyPrefix } from '../components/post/postCreatorUtils';
 import getPostsByType from '../api/posts/getPostsByType';
 import getFormByType from '../api/forms/getFormByType';
 import ShowMore from '../components/common/ShowMore';
+import usePagination from '../hooks/usePagination';
 
 const isNewImage = (image) => image instanceof File;
 
@@ -32,7 +33,6 @@ const ContentWrapperHeaderContainer = styled('div')(({ theme }) => ({
 
 function Posts() {
   const [formAndPosts, setFormAndPosts] = useState({ form: {}, posts: [] });
-  const [page, setPage] = useState({ hasNext: true, cursor: null });
   const [openForUpdate, setOpenForUpdate] = useState(false);
   const [openForAdd, setOpenForAdd] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -41,21 +41,18 @@ function Posts() {
 
   const { type } = useParams();
 
+  const { page, getFirstPage, getNextPage } = usePagination(getPostsByType, { type });
+
   const { form, posts } = formAndPosts ?? {};
 
   useEffect(() => {
     let isMounted = true;
 
     if (isMounted) {
-      console.log('changed', type);
-
       const initialize = async () => {
-        const [formResult, postsResult] = await Promise.all([
-          getFormByType(type),
-          getPostsByType(type),
-        ]);
+        const postsResult = await getFirstPage();
+        const formResult = await getFormByType(type);
         setFormAndPosts({ form: formResult, posts: postsResult?.records ?? [] });
-        setPage({ hasNext: postsResult?.hasNext, cursor: postsResult?.cursor });
       };
       initialize();
     }
@@ -231,10 +228,10 @@ function Posts() {
 
   const handleConfirm = () => deletePost();
 
-  const getNextPage = async () => {
-    const nextPage = await getPostsByType(type, page?.cursor);
+  const handleOnClickShowMore = async () => {
+    const nextPage = await getNextPage();
+
     setPosts([...posts, ...(nextPage?.records ?? [])]);
-    setPage({ hasNext: nextPage?.hasNext, cursor: nextPage?.cursor });
   };
 
   return (
@@ -289,7 +286,7 @@ function Posts() {
       )}
       <ShowMore
         hasNext={page?.hasNext}
-        onClickShowMore={getNextPage}
+        onClickShowMore={handleOnClickShowMore}
         showNoNextText
         noNextText="Retrieved all the posts"
       />

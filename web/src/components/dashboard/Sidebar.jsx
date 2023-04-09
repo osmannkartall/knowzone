@@ -13,6 +13,7 @@ import FormCreator from '../form/FormCreator';
 import createForm from '../../api/forms/createForm';
 import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
 import ShowMore from '../common/ShowMore';
+import usePagination from '../../hooks/usePagination';
 
 const PREFIX = 'Sidebar';
 
@@ -100,16 +101,16 @@ function Sidebar({ isSidebarOpen }) {
   const [isFormCreatorOpen, setIsFormCreatorOpen] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const [sidebarItems, setSidebarItems] = useState([]);
-  const [page, setPage] = useState({ hasNext: true, cursor: '' });
+
+  const { page, getFirstPage, getNextPage } = usePagination(getFormTypes);
 
   useEffect(() => {
     let isMounted = true;
 
     if (isMounted) {
       const initializeFormTypes = async () => {
-        const formTypesResult = await getFormTypes();
+        const formTypesResult = await getFirstPage();
         setSidebarItems(formTypesResult?.records);
-        setPage({ hasNext: formTypesResult?.hasNext, cursor: formTypesResult?.cursor });
       };
       initializeFormTypes();
     }
@@ -155,10 +156,9 @@ function Sidebar({ isSidebarOpen }) {
     return isAddFormSuccessful;
   };
 
-  const getNextPage = async () => {
-    const nextPage = await getFormTypes(page?.cursor);
+  const handleOnClickShowMore = async () => {
+    const nextPage = await getNextPage();
     setSidebarItems([...sidebarItems, ...(nextPage?.records ?? [])]);
-    setPage({ hasNext: nextPage?.hasNext, cursor: nextPage?.cursor });
   };
 
   return (
@@ -174,7 +174,7 @@ function Sidebar({ isSidebarOpen }) {
         >
           <div className={classes.sidebar}>
             <SidebarItemList sidebarItems={sidebarItems} />
-            <ShowMore hasNext={page?.hasNext} onClickShowMore={getNextPage} />
+            <ShowMore hasNext={page?.hasNext} onClickShowMore={handleOnClickShowMore} />
           </div>
           <div className={classes.sidebarBottomContainer}>
             <Button
