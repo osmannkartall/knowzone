@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Dialog, DialogActions, DialogTitle, Button, styled } from '@mui/material';
 import { toast } from 'react-toastify';
-import Post from './Post';
-import PostCreator from './PostCreator';
-import ContentWrapper from '../common/ContentWrapper';
-import { GRAY3, IRREVERSIBLE_ACTION, WHITE } from '../../constants/colors';
-import LinearProgressModal from '../common/LinearProgressModal';
-import { BE_ROUTES } from '../../constants/routes';
-import { removeNumericKeyPrefix } from './postCreatorUtils';
+import Post from '../components/post/Post';
+import PostCreator from '../components/post/PostCreator';
+import ContentWrapper from '../components/common/ContentWrapper';
+import { GRAY3, IRREVERSIBLE_ACTION, WHITE } from '../constants/colors';
+import LinearProgressModal from '../components/common/LinearProgressModal';
+import { BE_ROUTES } from '../constants/routes';
+import { removeNumericKeyPrefix } from '../components/post/postCreatorUtils';
+import getPostsByType from '../api/posts/getPostsByType';
+import getFormByType from '../api/forms/getFormByType';
 
 const isNewImage = (image) => image instanceof File;
 
@@ -26,14 +29,50 @@ const ContentWrapperHeaderContainer = styled('div')(({ theme }) => ({
   zIndex: 100,
 }));
 
-function Posts({ title, formAndPosts, setPosts }) {
+const LoadMoreContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  marginBottom: theme.spacing(2),
+}));
+
+function Posts() {
+  const [formAndPosts, setFormAndPosts] = useState({ form: {}, posts: [] });
+  const [cursor, setCursor] = useState({ hasNext: true, next: null });
   const [openForUpdate, setOpenForUpdate] = useState(false);
   const [openForAdd, setOpenForAdd] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState();
 
+  const { type } = useParams();
+
   const { form, posts } = formAndPosts ?? {};
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (isMounted) {
+      console.log('changed', type);
+
+      const initialize = async () => {
+        const [formResult, postsResult] = await Promise.all([
+          getFormByType(type),
+          getPostsByType(type),
+        ]);
+        setFormAndPosts({ form: formResult, posts: postsResult?.records ?? [] });
+        setCursor({ hasNext: postsResult?.hasNext, next: postsResult?.next });
+      };
+      initialize();
+    }
+
+    return function cleanup() {
+      isMounted = false;
+    };
+  }, [type]);
+
+  const setPosts = (newPosts) => {
+    setFormAndPosts((prevState) => ({ ...prevState, posts: newPosts }));
+  };
 
   const handleClose = () => setOpenDialog(false);
 
@@ -56,7 +95,7 @@ function Posts({ title, formAndPosts, setPosts }) {
     setIsLinearProgressModalOpen(true);
 
     try {
-      const { id, content, topics, type } = values ?? {};
+      const { id, content, topics } = values ?? {};
 
       if (id) {
         const idx = posts.findIndex((p) => p.id === id);
@@ -148,7 +187,7 @@ function Posts({ title, formAndPosts, setPosts }) {
     try {
       if (values?.type !== '') {
         const fd = new FormData();
-        const { type, topics, content } = values;
+        const { topics, content } = values;
         const { images, ...rest } = removeNumericKeyPrefix(content);
         const filledContentFields = {};
 
@@ -197,12 +236,18 @@ function Posts({ title, formAndPosts, setPosts }) {
 
   const handleConfirm = () => deletePost();
 
+  const getNextPage = async () => {
+    const nextPage = await getPostsByType(type, cursor?.next);
+    setPosts([...posts, ...(nextPage?.records ?? [])]);
+    setCursor({ hasNext: nextPage?.hasNext, next: nextPage?.next });
+  };
+
   return (
     <LinearProgressModal isOpen={isLinearProgressModalOpen}>
       <ContentWrapper
         Header={(
           <ContentWrapperHeaderContainer>
-            <h2>{title}</h2>
+            <h2>{type}</h2>
             <Button
               variant="outlined"
               color="primary"
@@ -247,6 +292,17 @@ function Posts({ title, formAndPosts, setPosts }) {
           form={form}
         />
       )}
+      {cursor?.hasNext && (
+        <LoadMoreContainer>
+          <Button
+            variant="outlined"
+            onClick={getNextPage}
+          >
+            Load More
+          </Button>
+        </LoadMoreContainer>
+      )}
+      {!cursor?.hasNext && <LoadMoreContainer>Retrieved all the posts</LoadMoreContainer>}
       <Dialog
         open={openDialog}
         onClose={handleClose}

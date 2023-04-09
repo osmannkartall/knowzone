@@ -90,9 +90,11 @@ const create = async (req, res, next) => {
   }
 };
 
-const findAll = async (req, res, next) => {
+const getByType = async (req, res, next) => {
   try {
-    res.send(await formRepository.find({ 'owner.id': req.session.userId }));
+    res.json(
+      await formRepository.findOne({ 'owner.id': req.session.userId, type: req.query.type }),
+    );
   } catch (err) {
     changeToCustomError(err, {
       description: 'Error when reading record list',
@@ -131,7 +133,7 @@ const filter = async (req, res, next) => {
       fields = { ...fields, ...req.body.fields };
     }
 
-    const result = await formRepository.find(fields, req.body.projection);
+    const result = await formRepository.find(fields, req.body.projection, req.query.cursor);
 
     if (req.body?.single && result.length > 0) {
       res.send(result[0]);
@@ -192,7 +194,7 @@ const deleteAll = async (req, res, next) => {
 
 router.post('/', checkAuthentication, create);
 
-router.get('/', checkAuthentication, findAll);
+router.get('/', checkAuthentication, getByType);
 
 router.post('/filter', checkAuthentication, filter);
 

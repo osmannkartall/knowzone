@@ -12,9 +12,9 @@ import { FE_ROUTES } from './constants/routes';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { checkUserSession } from './contexts/AuthActions';
-import PostsByType from './pages/PostsByType';
 import LinearProgressModal from './components/common/LinearProgressModal';
 import Home from './pages/Home';
+import Posts from './pages/Posts';
 
 const theme = createTheme(({
   palette: {
@@ -84,7 +84,7 @@ function Wrapper() {
             path={`/${FE_ROUTES.POSTS}/:type`}
             element={(
               <AuthRouteComponent
-                Success={<Dashboard><PostsByType /></Dashboard>}
+                Success={<Dashboard><Posts /></Dashboard>}
                 Terminated={<Navigate to={`/${FE_ROUTES.LOGIN}`} />}
               />
             )}

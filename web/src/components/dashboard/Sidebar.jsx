@@ -27,6 +27,7 @@ const Root = styled('div')(({ theme }) => ({
     width: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
+    borderBottom: `1px solid ${GRAY3}`,
   },
 
   [`& .${classes.sidebarContainer}`]: {
@@ -47,6 +48,12 @@ const Root = styled('div')(({ theme }) => ({
     margin: theme.spacing(1, 2),
     padding: theme.spacing(1, 0),
   },
+}));
+
+const LoadMoreContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  marginBottom: theme.spacing(2),
 }));
 
 function SidebarItem({ text }) {
@@ -98,14 +105,16 @@ function Sidebar({ isSidebarOpen }) {
   const [isFormCreatorOpen, setIsFormCreatorOpen] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const [sidebarItems, setSidebarItems] = useState([]);
+  const [cursor, setCursor] = useState({});
 
   useEffect(() => {
     let isMounted = true;
 
     if (isMounted) {
       const initializeFormTypes = async () => {
-        const result = await getFormTypes();
-        setSidebarItems(result);
+        const formTypesResult = await getFormTypes();
+        setSidebarItems(formTypesResult?.records);
+        setCursor({ hasNext: formTypesResult?.hasNext, next: formTypesResult?.next });
       };
       initializeFormTypes();
     }
@@ -151,6 +160,12 @@ function Sidebar({ isSidebarOpen }) {
     return isAddFormSuccessful;
   };
 
+  const getNextPage = async () => {
+    const nextPage = await getFormTypes(cursor?.next);
+    setSidebarItems([...sidebarItems, ...(nextPage?.records ?? [])]);
+    setCursor({ hasNext: nextPage?.hasNext, next: nextPage?.next });
+  };
+
   return (
     <LinearProgressModal isOpen={isLinearProgressModalOpen}>
       <Root>
@@ -164,6 +179,16 @@ function Sidebar({ isSidebarOpen }) {
         >
           <div className={classes.sidebar}>
             <SidebarItemList sidebarItems={sidebarItems} />
+            {cursor?.hasNext && (
+              <LoadMoreContainer>
+                <Button
+                  variant="outlined"
+                  onClick={getNextPage}
+                >
+                  Load More
+                </Button>
+              </LoadMoreContainer>
+            )}
           </div>
           <div className={classes.sidebarBottomContainer}>
             <Button

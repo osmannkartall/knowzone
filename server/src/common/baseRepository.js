@@ -1,6 +1,7 @@
 export default class BaseRepository {
   constructor(model) {
     this.model = model;
+    this.limit = 10;
   }
 
   async create(record) {
@@ -15,8 +16,47 @@ export default class BaseRepository {
     return this.model.findById(id);
   }
 
-  async find(fields, projection) {
-    return this.model.find(fields, projection, { sort: { createdAt: -1 } });
+  async find(fields, projection, cursor) {
+    let formattedFields = fields;
+    const [nextCreatedAt, nextId] = (cursor ?? '').split('_');
+
+    if (nextCreatedAt && nextId) {
+      formattedFields = {
+        $and: [
+          fields,
+          {
+            $or: [{
+              createdAt: { $lt: new Date(nextCreatedAt) },
+            }, {
+              createdAt: new Date(nextCreatedAt),
+              _id: { $lt: nextId },
+            }],
+          },
+        ],
+      };
+    }
+
+    if (projection && !projection.createdAt) {
+      projection.createdAt = 1;
+    }
+
+    const records = await this.model.find(formattedFields, projection)
+      .sort({ createdAt: -1, _id: -1 })
+      .limit(this.limit);
+
+    const hasNext = records.length === this.limit;
+    let next = null;
+
+    if (records.length) {
+      const lastRecord = records[records.length - 1];
+      next = `${lastRecord.createdAt.toISOString()}_${lastRecord._id}`;
+    }
+
+    return { records, hasNext, next };
+  }
+
+  async findWithoutPagination(fields, projection) {
+    return this.model.find(fields, projection).limit(this.limit);
   }
 
   async findOne(conditions, projection) {
