@@ -1,34 +1,32 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Button, styled } from '@mui/material';
 import Post from '../components/post/Post';
 import ContentWrapper from '../components/common/ContentWrapper';
 import LinearProgressModal from '../components/common/LinearProgressModal';
 import getSearchResults from '../api/search/getSearchResults';
+import ShowMore from '../components/common/ShowMore';
 
-const LoadMoreContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  marginBottom: theme.spacing(2),
-}));
+const searchResultMessage = (posts) => {
+  if (!posts) {
+    return null;
+  }
 
-const searchResultMessage = (length) => {
-  if (!length) {
+  if (!posts.length) {
     return 'No results found matching your search.';
   }
 
-  if (length === 1) {
-    return `${length} post`;
+  if (posts.length === 1) {
+    return '1 post';
   }
 
-  return `${length} posts`;
+  return `${posts.length} posts`;
 };
 
 function SearchResults() {
   const location = useLocation();
   const [formsAndPosts, setFormsAndPosts] = useState({});
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
-  const [cursor, setCursor] = useState({ hasNext: true, next: null });
+  const [page, setPage] = useState({ hasNext: true, cursor: null });
   const { forms, posts } = formsAndPosts;
   const { from, ...body } = location.state ?? {};
 
@@ -44,9 +42,9 @@ function SearchResults() {
           forms: searchResults?.forms ?? {},
           posts: searchResults?.postsResult?.records ?? [],
         });
-        setCursor({
+        setPage({
           hasNext: searchResults?.postsResult?.hasNext,
-          next: searchResults?.postsResult?.next,
+          cursor: searchResults?.postsResult?.next,
         });
 
         setIsLinearProgressModalOpen(false);
@@ -61,20 +59,20 @@ function SearchResults() {
   }, [location.state]);
 
   const getNextPage = async () => {
-    const nextPage = await getSearchResults(body, cursor?.next);
+    const nextPage = await getSearchResults(body, page?.cursor);
     setFormsAndPosts(
       {
         posts: [...posts, ...(nextPage?.postsResult?.records ?? [])],
         forms: { ...forms, ...nextPage?.forms },
       },
     );
-    setCursor({ hasNext: nextPage?.postsResult?.hasNext, next: nextPage?.postsResult?.next });
+    setPage({ hasNext: nextPage?.postsResult?.hasNext, cursor: nextPage?.postsResult?.cursor });
   };
 
   return (
     <LinearProgressModal isOpen={isLinearProgressModalOpen}>
       <ContentWrapper Header={<h2>Search Results</h2>}>
-        <p>{searchResultMessage(posts?.length)}</p>
+        <p>{searchResultMessage(posts)}</p>
         {Array.isArray(posts) && posts.length ? (
           posts.map((p) => (
             <Post
@@ -84,19 +82,12 @@ function SearchResults() {
               post={p}
             />
           ))) : null}
-        {cursor?.hasNext && (
-          <LoadMoreContainer>
-            <Button
-              variant="outlined"
-              onClick={getNextPage}
-            >
-              Load More
-            </Button>
-          </LoadMoreContainer>
-        )}
-        {posts?.length && !cursor?.hasNext ? (
-          <LoadMoreContainer>Retrieved all the posts</LoadMoreContainer>
-        ) : null}
+        <ShowMore
+          hasNext={page?.hasNext && posts}
+          onClickShowMore={getNextPage}
+          showNoNextText={posts?.length && !page?.hasNext}
+          noNextText="Retrieved all the posts"
+        />
       </ContentWrapper>
     </LinearProgressModal>
   );

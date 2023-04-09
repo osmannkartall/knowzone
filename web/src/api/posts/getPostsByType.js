@@ -1,9 +1,9 @@
 import { BE_ROUTES } from '../../constants/routes';
 
-const getPostsByType = async (type, next) => {
+const getPostsByType = async (type, cursor) => {
   try {
     const response = await fetch(
-      `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}?type=${type}&cursor=${next}`,
+      `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}?type=${type}&cursor=${cursor}`,
       {
         credentials: 'include',
       },

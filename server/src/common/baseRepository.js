@@ -16,43 +16,33 @@ export default class BaseRepository {
     return this.model.findById(id);
   }
 
-  async find(fields, projection, cursor) {
-    let formattedFields = fields;
+  async find(filter, projection, cursor) {
     const [nextCreatedAt, nextId] = (cursor ?? '').split('_');
 
-    if (nextCreatedAt && nextId) {
-      formattedFields = {
-        $and: [
-          fields,
-          {
-            $or: [{
-              createdAt: { $lt: new Date(nextCreatedAt) },
-            }, {
-              createdAt: new Date(nextCreatedAt),
-              _id: { $lt: nextId },
-            }],
-          },
-        ],
-      };
-    }
-
+    const newFilter = nextCreatedAt && nextId ? {
+      $and: [
+        filter,
+        {
+          $or: [{
+            createdAt: { $lt: new Date(nextCreatedAt) },
+          }, {
+            createdAt: new Date(nextCreatedAt),
+            _id: { $lt: nextId },
+          }],
+        },
+      ],
+    } : filter;
     if (projection && !projection.createdAt) {
       projection.createdAt = 1;
     }
+    const options = { sort: { createdAt: -1, _id: -1 }, limit: this.limit };
 
-    const records = await this.model.find(formattedFields, projection)
-      .sort({ createdAt: -1, _id: -1 })
-      .limit(this.limit);
-
+    const records = await this.model.find(newFilter, projection, options);
     const hasNext = records.length === this.limit;
-    let next = null;
+    const lastRecord = records[this.limit - 1];
+    const newCursor = hasNext ? `${lastRecord.createdAt.toISOString()}_${lastRecord._id}` : null;
 
-    if (records.length) {
-      const lastRecord = records[records.length - 1];
-      next = `${lastRecord.createdAt.toISOString()}_${lastRecord._id}`;
-    }
-
-    return { records, hasNext, next };
+    return { records, hasNext, cursor: newCursor };
   }
 
   async findWithoutPagination(fields, projection) {

@@ -62,8 +62,6 @@ const filterSchema = Joi.object({
     Joi.string(),
     Joi.array().items(Joi.string()),
   ],
-
-  single: Joi.boolean(),
 });
 
 const create = async (req, res, next) => {
@@ -126,20 +124,11 @@ const findById = async (req, res, next) => {
 const filter = async (req, res, next) => {
   try {
     await filterSchema.validateAsync(req.body);
-
-    let fields = { 'owner.id': req.session.userId };
-
+    let filters = { 'owner.id': req.session.userId };
     if (req.body?.fields) {
-      fields = { ...fields, ...req.body.fields };
+      filters = { ...filters, ...req.body.fields };
     }
-
-    const result = await formRepository.find(fields, req.body.projection, req.query.cursor);
-
-    if (req.body?.single && result.length > 0) {
-      res.send(result[0]);
-    } else {
-      res.send(result);
-    }
+    res.json(await formRepository.find(filters, req.body.projection, req.query.cursor));
   } catch (err) {
     changeToCustomError(err, {
       description: 'Error when getting records',

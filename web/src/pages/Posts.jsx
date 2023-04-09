@@ -11,6 +11,7 @@ import { BE_ROUTES } from '../constants/routes';
 import { removeNumericKeyPrefix } from '../components/post/postCreatorUtils';
 import getPostsByType from '../api/posts/getPostsByType';
 import getFormByType from '../api/forms/getFormByType';
+import ShowMore from '../components/common/ShowMore';
 
 const isNewImage = (image) => image instanceof File;
 
@@ -29,15 +30,9 @@ const ContentWrapperHeaderContainer = styled('div')(({ theme }) => ({
   zIndex: 100,
 }));
 
-const LoadMoreContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  marginBottom: theme.spacing(2),
-}));
-
 function Posts() {
   const [formAndPosts, setFormAndPosts] = useState({ form: {}, posts: [] });
-  const [cursor, setCursor] = useState({ hasNext: true, next: null });
+  const [page, setPage] = useState({ hasNext: true, cursor: null });
   const [openForUpdate, setOpenForUpdate] = useState(false);
   const [openForAdd, setOpenForAdd] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -60,7 +55,7 @@ function Posts() {
           getPostsByType(type),
         ]);
         setFormAndPosts({ form: formResult, posts: postsResult?.records ?? [] });
-        setCursor({ hasNext: postsResult?.hasNext, next: postsResult?.next });
+        setPage({ hasNext: postsResult?.hasNext, cursor: postsResult?.cursor });
       };
       initialize();
     }
@@ -237,9 +232,9 @@ function Posts() {
   const handleConfirm = () => deletePost();
 
   const getNextPage = async () => {
-    const nextPage = await getPostsByType(type, cursor?.next);
+    const nextPage = await getPostsByType(type, page?.cursor);
     setPosts([...posts, ...(nextPage?.records ?? [])]);
-    setCursor({ hasNext: nextPage?.hasNext, next: nextPage?.next });
+    setPage({ hasNext: nextPage?.hasNext, cursor: nextPage?.cursor });
   };
 
   return (
@@ -292,17 +287,12 @@ function Posts() {
           form={form}
         />
       )}
-      {cursor?.hasNext && (
-        <LoadMoreContainer>
-          <Button
-            variant="outlined"
-            onClick={getNextPage}
-          >
-            Load More
-          </Button>
-        </LoadMoreContainer>
-      )}
-      {!cursor?.hasNext && <LoadMoreContainer>Retrieved all the posts</LoadMoreContainer>}
+      <ShowMore
+        hasNext={page?.hasNext}
+        onClickShowMore={getNextPage}
+        showNoNextText
+        noNextText="Retrieved all the posts"
+      />
       <Dialog
         open={openDialog}
         onClose={handleClose}

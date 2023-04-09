@@ -12,6 +12,7 @@ import getFormTypes from '../../api/forms/getFormTypes';
 import FormCreator from '../form/FormCreator';
 import createForm from '../../api/forms/createForm';
 import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
+import ShowMore from '../common/ShowMore';
 
 const PREFIX = 'Sidebar';
 
@@ -48,12 +49,6 @@ const Root = styled('div')(({ theme }) => ({
     margin: theme.spacing(1, 2),
     padding: theme.spacing(1, 0),
   },
-}));
-
-const LoadMoreContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  marginBottom: theme.spacing(2),
 }));
 
 function SidebarItem({ text }) {
@@ -105,7 +100,7 @@ function Sidebar({ isSidebarOpen }) {
   const [isFormCreatorOpen, setIsFormCreatorOpen] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const [sidebarItems, setSidebarItems] = useState([]);
-  const [cursor, setCursor] = useState({});
+  const [page, setPage] = useState({ hasNext: true, cursor: '' });
 
   useEffect(() => {
     let isMounted = true;
@@ -114,7 +109,7 @@ function Sidebar({ isSidebarOpen }) {
       const initializeFormTypes = async () => {
         const formTypesResult = await getFormTypes();
         setSidebarItems(formTypesResult?.records);
-        setCursor({ hasNext: formTypesResult?.hasNext, next: formTypesResult?.next });
+        setPage({ hasNext: formTypesResult?.hasNext, cursor: formTypesResult?.cursor });
       };
       initializeFormTypes();
     }
@@ -161,9 +156,9 @@ function Sidebar({ isSidebarOpen }) {
   };
 
   const getNextPage = async () => {
-    const nextPage = await getFormTypes(cursor?.next);
+    const nextPage = await getFormTypes(page?.cursor);
     setSidebarItems([...sidebarItems, ...(nextPage?.records ?? [])]);
-    setCursor({ hasNext: nextPage?.hasNext, next: nextPage?.next });
+    setPage({ hasNext: nextPage?.hasNext, cursor: nextPage?.cursor });
   };
 
   return (
@@ -179,16 +174,7 @@ function Sidebar({ isSidebarOpen }) {
         >
           <div className={classes.sidebar}>
             <SidebarItemList sidebarItems={sidebarItems} />
-            {cursor?.hasNext && (
-              <LoadMoreContainer>
-                <Button
-                  variant="outlined"
-                  onClick={getNextPage}
-                >
-                  Load More
-                </Button>
-              </LoadMoreContainer>
-            )}
+            <ShowMore hasNext={page?.hasNext} onClickShowMore={getNextPage} />
           </div>
           <div className={classes.sidebarBottomContainer}>
             <Button
