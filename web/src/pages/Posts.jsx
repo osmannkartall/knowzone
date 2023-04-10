@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Dialog, DialogActions, DialogTitle, Button, styled } from '@mui/material';
+import { Dialog, DialogActions, DialogTitle, Button } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { toast } from 'react-toastify';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import Post from '../components/post/Post';
 import PostCreator from '../components/post/PostCreator';
 import ContentWrapper from '../components/common/ContentWrapper';
@@ -9,22 +11,22 @@ import { GRAY3, IRREVERSIBLE_ACTION, WHITE } from '../constants/colors';
 import LinearProgressModal from '../components/common/LinearProgressModal';
 import { BE_ROUTES } from '../constants/routes';
 import { removeNumericKeyPrefix } from '../components/post/postCreatorUtils';
-import getPostsByType from '../api/posts/getPostsByType';
 import getFormByType from '../api/forms/getFormByType';
-import ShowMore from '../components/common/ShowMore';
 import usePagination from '../hooks/usePagination';
+import { topbarHeight } from '../constants/styles';
+import FetchResult from '../components/common/FetchResult';
 
 const isNewImage = (image) => image instanceof File;
 
 const ContentWrapperHeaderContainer = styled('div')(({ theme }) => ({
   position: 'sticky',
-  top: 0,
+  top: topbarHeight,
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
   padding: theme.spacing(1, 2),
-  margin: theme.spacing(1, 0),
+  margin: theme.spacing(2, 0),
   border: `1px solid ${GRAY3}`,
   borderRadius: 4,
   backgroundColor: WHITE,
@@ -32,7 +34,7 @@ const ContentWrapperHeaderContainer = styled('div')(({ theme }) => ({
 }));
 
 function Posts() {
-  const [formAndPosts, setFormAndPosts] = useState({ form: {}, posts: [] });
+  const [form, setForm] = useState({});
   const [openForUpdate, setOpenForUpdate] = useState(false);
   const [openForAdd, setOpenForAdd] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -41,18 +43,18 @@ function Posts() {
 
   const { type } = useParams();
 
-  const { page, getFirstPage, getNextPage } = usePagination(getPostsByType, { type });
-
-  const { form, posts } = formAndPosts ?? {};
+  const { data, setData, getNextPage, status, errorMessage } = usePagination({
+    url: `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}`,
+    method: 'GET',
+    queryParameters: { type },
+  });
 
   useEffect(() => {
     let isMounted = true;
 
     if (isMounted) {
       const initialize = async () => {
-        const postsResult = await getFirstPage();
-        const formResult = await getFormByType(type);
-        setFormAndPosts({ form: formResult, posts: postsResult?.records ?? [] });
+        setForm(await getFormByType(type));
       };
       initialize();
     }
@@ -62,9 +64,17 @@ function Posts() {
     };
   }, [type]);
 
-  const setPosts = (newPosts) => {
-    setFormAndPosts((prevState) => ({ ...prevState, posts: newPosts }));
-  };
+  const parentRef = useRef(null);
+
+  const parentOffsetRef = useRef(0);
+
+  useLayoutEffect(() => { parentOffsetRef.current = parentRef.current?.offsetTop ?? 0; }, []);
+
+  const virtualizer = useWindowVirtualizer({
+    count: data?.length,
+    estimateSize: () => 45,
+    scrollMargin: parentOffsetRef.current,
+  });
 
   const handleClose = () => setOpenDialog(false);
 
@@ -90,7 +100,7 @@ function Posts() {
       const { id, content, topics } = values ?? {};
 
       if (id) {
-        const idx = posts.findIndex((p) => p.id === id);
+        const idx = data.findIndex((p) => p.id === id);
 
         if (idx !== -1) {
           const fd = new FormData();
@@ -121,9 +131,9 @@ function Posts() {
           if (result?.status === 'fail') {
             toast.error(result.message);
           } else {
-            const newPosts = [...posts];
+            const newPosts = [...data];
             newPosts[idx] = { ...result, type };
-            setPosts(newPosts);
+            setData(newPosts);
             setOpenForUpdate(false);
 
             isUpdatePostSuccessful = true;
@@ -145,7 +155,7 @@ function Posts() {
 
     try {
       if (selectedPost?.id) {
-        const idx = posts.findIndex((p) => p.id === selectedPost.id);
+        const idx = data.findIndex((p) => p.id === selectedPost.id);
 
         if (idx !== -1) {
           const response = await fetch(
@@ -156,12 +166,12 @@ function Posts() {
               credentials: 'include',
             },
           );
-          const result = response.json();
+          const result = await response.json();
 
           console.log(result.message);
-          const newPosts = [...posts];
+          const newPosts = [...data];
           newPosts.splice(idx, 1);
-          setPosts(newPosts);
+          setData(newPosts);
           setOpenDialog(false);
         }
       }
@@ -211,8 +221,8 @@ function Posts() {
         if (result?.status === 'fail') {
           toast.error(result?.message);
         } else {
-          toast.success(result?.message);
           setOpenForAdd(false);
+          setData((prev) => [result, ...prev]);
           isAddPostSuccessful = true;
         }
       }
@@ -228,16 +238,12 @@ function Posts() {
 
   const handleConfirm = () => deletePost();
 
-  const handleOnClickShowMore = async () => {
-    const nextPage = await getNextPage();
-
-    setPosts([...posts, ...(nextPage?.records ?? [])]);
-  };
+  const handleOnClickShowMore = () => getNextPage();
 
   return (
     <LinearProgressModal isOpen={isLinearProgressModalOpen}>
       <ContentWrapper
-        Header={(
+        Header={form ? (
           <ContentWrapperHeaderContainer>
             <h2>{type}</h2>
             <Button
@@ -250,20 +256,56 @@ function Posts() {
               Create Post
             </Button>
           </ContentWrapperHeaderContainer>
-        )}
+        ) : null}
       >
-        {Array.isArray(posts) && posts.length ? (
-          posts.map((p) => (
-            <Post
-              key={p.id}
-              showType
-              editable
-              content={form?.content ?? {}}
-              post={p}
-              onClickUpdate={() => setForUpdate(p)}
-              onClickDelete={() => setForDelete(p)}
-            />
-          ))) : null}
+        {data && (
+          <div ref={parentRef}>
+            <div
+              style={{
+                height: virtualizer.getTotalSize(),
+                position: 'relative',
+              }}
+            >
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  transform: `translateY(${(virtualizer.getVirtualItems()[0]?.start ?? 0)
+                    - virtualizer.options.scrollMargin}px)`,
+                }}
+              >
+                {virtualizer.getVirtualItems().map((virtualRow) => (
+                  <div
+                    key={virtualRow.key}
+                    data-index={virtualRow.index}
+                    ref={virtualizer.measureElement}
+                    style={{ paddingBottom: 16 }}
+                  >
+                    <Post
+                      showType
+                      editable
+                      content={form?.content ?? {}}
+                      post={data[virtualRow.index]}
+                      onClickUpdate={() => setForUpdate(data[virtualRow.index])}
+                      onClickDelete={() => setForDelete(data[virtualRow.index])}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+          <FetchResult
+            status={status}
+            errorMessage={errorMessage}
+            handleOnClickShowMore={handleOnClickShowMore}
+            noNextText="Retrieved all the posts"
+            noResultText="No posts found"
+          />
+        </div>
       </ContentWrapper>
       {openForUpdate && (
         <PostCreator
@@ -284,12 +326,6 @@ function Posts() {
           form={form}
         />
       )}
-      <ShowMore
-        hasNext={page?.hasNext}
-        onClickShowMore={handleOnClickShowMore}
-        showNoNextText
-        noNextText="Retrieved all the posts"
-      />
       <Dialog
         open={openDialog}
         onClose={handleClose}

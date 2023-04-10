@@ -1,19 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useState, useRef } from 'react';
 import { styled } from '@mui/material/styles';
-import { List, ListItem, ListItemText, Button, ListItemIcon } from '@mui/material';
+import { List, ListItemText, Button, ListItemIcon, ListItemButton } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
 import BookmarkBorder from '@mui/icons-material/BookmarkBorder';
 import Bookmark from '@mui/icons-material/Bookmark';
 import { toast } from 'react-toastify';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { GRAY2, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
 import LinearProgressModal from '../common/LinearProgressModal';
-import getFormTypes from '../../api/forms/getFormTypes';
 import FormCreator from '../form/FormCreator';
 import createForm from '../../api/forms/createForm';
 import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
-import ShowMore from '../common/ShowMore';
 import usePagination from '../../hooks/usePagination';
+import { BE_ROUTES } from '../../constants/routes';
+import FetchResult from '../common/FetchResult';
 
 const PREFIX = 'Sidebar';
 
@@ -26,19 +27,19 @@ const classes = {
 const Root = styled('div')(({ theme }) => ({
   [`& .${classes.sidebar}`]: {
     height: '100%',
-    width: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
     borderBottom: `1px solid ${GRAY3}`,
+    padding: theme.spacing(2),
+    paddingBottom: 0,
   },
 
   [`& .${classes.sidebarContainer}`]: {
     display: 'flex',
     flexDirection: 'column',
-    position: 'fixed',
-    left: 0,
-    top: topbarHeight,
-    height: `calc(100% - ${topbarHeight}px)`,
+    position: 'sticky',
+    top: topbarHeight + 1,
+    height: `calc(100vh - ${topbarHeight + 1}px)`,
     width: sidebarWidth,
     backgroundColor: WHITE,
     borderRight: `1px solid ${GRAY3}`,
@@ -60,65 +61,56 @@ function SidebarItem({ text }) {
   );
 
   return (
-    <ListItem
-      button
-      style={{
-        color: isActiveRoute() ? PRIMARY : GRAY2,
-        backgroundColor: isActiveRoute() ? 'rgba(20, 99, 255, 0.1)' : WHITE,
-      }}
+    <ListItemButton
+      selected={isActiveRoute()}
       component={Link}
       key={text}
       to={`/posts/${text}`}
+      sx={{ borderRadius: 2 }}
     >
       <ListItemIcon
         style={{
           fontSize: 14,
-          minWidth: '40px',
+          minWidth: '32px',
           color: isActiveRoute() ? PRIMARY : GRAY2,
         }}
       >
         {isActiveRoute() ? <Bookmark fontSize="small" /> : <BookmarkBorder fontSize="small" />}
       </ListItemIcon>
-      <ListItemText primary={text} />
-    </ListItem>
-  );
-}
-
-function SidebarItemList({ sidebarItems }) {
-  return (
-    <List>
-      {(sidebarItems ?? []).map((sidebarItem) => (
-        <SidebarItem
-          key={sidebarItem.id}
-          text={sidebarItem.type}
-        />
-      ))}
-    </List>
+      <ListItemText
+        primary={text}
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          color: isActiveRoute() ? PRIMARY : GRAY2,
+        }}
+      />
+    </ListItemButton>
   );
 }
 
 function Sidebar({ isSidebarOpen }) {
   const [isFormCreatorOpen, setIsFormCreatorOpen] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
-  const [sidebarItems, setSidebarItems] = useState([]);
 
-  const { page, getFirstPage, getNextPage } = usePagination(getFormTypes);
+  const { data, setData, getNextPage, status, errorMessage } = usePagination({
+    url: `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.FORMS}/filter`,
+    method: 'POST',
+    body: { projection: { type: 1 } },
+  });
 
-  useEffect(() => {
-    let isMounted = true;
+  const parentRef = useRef(null);
 
-    if (isMounted) {
-      const initializeFormTypes = async () => {
-        const formTypesResult = await getFirstPage();
-        setSidebarItems(formTypesResult?.records);
-      };
-      initializeFormTypes();
-    }
+  const parentOffsetRef = useRef(0);
 
-    return function cleanup() {
-      isMounted = false;
-    };
-  }, []);
+  useLayoutEffect(() => { parentOffsetRef.current = parentRef.current?.offsetTop ?? 0; }, []);
+
+  const virtualizer = useVirtualizer({
+    count: data?.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 48,
+    overscan: 5,
+  });
 
   const addForm = async (values) => {
     let isAddFormSuccessful = false;
@@ -143,7 +135,7 @@ function Sidebar({ isSidebarOpen }) {
         toast.error(result?.message);
       } else {
         setIsFormCreatorOpen(false);
-        setSidebarItems((prev) => [{ id: type, type }, ...prev]);
+        setData((prev) => [{ id: type, type }, ...prev]);
         isAddFormSuccessful = true;
       }
     } catch (error) {
@@ -156,10 +148,7 @@ function Sidebar({ isSidebarOpen }) {
     return isAddFormSuccessful;
   };
 
-  const handleOnClickShowMore = async () => {
-    const nextPage = await getNextPage();
-    setSidebarItems([...sidebarItems, ...(nextPage?.records ?? [])]);
-  };
+  const handleOnClickShowMore = () => getNextPage();
 
   return (
     <LinearProgressModal isOpen={isLinearProgressModalOpen}>
@@ -167,14 +156,46 @@ function Sidebar({ isSidebarOpen }) {
         <div
           className={classes.sidebarContainer}
           style={
-          isSidebarOpen
-            ? { display: 'flex' }
-            : { display: 'none' }
-        }
+            isSidebarOpen
+              ? { display: 'flex' }
+              : { display: 'none' }
+          }
         >
           <div className={classes.sidebar}>
-            <SidebarItemList sidebarItems={sidebarItems} />
-            <ShowMore hasNext={page?.hasNext} onClickShowMore={handleOnClickShowMore} />
+            <List disablePadding>
+              <div ref={parentRef}>
+                <div
+                  style={{
+                    height: `${virtualizer.getTotalSize()}px`,
+                    width: '100%',
+                    position: 'relative',
+                  }}
+                >
+                  {virtualizer.getVirtualItems().map((virtualRow) => (
+                    <div
+                      key={virtualRow.index}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: `${virtualRow.size}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                    >
+                      <SidebarItem text={data?.[virtualRow.index].type} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </List>
+            <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0px' }}>
+              <FetchResult
+                status={status}
+                errorMessage={errorMessage}
+                handleOnClickShowMore={handleOnClickShowMore}
+              />
+            </div>
           </div>
           <div className={classes.sidebarBottomContainer}>
             <Button
@@ -188,11 +209,11 @@ function Sidebar({ isSidebarOpen }) {
             </Button>
           </div>
           {isFormCreatorOpen && (
-            <FormCreator
-              open={isFormCreatorOpen}
-              setOpen={setIsFormCreatorOpen}
-              handler={addForm}
-            />
+          <FormCreator
+            open={isFormCreatorOpen}
+            setOpen={setIsFormCreatorOpen}
+            handler={addForm}
+          />
           )}
         </div>
       </Root>

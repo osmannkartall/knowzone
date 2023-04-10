@@ -75,18 +75,25 @@ async function search(info, cursor) {
     query = filterQuery;
   }
 
-  const postsResult = await postRepository.find(query, null, cursor);
+  const posts = await postRepository.find(query, null, cursor);
 
-  const types = (postsResult.records ?? []).map((p) => p.type);
+  const types = (posts.records ?? []).map((p) => p.type);
 
   const forms = await formRepository.findWithoutPagination(
     { type: { $in: types } },
     { type: 1, content: 1 },
   );
 
+  const formsObject = forms.reduce((result, item) => ({ ...result, [item.type]: item }), {});
+
   return {
-    ...postsResult,
-    forms: forms.reduce((result, item) => ({ ...result, [item.type]: item }), {}),
+    records: {
+      posts: posts.records,
+      forms: formsObject,
+    },
+    hasNext: posts.hasNext,
+    cursor: posts.cursor,
+    noResult: posts.noResult,
   };
 }
 

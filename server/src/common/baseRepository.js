@@ -1,7 +1,7 @@
 export default class BaseRepository {
   constructor(model) {
     this.model = model;
-    this.limit = 10;
+    this.limit = 20;
   }
 
   async create(record) {
@@ -41,8 +41,9 @@ export default class BaseRepository {
     const hasNext = records.length === this.limit;
     const lastRecord = records[this.limit - 1];
     const newCursor = hasNext ? `${lastRecord.createdAt.toISOString()}_${lastRecord._id}` : null;
+    const noResult = !(nextCreatedAt && nextId) && records.length === 0;
 
-    return { records, hasNext, cursor: newCursor };
+    return { records, hasNext, cursor: newCursor, noResult };
   }
 
   async findWithoutPagination(fields, projection) {

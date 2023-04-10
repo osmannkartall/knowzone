@@ -79,8 +79,7 @@ const create = async (_, res, next) => {
   try {
     const post = res.locals.data;
     await createSchema.validateAsync(post);
-    await postRepository.create(post);
-    res.json(createSuccessResponse('Created the record successfully'));
+    res.json(await postRepository.create(post));
   } catch (err) {
     changeToCustomError(err, {
       description: 'Error when creating new record',

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme, StyledEngineProvider } from '@mui/material/styles';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -42,6 +42,16 @@ function AuthRouteComponent({ Success, Terminated }) {
   return component;
 }
 
+function ScrollToTop() {
+  const { pathname, state } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname, state]);
+
+  return null;
+}
+
 function Wrapper() {
   const authDispatch = useAuthDispatch();
 
@@ -52,6 +62,7 @@ function Wrapper() {
   return (
     <>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route
             path="/"
