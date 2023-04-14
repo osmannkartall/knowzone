@@ -50,8 +50,8 @@ function usePagination(request) {
   useEffect(() => {
     let mounted = true;
 
-    if (mounted) {
-      const handleDataChange = (records) => {
+    const handleDataChange = (records) => {
+      if (mounted) {
         if (Array.isArray(records)) {
           setData((prevData) => [...(prevData ?? []), ...records]);
         } else {
@@ -67,30 +67,30 @@ function usePagination(request) {
             return newData;
           });
         }
-      };
+      }
+    };
 
-      const fetchResults = async () => {
-        try {
-          setStatus('loading');
-          const nextPage = await fetchData(currentUrl, method, JSONStringBody);
-          handleDataChange(nextPage.records);
-          setCursor(nextPage.cursor);
-          if (nextPage.hasNext) {
-            setStatus('hasNext');
-          } else if (nextPage.noResult) {
-            setStatus('noResult');
-          } else {
-            setStatus('resolved');
-          }
-        } catch (err) {
-          console.log(err);
-          setStatus('error');
-          setErrorMessage(err.message);
+    const fetchResults = async () => {
+      try {
+        setStatus('loading');
+        const nextPage = await fetchData(currentUrl, method, JSONStringBody);
+        handleDataChange(nextPage.records);
+        setCursor(nextPage.cursor);
+        if (nextPage.hasNext) {
+          setStatus('hasNext');
+        } else if (nextPage.noResult) {
+          setStatus('noResult');
+        } else {
+          setStatus('resolved');
         }
-      };
+      } catch (err) {
+        console.log(err);
+        setStatus('error');
+        setErrorMessage(err.message);
+      }
+    };
 
-      fetchResults();
-    }
+    fetchResults();
 
     return function cleanup() {
       mounted = false;
