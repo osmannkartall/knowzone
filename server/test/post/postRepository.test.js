@@ -22,6 +22,8 @@ async function create(post) {
   return data;
 }
 
+const emptyPostsResult = { cursor: null, hasNext: false, noResult: true, records: [] };
+
 const myType = 'my type';
 const notMyType = 'not my type';
 
@@ -446,7 +448,7 @@ describe('PostRepository.create() with valid records', () => {
 describe('PostRepository.find()', () => {
   it('should return empty list when there is no post', async () => {
     const result = await postRepository.find();
-    expect(result).toEqual([]);
+    expect(result).toEqual(emptyPostsResult);
   });
 
   it('should return empty list when there is no post for current user', async () => {
@@ -457,7 +459,7 @@ describe('PostRepository.find()', () => {
     ]);
 
     const result = await postRepository.find({ 'owner.id': '222222222222662222222222' });
-    expect(result).toEqual([]);
+    expect(result).toEqual(emptyPostsResult);
   });
 
   it('should return only posts with the given type', async () => {
@@ -469,7 +471,7 @@ describe('PostRepository.find()', () => {
     ]);
 
     const result = await postRepository.find({ 'owner.id': postMock.owner.id, type: myType });
-    expect(result.every((obj) => obj.type === myType)).toBe(true);
+    expect(result.records.every((obj) => obj.type === myType)).toBe(true);
   });
 });
 
@@ -534,7 +536,9 @@ describe('PostRepository.deleteMany()', () => {
 
     await postRepository.deleteMany({ 'owner.id': postMock.owner.id });
 
-    await expect(await postRepository.find({ 'owner.id': postMock.owner.id })).toEqual([]);
+    await expect(await postRepository.find({ 'owner.id': postMock.owner.id })).toEqual(
+      emptyPostsResult,
+    );
   });
 
   it('should return empty array after delete for given owner id', async () => {
@@ -550,17 +554,22 @@ describe('PostRepository.deleteMany()', () => {
 
     await postRepository.deleteMany({ 'owner.id': postMock.owner.id });
 
-    const myTypePostsAfterDeletion = await postRepository.find({ 'owner.id': postMock.owner.id });
-    const notMyTypePostsAfterDeletion = await postRepository.find({ 'owner.id': postWithNotMyType.owner.id });
+    const myTypePostsAfterDeletion = await postRepository.find(
+      { 'owner.id': postMock.owner.id },
+    );
+    const notMyTypePostsAfterDeletion = await postRepository.find(
+      { 'owner.id': postWithNotMyType.owner.id },
+    );
 
-    expect(myTypePostsAfterDeletion).toHaveLength(0);
-    expect(notMyTypePostsAfterDeletion).toHaveLength(2);
+    expect(myTypePostsAfterDeletion.records).toHaveLength(0);
+    expect(notMyTypePostsAfterDeletion.records).toHaveLength(2);
   });
 
   it('should return empty array after delete for given filter values', async () => {
-    const postWithDiffContent = { ...postMock,
-      content: { ...contentMock, textInput: 'b text',
-      } };
+    const postWithDiffContent = {
+      ...postMock,
+      content: { ...contentMock, textInput: 'b text' },
+    };
 
     await Promise.all([
       create(postMock),
@@ -573,10 +582,14 @@ describe('PostRepository.deleteMany()', () => {
 
     await postRepository.deleteMany({ 'content.textInput': 'a text' });
 
-    const myPostsAfterDeletion = await postRepository.find({ 'content.textInput': postMock.content.textInput });
-    const myPostsWithDiffContentAfterDeletion = await postRepository.find({ 'content.textInput': postWithDiffContent.content.textInput });
+    const myPostsAfterDeletion = await postRepository.find(
+      { 'content.textInput': postMock.content.textInput },
+    );
+    const myPostsWithDiffContentAfterDeletion = await postRepository.find(
+      { 'content.textInput': postWithDiffContent.content.textInput },
+    );
 
-    expect(myPostsAfterDeletion).toHaveLength(0);
-    expect(myPostsWithDiffContentAfterDeletion).toHaveLength(3);
+    expect(myPostsAfterDeletion.records).toHaveLength(0);
+    expect(myPostsWithDiffContentAfterDeletion.records).toHaveLength(3);
   });
 });

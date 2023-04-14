@@ -1,15 +1,16 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { jest } from '@jest/globals';
 import SearchService from '../../src/search/searchService.js';
-import PostModel from '../../src/post/post.js';
+import PostRepository from '../../src/post/postRepository.js';
 
-jest.mock('../../src/post/post');
+const mockPostRepository = {
+  find: jest.fn().mockResolvedValue([]),
+};
 
-beforeEach(
-  () => {
-    jest.spyOn(PostModel, 'find').mockReturnValueOnce([]);
-  },
-);
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.spyOn(PostRepository.prototype, 'find').mockImplementation(mockPostRepository.find);
+});
 
 describe('SearchService - filter()', () => {
   const searchText = 'search this words';
@@ -33,6 +34,8 @@ describe('SearchService - filter()', () => {
   };
 
   const textIndexQuery = { $text: { $search: searchText } };
+
+  const cursor = 'id_timestamp';
 
   it('should create query with search text, dates, type and topics', async () => {
     const filterInfo = {
@@ -58,27 +61,27 @@ describe('SearchService - filter()', () => {
       ],
     };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
   it('should create query with only type', async () => {
     const filterInfo = { ownerId, type };
     const expectedQuery = { type: typeFilter, 'owner.id': ownerId };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
   it('should create query with only topics', async () => {
     const filterInfo = { ownerId, topics };
     const expectedQuery = { topics: topicsFilter, 'owner.id': ownerId };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
   it('should create query with only dates', async () => {
@@ -95,18 +98,18 @@ describe('SearchService - filter()', () => {
       'owner.id': ownerId,
     };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
   it('should create query with only createdAt', async () => {
     const filterInfo = { ownerId, createdAtStartDate, createdAtEndDate };
     const expectedQuery = { createdAt: createdAtFilter, 'owner.id': ownerId };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
   it('should create query with only createdAtStartDate', async () => {
@@ -116,9 +119,9 @@ describe('SearchService - filter()', () => {
       'owner.id': ownerId,
     };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
   it('should create query with only createdAtEndDate', async () => {
@@ -128,18 +131,18 @@ describe('SearchService - filter()', () => {
       'owner.id': ownerId,
     };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
   it('should create query with only updatedAt', async () => {
     const filterInfo = { ownerId, updatedAtStartDate, updatedAtEndDate };
     const expectedQuery = { updatedAt: updatedAtFilter, 'owner.id': ownerId };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
   it('should create query with only updatedAtStartDate', async () => {
@@ -149,9 +152,9 @@ describe('SearchService - filter()', () => {
       'owner.id': ownerId,
     };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
   it('should create query with only updatedAtEndDate', async () => {
@@ -161,9 +164,9 @@ describe('SearchService - filter()', () => {
       'owner.id': ownerId,
     };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
   it('should create query with only type and search text', async () => {
@@ -178,9 +181,9 @@ describe('SearchService - filter()', () => {
       ],
     };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
   it('should create query with only topics and search text', async () => {
@@ -195,9 +198,9 @@ describe('SearchService - filter()', () => {
       ],
     };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
   it('should create query with only searchText', async () => {
@@ -206,8 +209,8 @@ describe('SearchService - filter()', () => {
       $and: [textIndexQuery, { 'owner.id': ownerId }],
     };
 
-    await SearchService.search(filterInfo);
+    await SearchService.search(filterInfo, cursor);
 
-    expect(PostModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 });
