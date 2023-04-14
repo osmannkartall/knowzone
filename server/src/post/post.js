@@ -98,9 +98,7 @@ const postSchema = new Schema(
 );
 
 postSchema.index({ '$**': 'text' });
-postSchema.index({ type: 1 });
-// postSchema.index({ _id: 1 });
-postSchema.index({ createdAt: 1 });
+postSchema.index({ createdAt: -1 });
 postSchema.index({ topics: 1 });
 
 transformToJSON(postSchema);
