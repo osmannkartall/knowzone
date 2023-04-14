@@ -76,14 +76,8 @@ async function search(info, cursor) {
   }
 
   const posts = await postRepository.find(query, null, cursor);
-
   const types = (posts.records ?? []).map((p) => p.type);
-
-  const forms = await formRepository.findWithoutPagination(
-    { type: { $in: types } },
-    { type: 1, content: 1 },
-  );
-
+  const forms = await formRepository.findAll({ type: { $in: types } }, { type: 1, content: 1 });
   const formsObject = forms.reduce((result, item) => ({ ...result, [item.type]: item }), {});
 
   return {

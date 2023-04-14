@@ -8,8 +8,8 @@ export default class BaseRepository {
     return this.model.create(record);
   }
 
-  async findAll() {
-    return this.model.find({}, null, { sort: { createdAt: -1 } });
+  async findAll(filter, projection) {
+    return this.model.find(filter, projection);
   }
 
   async findById(id) {
@@ -44,10 +44,6 @@ export default class BaseRepository {
     const noResult = !(nextCreatedAt && nextId) && records.length === 0;
 
     return { records, hasNext, cursor: newCursor, noResult };
-  }
-
-  async findWithoutPagination(fields, projection) {
-    return this.model.find(fields, projection).limit(this.limit);
   }
 
   async findOne(conditions, projection) {
