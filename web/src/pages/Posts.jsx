@@ -303,7 +303,7 @@ function Posts() {
             errorMessage={errorMessage}
             handleOnClickShowMore={handleOnClickShowMore}
             noNextText="Retrieved all the posts"
-            noResultText="No posts found"
+            noResultText={data?.length ? null : 'No posts found'}
           />
         </div>
       </ContentWrapper>
