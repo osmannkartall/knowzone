@@ -14,7 +14,6 @@ beforeEach(() => {
 
 describe('SearchService - filter()', () => {
   const searchText = 'search this words';
-  const ownerId = '641ac3f13325cf129878ca49';
   const type = 'test type';
   const createdAtStartDate = '2022-10-22';
   const createdAtEndDate = '2023-10-22';
@@ -40,7 +39,6 @@ describe('SearchService - filter()', () => {
   it('should create query with search text, dates, type and topics', async () => {
     const filterInfo = {
       searchText,
-      ownerId,
       type,
       createdAtStartDate,
       createdAtEndDate,
@@ -56,7 +54,6 @@ describe('SearchService - filter()', () => {
           updatedAt: updatedAtFilter,
           topics: topicsFilter,
           type: typeFilter,
-          'owner.id': ownerId,
         },
       ],
     };
@@ -67,8 +64,8 @@ describe('SearchService - filter()', () => {
   });
 
   it('should create query with only type', async () => {
-    const filterInfo = { ownerId, type };
-    const expectedQuery = { type: typeFilter, 'owner.id': ownerId };
+    const filterInfo = { type };
+    const expectedQuery = { type: typeFilter };
 
     await SearchService.search(filterInfo, cursor);
 
@@ -76,8 +73,8 @@ describe('SearchService - filter()', () => {
   });
 
   it('should create query with only topics', async () => {
-    const filterInfo = { ownerId, topics };
-    const expectedQuery = { topics: topicsFilter, 'owner.id': ownerId };
+    const filterInfo = { topics };
+    const expectedQuery = { topics: topicsFilter };
 
     await SearchService.search(filterInfo, cursor);
 
@@ -86,7 +83,6 @@ describe('SearchService - filter()', () => {
 
   it('should create query with only dates', async () => {
     const filterInfo = {
-      ownerId,
       createdAtStartDate,
       createdAtEndDate,
       updatedAtStartDate,
@@ -95,7 +91,6 @@ describe('SearchService - filter()', () => {
     const expectedQuery = {
       createdAt: createdAtFilter,
       updatedAt: updatedAtFilter,
-      'owner.id': ownerId,
     };
 
     await SearchService.search(filterInfo, cursor);
@@ -104,8 +99,8 @@ describe('SearchService - filter()', () => {
   });
 
   it('should create query with only createdAt', async () => {
-    const filterInfo = { ownerId, createdAtStartDate, createdAtEndDate };
-    const expectedQuery = { createdAt: createdAtFilter, 'owner.id': ownerId };
+    const filterInfo = { createdAtStartDate, createdAtEndDate };
+    const expectedQuery = { createdAt: createdAtFilter };
 
     await SearchService.search(filterInfo, cursor);
 
@@ -113,10 +108,9 @@ describe('SearchService - filter()', () => {
   });
 
   it('should create query with only createdAtStartDate', async () => {
-    const filterInfo = { ownerId, createdAtStartDate };
+    const filterInfo = { createdAtStartDate };
     const expectedQuery = {
       createdAt: { $gte: new Date(`${createdAtStartDate}T00:00:00.000Z`) },
-      'owner.id': ownerId,
     };
 
     await SearchService.search(filterInfo, cursor);
@@ -125,10 +119,9 @@ describe('SearchService - filter()', () => {
   });
 
   it('should create query with only createdAtEndDate', async () => {
-    const filterInfo = { ownerId, createdAtEndDate };
+    const filterInfo = { createdAtEndDate };
     const expectedQuery = {
       createdAt: { $lte: new Date(`${createdAtEndDate}T23:59:59.999Z`) },
-      'owner.id': ownerId,
     };
 
     await SearchService.search(filterInfo, cursor);
@@ -137,8 +130,8 @@ describe('SearchService - filter()', () => {
   });
 
   it('should create query with only updatedAt', async () => {
-    const filterInfo = { ownerId, updatedAtStartDate, updatedAtEndDate };
-    const expectedQuery = { updatedAt: updatedAtFilter, 'owner.id': ownerId };
+    const filterInfo = { updatedAtStartDate, updatedAtEndDate };
+    const expectedQuery = { updatedAt: updatedAtFilter };
 
     await SearchService.search(filterInfo, cursor);
 
@@ -146,10 +139,9 @@ describe('SearchService - filter()', () => {
   });
 
   it('should create query with only updatedAtStartDate', async () => {
-    const filterInfo = { ownerId, updatedAtStartDate };
+    const filterInfo = { updatedAtStartDate };
     const expectedQuery = {
       updatedAt: { $gte: new Date(`${updatedAtStartDate}T00:00:00.000Z`) },
-      'owner.id': ownerId,
     };
 
     await SearchService.search(filterInfo, cursor);
@@ -158,10 +150,9 @@ describe('SearchService - filter()', () => {
   });
 
   it('should create query with only updatedAtEndDate', async () => {
-    const filterInfo = { ownerId, updatedAtEndDate };
+    const filterInfo = { updatedAtEndDate };
     const expectedQuery = {
       updatedAt: { $lte: new Date(`${updatedAtEndDate}T23:59:59.999Z`) },
-      'owner.id': ownerId,
     };
 
     await SearchService.search(filterInfo, cursor);
@@ -170,13 +161,12 @@ describe('SearchService - filter()', () => {
   });
 
   it('should create query with only type and search text', async () => {
-    const filterInfo = { ownerId, type, searchText };
+    const filterInfo = { type, searchText };
     const expectedQuery = {
       $and: [
         textIndexQuery,
         {
           type: typeFilter,
-          'owner.id': ownerId,
         },
       ],
     };
@@ -187,13 +177,12 @@ describe('SearchService - filter()', () => {
   });
 
   it('should create query with only topics and search text', async () => {
-    const filterInfo = { ownerId, topics, searchText };
+    const filterInfo = { topics, searchText };
     const expectedQuery = {
       $and: [
         textIndexQuery,
         {
           topics: topicsFilter,
-          'owner.id': ownerId,
         },
       ],
     };
@@ -204,9 +193,9 @@ describe('SearchService - filter()', () => {
   });
 
   it('should create query with only searchText', async () => {
-    const filterInfo = { ownerId, searchText };
+    const filterInfo = { searchText };
     const expectedQuery = {
-      $and: [textIndexQuery, { 'owner.id': ownerId }],
+      $and: [textIndexQuery, { }],
     };
 
     await SearchService.search(filterInfo, cursor);
