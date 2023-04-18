@@ -6,4 +6,4 @@ export const IRREVERSIBLE_ACTION = '#f44336';
 export const GRAY1 = '#333333'; // font
 export const GRAY2 = '#7f7f86'; // modals, icons, inactive states
 export const GRAY3 = '#e1e1e1'; // border
-export const GRAY4 = '#f5f5f5'; // low contrast background: inner divs
+export const GRAY4 = '#f9f9f9'; // low contrast background: inner divs

@@ -23,7 +23,6 @@ const classes = {
   imageContainer: `${PREFIX}-imageContainer`,
   list: `${PREFIX}-list`,
   timeInfo: `${PREFIX}-timeInfo`,
-  listItem: `${PREFIX}-listItem`,
   postBodySectionContent: `${PREFIX}-postBodySectionContent`,
   topicsContainer: `${PREFIX}-topicsContainer`,
 };
@@ -83,7 +82,6 @@ const Root = styled('div')(({ theme }) => ({
   [`& .${classes.imageContainer}`]: {
     display: 'flex',
     flexDirection: 'row',
-    marginTop: theme.spacing(2),
     overflow: 'auto',
     maxWidth: 1000,
     [theme.breakpoints.down('md')]: {
@@ -93,6 +91,8 @@ const Root = styled('div')(({ theme }) => ({
 
   [`& .${classes.list}`]: {
     margin: 0,
+    padding: 0,
+    paddingLeft: theme.spacing(2),
   },
 
   [`& .${classes.timeInfo}`]: {
@@ -111,11 +111,7 @@ const Root = styled('div')(({ theme }) => ({
     },
   },
 
-  [`& .${classes.listItem}`]: {
-    marginTop: theme.spacing(1),
-  },
-
-  [`&.${classes.postBodySectionContent}`]: {
+  [`& .${classes.postBodySectionContent}`]: {
     backgroundColor: GRAY4,
     borderRadius: 4,
     height: 'auto',
@@ -139,7 +135,7 @@ function convertDate(dateStr) {
 function PostBodySection({ title, children }) {
   return (
     <>
-      <h3>{title}</h3>
+      <h4>{title}</h4>
       <div className={classes.postBodySectionContent}>
         {children}
       </div>
@@ -147,9 +143,11 @@ function PostBodySection({ title, children }) {
   );
 }
 
-function TextPart({ value }) {
+function TextPart({ title, value }) {
   return (
-    <div className={classes.text}>{value}</div>
+    <PostBodySection title={title ?? 'Text'}>
+      <div className={classes.text}>{value}</div>
+    </PostBodySection>
   );
 }
 
@@ -157,9 +155,7 @@ function ListPart({ title, listItems }) {
   return (
     <PostBodySection title={title ?? 'List'}>
       <ul className={classes.list}>
-        {(listItems ?? []).map((listItem) => (
-          <li key={listItem} className={classes.listItem}>{listItem}</li>
-        ))}
+        {(listItems ?? []).map((listItem) => <li key={listItem}>{listItem}</li>)}
       </ul>
     </PostBodySection>
   );
@@ -175,8 +171,9 @@ function EditorPart({ title, text }) {
 
 function ImagePart({ images }) {
   return (
-    <div className={classes.imageContainer}>
-      {
+    <PostBodySection title="images">
+      <div className={classes.imageContainer}>
+        {
         images.map((i) => (
           <img
             key={i.name}
@@ -188,7 +185,8 @@ function ImagePart({ images }) {
           />
         ))
       }
-    </div>
+      </div>
+    </PostBodySection>
   );
 }
 
@@ -210,10 +208,16 @@ function OwnerTopbar({ owner }) {
 
 const DynamicPart = ({ post, content }) => Object.entries(post.content ?? {}).map(([k, v]) => {
   const { TEXT, LIST, EDITOR, IMAGE } = FORM_COMPONENT_TYPES;
-  if (content?.[k] === TEXT) return <TextPart key={k} value={v} />;
+
+  if (Array.isArray(v) && !v.length) return null;
+
+  if (!v) return null;
+
+  if (content?.[k] === TEXT) return <TextPart key={k} title={k} value={v} />;
   if (content?.[k] === LIST) return <ListPart key={k} title={k} listItems={v} />;
   if (content?.[k] === EDITOR) return <EditorPart key={k} title={k} text={v} />;
   if (content?.[k] === IMAGE) return <ImagePart key={k} images={v} />;
+
   return null;
 });
 
