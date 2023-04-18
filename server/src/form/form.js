@@ -62,4 +62,6 @@ const formSchema = Schema(
 
 transformToJSON(formSchema);
 
+formSchema.index({ createdAt: -1 });
+
 export default model('form', formSchema);

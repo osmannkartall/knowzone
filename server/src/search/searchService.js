@@ -1,5 +1,8 @@
-import PostModel from '../post/post.js';
-import FormModel from '../form/form.js';
+import PostRepository from '../post/postRepository.js';
+import FormRepository from '../form/formRepository.js';
+
+const postRepository = new PostRepository();
+const formRepository = new FormRepository();
 
 function prepareFilterQuery(info) {
   const filterQuery = { 'owner.id': info.ownerId };
@@ -57,7 +60,7 @@ function prepareSearchTextQuery(info) {
   return {};
 }
 
-async function search(info) {
+async function search(info, cursor) {
   if (!info.ownerId) {
     return [];
   }
@@ -72,13 +75,20 @@ async function search(info) {
     query = filterQuery;
   }
 
-  const posts = await PostModel.find(query);
+  const posts = await postRepository.find(query, null, cursor);
+  const types = (posts.records ?? []).map((p) => p.type);
+  const forms = await formRepository.findAll({ type: { $in: types } }, { type: 1, content: 1 });
+  const formsObject = forms.reduce((result, item) => ({ ...result, [item.type]: item }), {});
 
-  const types = posts.map((p) => p.type);
-
-  const forms = await FormModel.find({ type: { $in: types } }, { type: 1, content: 1 });
-
-  return { posts, forms };
+  return {
+    records: {
+      posts: posts.records,
+      forms: formsObject,
+    },
+    hasNext: posts.hasNext,
+    cursor: posts.cursor,
+    noResult: posts.noResult,
+  };
 }
 
 export default { search };

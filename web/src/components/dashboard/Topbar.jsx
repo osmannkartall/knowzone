@@ -5,7 +5,7 @@ import { IconButton, MenuItem, Menu } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchBar from '../search/SearchBar';
-import { GRAY1, GRAY3, PRIMARY } from '../../constants/colors';
+import { GRAY1, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
 import { FE_ROUTES } from '../../constants/routes';
 import { sidebarWidth, topbarHeight } from '../../constants/styles';
 import AppLogo from '../common/AppLogo';
@@ -32,10 +32,11 @@ const Root = styled('div')(({ theme }) => ({
   borderBottom: `1px solid ${GRAY3}`,
   alignItems: 'center',
   justifyContent: 'space-between',
-  zIndex: 5,
+  zIndex: 1005,
   position: 'sticky',
   top: 0,
   height: topbarHeight,
+  backgroundColor: WHITE,
 
   [`& .${classes.accountButton}`]: {
     margin: theme.spacing(0, 2),

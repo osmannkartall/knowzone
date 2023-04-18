@@ -79,8 +79,7 @@ const create = async (_, res, next) => {
   try {
     const post = res.locals.data;
     await createSchema.validateAsync(post);
-    await postRepository.create(post);
-    res.json(createSuccessResponse('Created the record successfully'));
+    res.json(await postRepository.create(post));
   } catch (err) {
     changeToCustomError(err, {
       description: 'Error when creating new record',
@@ -94,15 +93,14 @@ const create = async (_, res, next) => {
 
 const findAll = async (req, res, next) => {
   try {
-    const { type } = req.query;
+    const { type, cursor } = req.query;
     const { userId } = req.session;
 
     if (type) {
       await typeSchemaPart.validateAsync(type);
-
-      res.send(await postRepository.find({ type, 'owner.id': userId }));
+      res.json(await postRepository.find({ type, 'owner.id': userId }, null, cursor));
     } else {
-      res.send(await postRepository.find({ 'owner.id': userId }));
+      res.json([]);
     }
   } catch (err) {
     changeToCustomError(err, {

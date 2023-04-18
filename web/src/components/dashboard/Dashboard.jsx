@@ -11,10 +11,12 @@ function Dashboard({ children }) {
   return (
     <Grid container>
       <Topbar openSidebar={openSidebar} />
-      <Sidebar isSidebarOpen={isSidebarOpen} />
-      <Content isSidebarOpen={isSidebarOpen}>
-        {children}
-      </Content>
+      <div style={{ display: 'flex', width: '100%' }}>
+        <Sidebar isSidebarOpen={isSidebarOpen} />
+        <Content isSidebarOpen={isSidebarOpen}>
+          {children}
+        </Content>
+      </div>
     </Grid>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme, StyledEngineProvider } from '@mui/material/styles';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,9 +12,9 @@ import { FE_ROUTES } from './constants/routes';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { checkUserSession } from './contexts/AuthActions';
-import PostsByType from './pages/PostsByType';
 import LinearProgressModal from './components/common/LinearProgressModal';
 import Home from './pages/Home';
+import Posts from './pages/Posts';
 
 const theme = createTheme(({
   palette: {
@@ -42,6 +42,16 @@ function AuthRouteComponent({ Success, Terminated }) {
   return component;
 }
 
+function ScrollToTop() {
+  const { pathname, state } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname, state]);
+
+  return null;
+}
+
 function Wrapper() {
   const authDispatch = useAuthDispatch();
 
@@ -52,6 +62,7 @@ function Wrapper() {
   return (
     <>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route
             path="/"
@@ -84,7 +95,7 @@ function Wrapper() {
             path={`/${FE_ROUTES.POSTS}/:type`}
             element={(
               <AuthRouteComponent
-                Success={<Dashboard><PostsByType /></Dashboard>}
+                Success={<Dashboard><Posts /></Dashboard>}
                 Terminated={<Navigate to={`/${FE_ROUTES.LOGIN}`} />}
               />
             )}

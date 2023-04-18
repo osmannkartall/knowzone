@@ -1,22 +1,49 @@
 export default class BaseRepository {
   constructor(model) {
     this.model = model;
+    this.limit = 20;
   }
 
   async create(record) {
     return this.model.create(record);
   }
 
-  async findAll() {
-    return this.model.find({}, null, { sort: { createdAt: -1 } });
+  async findAll(filter, projection) {
+    return this.model.find(filter, projection);
   }
 
   async findById(id) {
     return this.model.findById(id);
   }
 
-  async find(fields, projection) {
-    return this.model.find(fields, projection, { sort: { createdAt: -1 } });
+  async find(filter, projection, cursor) {
+    const [nextCreatedAt, nextId] = (cursor ?? '').split('_');
+
+    const newFilter = nextCreatedAt && nextId ? {
+      $and: [
+        filter,
+        {
+          $or: [{
+            _id: { $lt: nextId },
+          }, {
+            _id: nextId,
+            createdAt: { $lt: new Date(nextCreatedAt) },
+          }],
+        },
+      ],
+    } : filter;
+    if (projection && !projection.createdAt) {
+      projection.createdAt = 1;
+    }
+    const options = { sort: { _id: -1, createdAt: -1 }, limit: this.limit };
+
+    const records = await this.model.find(newFilter, projection, options);
+    const hasNext = records.length === this.limit;
+    const lastRecord = records[this.limit - 1];
+    const newCursor = hasNext ? `${lastRecord.createdAt.toISOString()}_${lastRecord._id}` : null;
+    const noResult = !(nextCreatedAt && nextId) && records.length === 0;
+
+    return { records, hasNext, cursor: newCursor, noResult };
   }
 
   async findOne(conditions, projection) {

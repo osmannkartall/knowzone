@@ -10,6 +10,7 @@
     "@mui/material": "^5.11.14",
     "@mui/x-date-pickers": "^6.0.3",
     "@pathofdev/react-tag-input": "^1.0.7",
+    "@tanstack/react-virtual": "^3.0.0-beta.54",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",

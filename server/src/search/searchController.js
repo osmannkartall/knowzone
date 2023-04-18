@@ -52,7 +52,7 @@ const search = async (req, res, next) => {
       await searchSchema.validateAsync(info);
 
       info.ownerId = req.session.userId;
-      const result = await SearchService.search(info);
+      const result = await SearchService.search(info, req.query.cursor);
       res.json(result);
     }
   } catch (err) {

@@ -1,75 +1,103 @@
-import { useState, useEffect } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import Post from '../components/post/Post';
 import ContentWrapper from '../components/common/ContentWrapper';
-import LinearProgressModal from '../components/common/LinearProgressModal';
+import usePagination from '../hooks/usePagination';
+import { topbarHeight } from '../constants/styles';
+import { WHITE } from '../constants/colors';
 import { BE_ROUTES } from '../constants/routes';
-
-const searchResultMessage = (length) => {
-  if (!length) {
-    return 'No results found matching your search.';
-  }
-
-  if (length === 1) {
-    return `${length} post`;
-  }
-
-  return `${length} posts`;
-};
+import FetchResult from '../components/common/FetchResult';
 
 function SearchResults() {
   const location = useLocation();
-  const [posts, setPosts] = useState([]);
-  const [forms, setForms] = useState([]);
-  const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
 
-  useEffect(() => {
-    let mounted = true;
-    const url = `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}`;
-    const { from, ...body } = location.state ?? {};
+  const { data, getNextPage, status, errorMessage } = usePagination({
+    url: `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.SEARCH}`,
+    method: 'POST',
+    body: location.state,
+  });
 
-    setIsLinearProgressModalOpen(true);
+  const { forms, posts } = data ?? {};
 
-    fetch(url, {
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
-      body: JSON.stringify(body),
-      credentials: 'include',
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (mounted) {
-          setPosts(data?.posts);
-          setForms(data?.forms);
-        }
-      })
-      .catch((error) => console.log(error))
-      .finally(() => {
-        if (mounted) {
-          setIsLinearProgressModalOpen(false);
-        }
-      });
+  const handleOnClickShowMore = () => getNextPage();
 
-    return function cleanup() {
-      mounted = false;
-    };
-  }, [location.state]);
+  const parentRef = useRef(null);
+
+  const parentOffsetRef = useRef(0);
+
+  useLayoutEffect(() => { parentOffsetRef.current = parentRef.current?.offsetTop ?? 0; }, []);
+
+  const virtualizer = useWindowVirtualizer({
+    count: posts?.length,
+    estimateSize: () => 45,
+    scrollMargin: parentOffsetRef.current,
+  });
 
   return (
-    <LinearProgressModal isOpen={isLinearProgressModalOpen}>
-      <ContentWrapper Header={<h2>Search Results</h2>}>
-        <p>{searchResultMessage(posts?.length)}</p>
-        {Array.isArray(posts) && posts.length ? (
-          posts.map((p) => (
-            <Post
-              key={p.id}
-              showType
-              content={(forms ?? []).find((f) => f.type === p.type)?.content ?? {}}
-              post={p}
-            />
-          ))) : null}
-      </ContentWrapper>
-    </LinearProgressModal>
+    <ContentWrapper
+      Header={(
+        <div
+          style={{
+            position: 'sticky',
+            top: topbarHeight,
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: WHITE,
+            zIndex: 100,
+          }}
+        >
+          <h2>Search Results</h2>
+        </div>
+      )}
+    >
+      {posts && (
+        <div ref={parentRef}>
+          <div
+            style={{
+              height: virtualizer.getTotalSize(),
+              position: 'relative',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                transform: `translateY(${
+                  (virtualizer.getVirtualItems()[0]?.start ?? 0) - virtualizer.options.scrollMargin
+                }px)`,
+              }}
+            >
+              {virtualizer.getVirtualItems().map((virtualRow) => (
+                <div
+                  key={virtualRow.key}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  style={{ paddingBottom: 16 }}
+                >
+                  <Post
+                    showType
+                    content={(forms?.[posts[virtualRow.index].type])?.content ?? {}}
+                    post={posts[virtualRow.index]}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+        <FetchResult
+          status={status}
+          errorMessage={errorMessage}
+          handleOnClickShowMore={handleOnClickShowMore}
+          noNextText="Retrieved all the posts"
+          noResultText="No results found matching your search"
+        />
+      </div>
+    </ContentWrapper>
   );
 }
 

@@ -31,7 +31,6 @@ const Root = styled('div')(({ theme }) => ({
   [`& .${classes.container}`]: {
     border: `1px solid ${GRAY3}`,
     borderRadius: 4,
-    marginBottom: theme.spacing(2),
   },
 
   [`& .${classes.postTopbar}`]: {
