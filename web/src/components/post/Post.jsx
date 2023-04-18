@@ -236,7 +236,7 @@ function TimestampBar({ post }) {
   );
 }
 
-function PostTopbar({ showType, editable, type, onClickUpdate, onClickDelete }) {
+function PostTopbar({ editable, type, onClickUpdate, onClickDelete }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -245,46 +245,42 @@ function PostTopbar({ showType, editable, type, onClickUpdate, onClickDelete }) 
   const handleClose = () => setAnchorEl(null);
 
   return (
-    showType ? (
-      <>
-        <div className={classes.postTopbar}>
-          <div className={classes.postTypeContainer}>
-            <Bookmark fontSize="small" />
-            <div className={classes.postTypeText}>
-              { type }
-            </div>
+    <>
+      <div className={classes.postTopbar}>
+        <div className={classes.postTypeContainer}>
+          <Bookmark fontSize="small" />
+          <div className={classes.postTypeText}>
+            { type }
           </div>
-          {
-            editable && (
-              <div>
-                <IconButton
-                  aria-label="update post"
-                  aria-controls="post-menu"
-                  aria-haspopup="true"
-                  onClick={handleMenu}
-                  className={classes.actionButton}
-                  style={{ width: 30, height: 30 }}
-                  size="large"
-                >
-                  <MoreHoriz />
-                </IconButton>
-                <Menu
-                  id="post-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={open}
-                  onClose={handleClose}
-                >
-                  <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>Update</MenuItem>
-                  <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>Delete</MenuItem>
-                </Menu>
-              </div>
-            )
-          }
         </div>
-        <Divider />
-      </>
-    ) : null
+        {editable && (
+          <div>
+            <IconButton
+              aria-label="update post"
+              aria-controls="post-menu"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              className={classes.actionButton}
+              style={{ width: 30, height: 30 }}
+              size="large"
+            >
+              <MoreHoriz />
+            </IconButton>
+            <Menu
+              id="post-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={open}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>Update</MenuItem>
+              <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>Delete</MenuItem>
+            </Menu>
+          </div>
+        )}
+      </div>
+      <Divider />
+    </>
   );
 }
 
@@ -298,12 +294,11 @@ function PostBody({ owner, content, post }) {
   );
 }
 
-function Post({ showType, editable, content, post, onClickUpdate, onClickDelete }) {
+function Post({ editable, content, post, onClickUpdate, onClickDelete }) {
   return (
     <Root>
       <div className={classes.container}>
         <PostTopbar
-          showType={showType}
           editable={editable}
           type={post.type}
           onClickUpdate={onClickUpdate}

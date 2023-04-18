@@ -1,39 +1,19 @@
-import { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Dialog, DialogActions, DialogTitle, Button } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { toast } from 'react-toastify';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
-import Post from '../components/post/Post';
 import PostCreator from '../components/post/PostCreator';
-import ContentWrapper from '../components/common/ContentWrapper';
-import { GRAY3, IRREVERSIBLE_ACTION, WHITE } from '../constants/colors';
+import { IRREVERSIBLE_ACTION, WHITE } from '../constants/colors';
 import LinearProgressModal from '../components/common/LinearProgressModal';
 import { BE_ROUTES } from '../constants/routes';
 import { removeNumericKeyPrefix } from '../components/post/postCreatorUtils';
 import getFormByType from '../api/forms/getFormByType';
 import usePagination from '../hooks/usePagination';
-import { topbarHeight } from '../constants/styles';
-import FetchResult from '../components/common/FetchResult';
+import Posts from '../components/post/Posts';
 
 const isNewImage = (image) => image instanceof File;
 
-const ContentWrapperHeaderContainer = styled('div')(({ theme }) => ({
-  position: 'sticky',
-  top: topbarHeight,
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: theme.spacing(1, 2),
-  margin: theme.spacing(2, 0),
-  border: `1px solid ${GRAY3}`,
-  borderRadius: 4,
-  backgroundColor: WHITE,
-  zIndex: 100,
-}));
-
-function Posts() {
+function PostsByOwner() {
   const [form, setForm] = useState({});
   const [openForUpdate, setOpenForUpdate] = useState(false);
   const [openForAdd, setOpenForAdd] = useState(false);
@@ -63,18 +43,6 @@ function Posts() {
       isMounted = false;
     };
   }, [type]);
-
-  const parentRef = useRef(null);
-
-  const parentOffsetRef = useRef(0);
-
-  useLayoutEffect(() => { parentOffsetRef.current = parentRef.current?.offsetTop ?? 0; }, []);
-
-  const virtualizer = useWindowVirtualizer({
-    count: data?.length,
-    estimateSize: () => 45,
-    scrollMargin: parentOffsetRef.current,
-  });
 
   const handleClose = () => setOpenDialog(false);
 
@@ -238,75 +206,31 @@ function Posts() {
 
   const handleConfirm = () => deletePost();
 
-  const handleOnClickShowMore = () => getNextPage();
-
   return (
     <LinearProgressModal isOpen={isLinearProgressModalOpen}>
-      <ContentWrapper
-        Header={form ? (
-          <ContentWrapperHeaderContainer>
-            <h2>{type}</h2>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => setOpenForAdd(true)}
-              size="small"
-              style={{ height: 40 }}
-            >
-              Create Post
-            </Button>
-          </ContentWrapperHeaderContainer>
+      <Posts
+        editable
+        errorMessage={errorMessage}
+        form={form}
+        getNextPage={getNextPage}
+        LeftHeader={<h2>{type}</h2>}
+        RightHeader={form ? (
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => setOpenForAdd(true)}
+            size="small"
+            style={{ height: 40 }}
+          >
+            Create Post
+          </Button>
         ) : null}
-      >
-        {data && (
-          <div ref={parentRef}>
-            <div
-              style={{
-                height: virtualizer.getTotalSize(),
-                position: 'relative',
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  transform: `translateY(${(virtualizer.getVirtualItems()[0]?.start ?? 0)
-                    - virtualizer.options.scrollMargin}px)`,
-                }}
-              >
-                {virtualizer.getVirtualItems().map((virtualRow) => (
-                  <div
-                    key={virtualRow.key}
-                    data-index={virtualRow.index}
-                    ref={virtualizer.measureElement}
-                    style={{ paddingBottom: 16 }}
-                  >
-                    <Post
-                      showType
-                      editable
-                      content={form?.content ?? {}}
-                      post={data[virtualRow.index]}
-                      onClickUpdate={() => setForUpdate(data[virtualRow.index])}
-                      onClickDelete={() => setForDelete(data[virtualRow.index])}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-          <FetchResult
-            status={status}
-            errorMessage={errorMessage}
-            handleOnClickShowMore={handleOnClickShowMore}
-            noNextText="Retrieved all the posts"
-            noResultText={data?.length ? null : 'No posts found'}
-          />
-        </div>
-      </ContentWrapper>
+        onClickDelete={setForDelete}
+        onClickUpdate={setForUpdate}
+        posts={data}
+        showType
+        status={status}
+      />
       {openForUpdate && (
         <PostCreator
           buttonTitle="update"
@@ -356,4 +280,4 @@ function Posts() {
   );
 }
 
-export default Posts;
+export default PostsByOwner;

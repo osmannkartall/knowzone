@@ -1,6 +1,6 @@
 import { Alert, Button, CircularProgress } from '@mui/material';
 
-function FetchResult({ status, errorMessage, handleOnClickShowMore, noNextText, noResultText }) {
+function FetchResult({ status, errorMessage, handleOnClickShowMore, noNextText }) {
   if (status === 'error') {
     return <Alert severity="error">{`Error: ${errorMessage}`}</Alert>;
   }
@@ -29,7 +29,7 @@ function FetchResult({ status, errorMessage, handleOnClickShowMore, noNextText, 
   }
 
   if (status === 'noResult') {
-    return noResultText;
+    return 'No results found';
   }
 
   return null;
