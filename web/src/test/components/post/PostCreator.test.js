@@ -83,9 +83,9 @@ describe('PostCreator', () => {
     await user.type(solutionInput, expectedPost.content[`${NUMERIC_KEY_PREFIX}solution`]);
     await user.upload(imageUploaderInput, [file1, file2]);
     await user.type(topicsInput, 'topic1');
-    fireEvent.keyDown(topicsInput, { key: 'enter', keyCode: 13 });
+    fireEvent.keyDown(topicsInput, { key: 'Enter' });
     await user.type(topicsInput, 'topic2');
-    fireEvent.keyDown(topicsInput, { key: 'enter', keyCode: 13 });
+    fireEvent.keyDown(topicsInput, { key: 'Enter' });
 
     fireEvent.submit(shareButton);
 
@@ -235,45 +235,11 @@ describe('PostCreator', () => {
 
     await user.type(itemInput, 'first todo');
     await user.type(topicsInput, 'topic_?');
-    fireEvent.keyDown(topicsInput, { key: 'enter', keyCode: 13 });
+    fireEvent.keyDown(topicsInput, { key: 'Enter' });
 
     fireEvent.submit(shareButton);
 
     await waitFor(() => expect(screen.getByText(/A topic should be at most 30 alphanumeric/i)));
-  });
-
-  it('should display error when there are duplicated topics', async () => {
-    const type = 'todo';
-    window.URL.createObjectURL = jest.fn();
-    function Component() {
-      const methods = useForm({
-        resolver: joiResolver(postCreatorSchema),
-        defaultValues: { type: '', topics: [] },
-      });
-      return (
-        <FormProvider {...methods}>
-          <PostCreator
-            open
-            form={forms[type]}
-            handler={mockOnSubmit}
-          />
-        </FormProvider>
-      );
-    }
-    const { user } = setup(<Component />);
-
-    const itemInput = screen.getByLabelText(/item/i);
-    const topicsInput = screen.getByLabelText(/topics/i);
-    const shareButton = screen.getByText(/share/i);
-
-    await user.type(itemInput, 'first todo');
-    await user.type(topicsInput, 'duplicated-topic');
-    fireEvent.keyDown(topicsInput, { key: 'enter', keyCode: 13 });
-    await user.type(topicsInput, 'duplicated-topic');
-    fireEvent.keyDown(topicsInput, { key: 'enter', keyCode: 13 });
-    fireEvent.submit(shareButton);
-
-    await waitFor(() => expect(screen.getByText(/Tag list should contain unique items/i)));
   });
 
   it('should render the empty form', async () => {

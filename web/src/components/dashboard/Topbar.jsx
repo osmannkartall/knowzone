@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { IconButton, MenuItem, Menu } from '@mui/material';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import { IconButton, MenuItem, Menu, Avatar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchBar from '../search/SearchBar';
 import { GRAY1, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
@@ -160,7 +159,7 @@ function Topbar({ openSidebar }) {
             style={{ width: 40, height: 40 }}
             size="large"
           >
-            <AccountCircle />
+            <Avatar alt="profile picture" src="https://loremflickr.com/640/480/cats" />
           </IconButton>
           <Menu
             id="menu-topbar"

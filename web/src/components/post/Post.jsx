@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { IconButton, Menu, MenuItem, Divider } from '@mui/material';
+import { IconButton, Menu, MenuItem, Divider, Avatar } from '@mui/material';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
+import Bookmark from '@mui/icons-material/Bookmark';
 import { GRAY3, GRAY4, PRIMARY } from '../../constants/colors';
-import TagPicker from '../common/TagPicker/TagPicker';
 import MarkdownPreview from '../common/MarkdownPreview';
 import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
+import ReadOnlyChips from '../common/ReadOnlyChips';
 
 const PREFIX = 'Post';
 
@@ -24,7 +25,7 @@ const classes = {
   timeInfo: `${PREFIX}-timeInfo`,
   listItem: `${PREFIX}-listItem`,
   postBodySectionContent: `${PREFIX}-postBodySectionContent`,
-  tagContainer: `${PREFIX}-tagContainer`,
+  topicsContainer: `${PREFIX}-topicsContainer`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -60,7 +61,6 @@ const Root = styled('div')(({ theme }) => ({
   [`& .${classes.ownerTopbar}`]: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginBottom: theme.spacing(2),
     alignItems: 'center',
   },
@@ -124,8 +124,8 @@ const Root = styled('div')(({ theme }) => ({
     padding: theme.spacing(2),
   },
 
-  [`& .${classes.tagContainer}`]: {
-    padding: theme.spacing(2),
+  [`& .${classes.topicsContainer}`]: {
+    padding: theme.spacing(1.5),
     [theme.breakpoints.down('md')]: {
       overflowX: 'auto',
     },
@@ -193,17 +193,17 @@ function ImagePart({ images }) {
 }
 
 function TopicsPart({ topics }) {
-  return (
-    <div className={classes.tagContainer}>
-      <TagPicker tags={topics} readOnly />
-    </div>
-  );
+  return <div className={classes.topicsContainer}><ReadOnlyChips chips={topics} /></div>;
 }
 
 function OwnerTopbar({ owner }) {
   return (
     <div className={classes.ownerTopbar}>
-      <div className={classes.ownerTitle}>{owner}</div>
+      <Avatar alt={owner.name} src="https://loremflickr.com/640/480/cats" />
+      <div style={{ marginLeft: 8 }}>
+        <div className={classes.ownerTitle}>{owner.name}</div>
+        <div>{owner.username}</div>
+      </div>
     </div>
   );
 }
@@ -226,6 +226,12 @@ function TimestampBar({ post }) {
       {post.updatedAt && <div>{updatedAtInfo}</div>}
       <div>|</div>
       <div>{createdAtInfo}</div>
+      {post.updatedAt !== post.createdAt ? (
+        <>
+          <div>|</div>
+          <div>{updatedAtInfo}</div>
+        </>
+      ) : null}
     </div>
   );
 }
@@ -243,6 +249,7 @@ function PostTopbar({ showType, editable, type, onClickUpdate, onClickDelete }) 
       <>
         <div className={classes.postTopbar}>
           <div className={classes.postTypeContainer}>
+            <Bookmark fontSize="small" />
             <div className={classes.postTypeText}>
               { type }
             </div>
@@ -284,7 +291,7 @@ function PostTopbar({ showType, editable, type, onClickUpdate, onClickDelete }) 
 function PostBody({ owner, content, post }) {
   return (
     <div className={classes.postBodyContainer}>
-      <OwnerTopbar owner={owner?.username} />
+      <OwnerTopbar owner={owner} />
       <DynamicPart post={post} content={content} />
       <TimestampBar post={post} />
     </div>

@@ -15,6 +15,7 @@ import { checkUserSession } from './contexts/AuthActions';
 import LinearProgressModal from './components/common/LinearProgressModal';
 import Home from './pages/Home';
 import Posts from './pages/Posts';
+import PostsByTopics from './pages/PostsByTopics';
 
 const theme = createTheme(({
   palette: {
@@ -96,6 +97,15 @@ function Wrapper() {
             element={(
               <AuthRouteComponent
                 Success={<Dashboard><Posts /></Dashboard>}
+                Terminated={<Navigate to={`/${FE_ROUTES.LOGIN}`} />}
+              />
+            )}
+          />
+          <Route
+            path={`/${FE_ROUTES.TOPICS}/:topic`}
+            element={(
+              <AuthRouteComponent
+                Success={<Dashboard><PostsByTopics /></Dashboard>}
                 Terminated={<Navigate to={`/${FE_ROUTES.LOGIN}`} />}
               />
             )}

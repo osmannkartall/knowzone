@@ -1,14 +1,13 @@
-import TagPicker from '../../common/TagPicker/TagPicker';
+import Chips from '../../common/Chips';
 
 function ListContent({ field, onChange, value }) {
   return (
     <div title={field}>
-      <TagPicker
-        id={field}
-        tags={Array.isArray(value) ? value : []}
-        setTags={onChange}
+      <Chips
+        inputId={field}
+        chips={Array.isArray(value) ? value : []}
+        setChips={onChange}
         placeholder="Type an item and press enter to add"
-        unique
         border
       />
     </div>

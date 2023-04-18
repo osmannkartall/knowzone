@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-import { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { FormHelperText, FormControl } from '@mui/material';
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
@@ -27,7 +25,7 @@ const FormDataRow = styled('div')(({ theme }) => ({
   margin: theme.spacing(2),
 }));
 
-function TopicsPart({ setAreTopicsUnique }) {
+function TopicsPart() {
   const { control, formState: { errors } } = useFormContext();
 
   return (
@@ -35,15 +33,10 @@ function TopicsPart({ setAreTopicsUnique }) {
       <Controller
         render={
         ({ field: { onChange, value } }) => (
-          <label>
-            <Title>Topics</Title>
-            <Topics
-              onChange={onChange}
-              value={value}
-              errors={errors}
-              setAreTopicsUnique={setAreTopicsUnique}
-            />
-          </label>
+          <FormControl style={{ display: 'flex', flexDirection: 'column' }}>
+            <Label htmlFor="topics">Topics</Label>
+            <Topics inputId="topics" onChange={onChange} value={value} errors={errors.topics} />
+          </FormControl>
         )
       }
         control={control}
@@ -99,8 +92,6 @@ const oldPostDefaultValues = (oldPost) => ({
 });
 
 function PostCreator({ buttonTitle, open, setOpen, handler, form, oldPost }) {
-  const [areTopicsUnique, setAreTopicsUnique] = useState(true);
-
   const useFormMethods = useForm({
     resolver: joiResolver(postCreatorSchema),
     defaultValues: oldPost ? oldPostDefaultValues(oldPost) : newPostDefaultValues(form?.type),
@@ -108,12 +99,10 @@ function PostCreator({ buttonTitle, open, setOpen, handler, form, oldPost }) {
   const { formState: { errors }, handleSubmit, reset, getValues } = useFormMethods;
 
   const onSubmit = async () => {
-    if (areTopicsUnique) {
-      const isSuccessful = await handler(getValues());
+    const isSuccessful = await handler(getValues());
 
-      if (isSuccessful) {
-        reset();
-      }
+    if (isSuccessful) {
+      reset();
     }
   };
 
@@ -136,7 +125,7 @@ function PostCreator({ buttonTitle, open, setOpen, handler, form, oldPost }) {
           )}
         </FormDataRow>
         <ContentParts content={form?.content} />
-        <TopicsPart setAreTopicsUnique={setAreTopicsUnique} />
+        <TopicsPart />
       </FormProvider>
     </Creator>
   );

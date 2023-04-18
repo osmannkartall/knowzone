@@ -5,7 +5,7 @@ const postRepository = new PostRepository();
 const formRepository = new FormRepository();
 
 function prepareFilterQuery(info) {
-  const filterQuery = { 'owner.id': info.ownerId };
+  const filterQuery = {};
 
   if (info.createdAtStartDate) {
     filterQuery.createdAt = {};
@@ -61,10 +61,6 @@ function prepareSearchTextQuery(info) {
 }
 
 async function search(info, cursor) {
-  if (!info.ownerId) {
-    return [];
-  }
-
   const filterQuery = prepareFilterQuery(info);
   const searchTextQuery = prepareSearchTextQuery(info);
   let query = {};
