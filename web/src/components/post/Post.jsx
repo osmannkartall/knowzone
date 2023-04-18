@@ -223,8 +223,6 @@ function TimestampBar({ post }) {
 
   return (
     <div className={classes.timeInfo}>
-      {post.updatedAt && <div>{updatedAtInfo}</div>}
-      <div>|</div>
       <div>{createdAtInfo}</div>
       {post.updatedAt !== post.createdAt ? (
         <>
