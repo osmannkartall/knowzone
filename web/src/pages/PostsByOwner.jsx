@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Dialog, DialogActions, DialogTitle, Button } from '@mui/material';
 import { toast } from 'react-toastify';
 import PostCreator from '../components/post/PostCreator';
 import { IRREVERSIBLE_ACTION, WHITE } from '../constants/colors';
 import LinearProgressModal from '../components/common/LinearProgressModal';
-import { BE_ROUTES } from '../constants/routes';
+import { BE_ROUTES, FE_ROUTES } from '../constants/routes';
 import { removeNumericKeyPrefix } from '../components/post/postCreatorUtils';
 import getFormByType from '../api/forms/getFormByType';
 import usePagination from '../hooks/usePagination';
@@ -16,6 +16,7 @@ const isNewImage = (image) => image instanceof File;
 function PostsByOwner() {
   const [form, setForm] = useState({});
   const [openForUpdate, setOpenForUpdate] = useState(false);
+  const [openFormDeleteDialog, setOpenFormDeleteDialog] = useState(false);
   const [openForAdd, setOpenForAdd] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
@@ -28,6 +29,8 @@ function PostsByOwner() {
     method: 'GET',
     queryParameters: { type },
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isMounted = true;
@@ -45,6 +48,8 @@ function PostsByOwner() {
   }, [type]);
 
   const handleClose = () => setOpenDialog(false);
+
+  const handleFormDeleteDialogClose = () => setOpenFormDeleteDialog(false);
 
   const setForUpdate = (post) => {
     if (post) {
@@ -204,7 +209,36 @@ function PostsByOwner() {
     return isAddPostSuccessful;
   };
 
+  const deleteForm = async () => {
+    setIsLinearProgressModalOpen(true);
+
+    try {
+      if (form) {
+        const response = await fetch(
+          `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.FORMS}/${form?.id}`,
+          {
+            headers: { 'Content-Type': 'application/json' },
+            method: 'DELETE',
+            credentials: 'include',
+          },
+        );
+        const result = response.json();
+        console.log(result);
+
+        navigate(`/${FE_ROUTES.HOME}`);
+        window.location.reload();
+        setOpenFormDeleteDialog(false);
+      }
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setIsLinearProgressModalOpen(false);
+    }
+  };
+
   const handleConfirm = () => deletePost();
+
+  const handleFormDeleteConfirm = () => deleteForm();
 
   return (
     <LinearProgressModal isOpen={isLinearProgressModalOpen}>
@@ -215,15 +249,26 @@ function PostsByOwner() {
         getNextPage={getNextPage}
         LeftHeader={<h2>{type}</h2>}
         RightHeader={form ? (
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => setOpenForAdd(true)}
-            size="small"
-            style={{ height: 40 }}
-          >
-            Create Post
-          </Button>
+          <div style={{ justifyContent: 'space-between' }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => setOpenForAdd(true)}
+              size="small"
+              style={{ height: 40 }}
+            >
+              Create Post
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => setOpenFormDeleteDialog(true)}
+              size="small"
+              style={{ marginLeft: '5px', height: 40 }}
+            >
+              Delete Form
+            </Button>
+          </div>
         ) : null}
         onClickDelete={setForDelete}
         onClickUpdate={setForUpdate}
@@ -266,6 +311,34 @@ function PostsByOwner() {
           <Button
             variant="contained"
             onClick={handleConfirm}
+            style={{
+              backgroundColor: IRREVERSIBLE_ACTION,
+              color: WHITE,
+            }}
+            autoFocus
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openFormDeleteDialog}
+        onClose={handleFormDeleteDialogClose}
+        aria-labelledby="alert-form-delete-dialog-title"
+        aria-describedby="alert-form-delete-dialog-description"
+      >
+
+        <DialogTitle id="alert-form-delete-dialog-title">
+          Are you sure you want to delete the form?
+          This will cause the deletion of all associated posts.
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={handleFormDeleteDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleFormDeleteConfirm}
             style={{
               backgroundColor: IRREVERSIBLE_ACTION,
               color: WHITE,
