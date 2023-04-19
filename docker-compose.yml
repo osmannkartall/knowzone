@@ -14,7 +14,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGODB_URI=mongodb://user:pass@db:27017/knowzone?authSource=admin&w=1
+      - MONGODB_URI=mongodb://db:27017/knowzone
       - REACT_URL=http://localhost:3000
       - SESSION_SECRET=knowzone-auth-secret
       - SESSION_NAME=sid
@@ -30,18 +30,12 @@ services:
   db:
     image: mongo
     restart: always
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=user
-      - MONGO_INITDB_ROOT_PASSWORD=pass
     volumes:
       - type: bind
         source: ./db/data
         target: /data/db
     ports:
       - "27017:27017"
-    environment:
-      - MONGODB_INITDB_ROOT_USERNAME=user
-      - MONGODB_INITDB_ROOT_PASSWORD=pass
 
 volumes:
   uploads:
