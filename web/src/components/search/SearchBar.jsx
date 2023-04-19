@@ -87,12 +87,9 @@ function SearchBar() {
   };
   const [searchOptions, setSearchOptions] = useState(emptySearchOptions);
   const [isSearchOptionsMenuOpen, setIsSearchOptionsMenuOpen] = useState(false);
-  const [areTopicsUnique, setAreTopicsUnique] = useState(true);
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  const handleTopicsNotUniqueError = (unique) => setAreTopicsUnique(unique);
 
   const toggleSearchOptionsMenu = () => setIsSearchOptionsMenuOpen(!isSearchOptionsMenuOpen);
 
@@ -111,7 +108,7 @@ function SearchBar() {
     return Object.values(rest).every((value) => isEmpty(value)) && !searchText.trim();
   };
 
-  const checkAllSearchOptions = () => !areAllSearchOptionsEmpty() && areTopicsUnique;
+  const checkAllSearchOptions = () => !areAllSearchOptionsEmpty();
 
   const checkDates = () => {
     if ((searchOptions.createdAtStartDate && searchOptions.createdAtEndDate)
@@ -141,8 +138,6 @@ function SearchBar() {
   const searchOrGiveError = () => {
     if (areAllSearchOptionsEmpty()) {
       toast.error('Could not search! Type what to search or specify search options correctly.');
-    } else if (!areTopicsUnique) {
-      toast.error('Could not search! Topics should be unique');
     } else if (!checkDates()) {
       toast.error('Invalid dates!');
     } else {
@@ -212,7 +207,6 @@ function SearchBar() {
           handleDateChange={handleDateChange}
           handleSearchOnClick={handleSearchOnClick}
           handleResetOnClick={handleResetOnClick}
-          handleTopicsNotUniqueError={handleTopicsNotUniqueError}
         />
       )}
     </Root>

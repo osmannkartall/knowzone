@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { IconButton, Menu, MenuItem, Divider } from '@mui/material';
+import { IconButton, Menu, MenuItem, Divider, Avatar } from '@mui/material';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
+import Bookmark from '@mui/icons-material/Bookmark';
 import { GRAY3, GRAY4, PRIMARY } from '../../constants/colors';
-import TagPicker from '../common/TagPicker/TagPicker';
 import MarkdownPreview from '../common/MarkdownPreview';
 import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
+import ReadOnlyChips from '../common/ReadOnlyChips';
 
 const PREFIX = 'Post';
 
@@ -22,9 +23,8 @@ const classes = {
   imageContainer: `${PREFIX}-imageContainer`,
   list: `${PREFIX}-list`,
   timeInfo: `${PREFIX}-timeInfo`,
-  listItem: `${PREFIX}-listItem`,
   postBodySectionContent: `${PREFIX}-postBodySectionContent`,
-  tagContainer: `${PREFIX}-tagContainer`,
+  topicsContainer: `${PREFIX}-topicsContainer`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -60,7 +60,6 @@ const Root = styled('div')(({ theme }) => ({
   [`& .${classes.ownerTopbar}`]: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginBottom: theme.spacing(2),
     alignItems: 'center',
   },
@@ -83,7 +82,6 @@ const Root = styled('div')(({ theme }) => ({
   [`& .${classes.imageContainer}`]: {
     display: 'flex',
     flexDirection: 'row',
-    marginTop: theme.spacing(2),
     overflow: 'auto',
     maxWidth: 1000,
     [theme.breakpoints.down('md')]: {
@@ -93,6 +91,8 @@ const Root = styled('div')(({ theme }) => ({
 
   [`& .${classes.list}`]: {
     margin: 0,
+    padding: 0,
+    paddingLeft: theme.spacing(2),
   },
 
   [`& .${classes.timeInfo}`]: {
@@ -111,11 +111,7 @@ const Root = styled('div')(({ theme }) => ({
     },
   },
 
-  [`& .${classes.listItem}`]: {
-    marginTop: theme.spacing(1),
-  },
-
-  [`&.${classes.postBodySectionContent}`]: {
+  [`& .${classes.postBodySectionContent}`]: {
     backgroundColor: GRAY4,
     borderRadius: 4,
     height: 'auto',
@@ -124,8 +120,8 @@ const Root = styled('div')(({ theme }) => ({
     padding: theme.spacing(2),
   },
 
-  [`& .${classes.tagContainer}`]: {
-    padding: theme.spacing(2),
+  [`& .${classes.topicsContainer}`]: {
+    padding: theme.spacing(1.5),
     [theme.breakpoints.down('md')]: {
       overflowX: 'auto',
     },
@@ -139,7 +135,7 @@ function convertDate(dateStr) {
 function PostBodySection({ title, children }) {
   return (
     <>
-      <h3>{title}</h3>
+      <h4>{title}</h4>
       <div className={classes.postBodySectionContent}>
         {children}
       </div>
@@ -147,9 +143,11 @@ function PostBodySection({ title, children }) {
   );
 }
 
-function TextPart({ value }) {
+function TextPart({ title, value }) {
   return (
-    <div className={classes.text}>{value}</div>
+    <PostBodySection title={title ?? 'Text'}>
+      <div className={classes.text}>{value}</div>
+    </PostBodySection>
   );
 }
 
@@ -157,9 +155,7 @@ function ListPart({ title, listItems }) {
   return (
     <PostBodySection title={title ?? 'List'}>
       <ul className={classes.list}>
-        {(listItems ?? []).map((listItem) => (
-          <li key={listItem} className={classes.listItem}>{listItem}</li>
-        ))}
+        {(listItems ?? []).map((listItem) => <li key={listItem}>{listItem}</li>)}
       </ul>
     </PostBodySection>
   );
@@ -175,8 +171,9 @@ function EditorPart({ title, text }) {
 
 function ImagePart({ images }) {
   return (
-    <div className={classes.imageContainer}>
-      {
+    <PostBodySection title="images">
+      <div className={classes.imageContainer}>
+        {
         images.map((i) => (
           <img
             key={i.name}
@@ -188,32 +185,39 @@ function ImagePart({ images }) {
           />
         ))
       }
-    </div>
+      </div>
+    </PostBodySection>
   );
 }
 
 function TopicsPart({ topics }) {
-  return (
-    <div className={classes.tagContainer}>
-      <TagPicker tags={topics} readOnly />
-    </div>
-  );
+  return <div className={classes.topicsContainer}><ReadOnlyChips chips={topics} /></div>;
 }
 
 function OwnerTopbar({ owner }) {
   return (
     <div className={classes.ownerTopbar}>
-      <div className={classes.ownerTitle}>{owner}</div>
+      <Avatar alt={owner.name} src="https://loremflickr.com/640/480/cats" />
+      <div style={{ marginLeft: 8 }}>
+        <div className={classes.ownerTitle}>{owner.name}</div>
+        <div>{owner.username}</div>
+      </div>
     </div>
   );
 }
 
 const DynamicPart = ({ post, content }) => Object.entries(post.content ?? {}).map(([k, v]) => {
   const { TEXT, LIST, EDITOR, IMAGE } = FORM_COMPONENT_TYPES;
-  if (content?.[k] === TEXT) return <TextPart key={k} value={v} />;
+
+  if (Array.isArray(v) && !v.length) return null;
+
+  if (!v) return null;
+
+  if (content?.[k] === TEXT) return <TextPart key={k} title={k} value={v} />;
   if (content?.[k] === LIST) return <ListPart key={k} title={k} listItems={v} />;
   if (content?.[k] === EDITOR) return <EditorPart key={k} title={k} text={v} />;
   if (content?.[k] === IMAGE) return <ImagePart key={k} images={v} />;
+
   return null;
 });
 
@@ -223,14 +227,18 @@ function TimestampBar({ post }) {
 
   return (
     <div className={classes.timeInfo}>
-      {post.updatedAt && <div>{updatedAtInfo}</div>}
-      <div>|</div>
       <div>{createdAtInfo}</div>
+      {post.updatedAt !== post.createdAt ? (
+        <>
+          <div>|</div>
+          <div>{updatedAtInfo}</div>
+        </>
+      ) : null}
     </div>
   );
 }
 
-function PostTopbar({ showType, editable, type, onClickUpdate, onClickDelete }) {
+function PostTopbar({ editable, type, onClickUpdate, onClickDelete }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -239,64 +247,60 @@ function PostTopbar({ showType, editable, type, onClickUpdate, onClickDelete }) 
   const handleClose = () => setAnchorEl(null);
 
   return (
-    showType ? (
-      <>
-        <div className={classes.postTopbar}>
-          <div className={classes.postTypeContainer}>
-            <div className={classes.postTypeText}>
-              { type }
-            </div>
+    <>
+      <div className={classes.postTopbar}>
+        <div className={classes.postTypeContainer}>
+          <Bookmark fontSize="small" />
+          <div className={classes.postTypeText}>
+            { type }
           </div>
-          {
-            editable && (
-              <div>
-                <IconButton
-                  aria-label="update post"
-                  aria-controls="post-menu"
-                  aria-haspopup="true"
-                  onClick={handleMenu}
-                  className={classes.actionButton}
-                  style={{ width: 30, height: 30 }}
-                  size="large"
-                >
-                  <MoreHoriz />
-                </IconButton>
-                <Menu
-                  id="post-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={open}
-                  onClose={handleClose}
-                >
-                  <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>Update</MenuItem>
-                  <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>Delete</MenuItem>
-                </Menu>
-              </div>
-            )
-          }
         </div>
-        <Divider />
-      </>
-    ) : null
+        {editable && (
+          <div>
+            <IconButton
+              aria-label="update post"
+              aria-controls="post-menu"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              className={classes.actionButton}
+              style={{ width: 30, height: 30 }}
+              size="large"
+            >
+              <MoreHoriz />
+            </IconButton>
+            <Menu
+              id="post-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={open}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>Update</MenuItem>
+              <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>Delete</MenuItem>
+            </Menu>
+          </div>
+        )}
+      </div>
+      <Divider />
+    </>
   );
 }
 
 function PostBody({ owner, content, post }) {
   return (
     <div className={classes.postBodyContainer}>
-      <OwnerTopbar owner={owner?.username} />
+      <OwnerTopbar owner={owner} />
       <DynamicPart post={post} content={content} />
       <TimestampBar post={post} />
     </div>
   );
 }
 
-function Post({ showType, editable, content, post, onClickUpdate, onClickDelete }) {
+function Post({ editable, content, post, onClickUpdate, onClickDelete }) {
   return (
     <Root>
       <div className={classes.container}>
         <PostTopbar
-          showType={showType}
           editable={editable}
           type={post.type}
           onClickUpdate={onClickUpdate}

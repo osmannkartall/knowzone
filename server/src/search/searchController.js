@@ -65,6 +65,35 @@ const search = async (req, res, next) => {
   }
 };
 
+const getPostsByTopics = async (req, res, next) => {
+  try {
+    const info = req.body;
+
+    if (isObjectEmpty(info)) {
+      const err = createCustomError({
+        description: 'No search filter information.',
+        statusCode: 500,
+        type: KNOWZONE_ERROR_TYPES.SEARCH,
+      });
+      next(err);
+    } else {
+      await searchSchema.validateAsync(info);
+
+      const result = await SearchService.search(info, req.query.cursor);
+      res.json(result);
+    }
+  } catch (err) {
+    if (!hasLowerLayerCustomError()) {
+      err.description = 'Error when filtering posts by search query';
+      err.statusCode = 500;
+      err.type = KNOWZONE_ERROR_TYPES.SEARCH;
+    }
+    next(err);
+  }
+};
+
 router.post('/', checkAuthentication, search);
+
+router.post('/topics', checkAuthentication, getPostsByTopics);
 
 export default router;

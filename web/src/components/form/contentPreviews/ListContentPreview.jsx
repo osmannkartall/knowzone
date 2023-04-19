@@ -1,12 +1,12 @@
-import TagPicker from '../../common/TagPicker/TagPicker';
+import Chips from '../../common/Chips';
 
 function ListContentPreview() {
   return (
-    <TagPicker
-      tags={['example1', 'example2']}
-      setTags={() => {}}
+    <Chips
+      chips={['example1', 'example2']}
+      setChips={() => {}}
       placeholder="Type an item and press enter to add"
-      unique
+      disabled
       border
     />
   );

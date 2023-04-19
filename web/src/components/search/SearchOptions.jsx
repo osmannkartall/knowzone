@@ -3,9 +3,9 @@ import { styled } from '@mui/material/styles';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import TagPicker from '../common/TagPicker/TagPicker';
 import { searchBarHeight } from '../../constants/styles';
 import { WHITE } from '../../constants/colors';
+import Chips from '../common/Chips';
 
 const PREFIX = 'SearchOptions';
 
@@ -95,7 +95,6 @@ function SearchOptions({
   handleDateChange,
   handleResetOnClick,
   handleSearchOnClick,
-  handleTopicsNotUniqueError,
 }) {
   return (
     <Root className={classes.container}>
@@ -109,15 +108,7 @@ function SearchOptions({
           />
         </SearchOptionRow>
         <SearchOptionRow label="Topics">
-          <TagPicker
-            id="search-option-tag-picker"
-            name="topics"
-            tags={options.topics}
-            setTags={setTopics}
-            onNotUniqueError={handleTopicsNotUniqueError}
-            fullWidth
-            unique
-          />
+          <Chips chips={options.topics} setChips={setTopics} border />
         </SearchOptionRow>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <SearchOptionRow label="Date Created">

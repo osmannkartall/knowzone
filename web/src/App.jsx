@@ -14,7 +14,8 @@ import Register from './pages/Register';
 import { checkUserSession } from './contexts/AuthActions';
 import LinearProgressModal from './components/common/LinearProgressModal';
 import Home from './pages/Home';
-import Posts from './pages/Posts';
+import PostsByTopics from './pages/PostsByTopics';
+import PostsByOwner from './pages/PostsByOwner';
 
 const theme = createTheme(({
   palette: {
@@ -95,7 +96,16 @@ function Wrapper() {
             path={`/${FE_ROUTES.POSTS}/:type`}
             element={(
               <AuthRouteComponent
-                Success={<Dashboard><Posts /></Dashboard>}
+                Success={<Dashboard><PostsByOwner /></Dashboard>}
+                Terminated={<Navigate to={`/${FE_ROUTES.LOGIN}`} />}
+              />
+            )}
+          />
+          <Route
+            path={`/${FE_ROUTES.TOPICS}/:topic`}
+            element={(
+              <AuthRouteComponent
+                Success={<Dashboard><PostsByTopics /></Dashboard>}
                 Terminated={<Navigate to={`/${FE_ROUTES.LOGIN}`} />}
               />
             )}

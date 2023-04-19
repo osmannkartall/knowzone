@@ -13,8 +13,7 @@ const fetchData = async (url, method, JSONStringBody) => {
     options.body = JSONStringBody;
   }
 
-  const response = await fetch(url, options);
-  return response.json();
+  return fetch(url, options);
 };
 
 function getUrl(url, queryString, cursor) {
@@ -73,18 +72,23 @@ function usePagination(request) {
     const fetchResults = async () => {
       try {
         setStatus('loading');
-        const nextPage = await fetchData(currentUrl, method, JSONStringBody);
-        handleDataChange(nextPage.records);
-        setCursor(nextPage.cursor);
-        if (nextPage.hasNext) {
-          setStatus('hasNext');
-        } else if (nextPage.noResult) {
-          setStatus('noResult');
+        const response = await fetchData(currentUrl, method, JSONStringBody);
+        const result = await response.json();
+        if (response.ok) {
+          handleDataChange(result.records);
+          setCursor(result.cursor);
+          if (result.hasNext) {
+            setStatus('hasNext');
+          } else if (result.noResult) {
+            setStatus('noResult');
+          } else {
+            setStatus('resolved');
+          }
         } else {
-          setStatus('resolved');
+          setStatus('error');
+          setErrorMessage(result.message);
         }
       } catch (err) {
-        console.log(err);
         setStatus('error');
         setErrorMessage(err.message);
       }

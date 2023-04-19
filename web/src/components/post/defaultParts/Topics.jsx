@@ -1,6 +1,8 @@
-import TagPicker from '../../common/TagPicker/TagPicker';
+import { FormHelperText } from '@mui/material';
+import { GRAY3, IRREVERSIBLE_ACTION } from '../../../constants/colors';
+import Chips from '../../common/Chips';
 
-const getErrorMessageOfArrayForm = (arr) => {
+function getErrorMessageOfArrayInput(arr) {
   if (arr) {
     if (arr.message) {
       return arr.message;
@@ -14,21 +16,25 @@ const getErrorMessageOfArrayForm = (arr) => {
   }
 
   return null;
-};
+}
 
-function Topics({ onChange, value, errors, setAreTopicsUnique }) {
+function Topics({ onChange, value, errors, inputId }) {
   return (
-    <TagPicker
-      tags={Array.isArray(value) ? value : []}
-      setTags={onChange}
-      placeholder="Type a topic and press enter to add"
-      required
-      unique
-      border
-      showError={errors.topics !== undefined}
-      onNotUniqueError={(isUnique) => setAreTopicsUnique(isUnique)}
-      helperText={getErrorMessageOfArrayForm(errors.topics)}
-    />
+    <>
+      <Chips
+        inputId={inputId}
+        chips={Array.isArray(value) ? value : []}
+        setChips={onChange}
+        placeholder="Type a topic and press enter to add"
+        border
+        borderColor={errors ? IRREVERSIBLE_ACTION : GRAY3}
+      />
+      {errors && (
+      <FormHelperText role="alert" error={errors !== undefined}>
+        {getErrorMessageOfArrayInput(errors)}
+      </FormHelperText>
+      )}
+    </>
   );
 }
 
