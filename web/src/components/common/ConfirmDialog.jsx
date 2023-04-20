@@ -18,7 +18,7 @@ function ConfirmDialog(
       aria-describedby="alert-dialog-description"
     >
       <DialogTitle id="alert-dialog-title">
-        {dialogTitle ?? 'Delete Item'}
+        {dialogTitle ?? 'Confirm'}
       </DialogTitle>
       <DialogActions>
         <Button onClick={onClickCancel} color="primary">
