@@ -144,8 +144,8 @@ const filter = async (req, res, next) => {
 };
 
 const deleteById = async (req, res, next) => {
-  // const session = await mongoose.startSession();
-  // session.startTransaction();
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
     /// TODO: form type could be included inside request body to avoid unnecessary query
@@ -154,7 +154,7 @@ const deleteById = async (req, res, next) => {
         _id: req.params.id,
         'owner.id': req.session.userId,
       },
-      // { session },
+      { session },
     );
 
     await postRepository.deleteMany(
@@ -162,10 +162,10 @@ const deleteById = async (req, res, next) => {
         'owner.id': req.session.userId,
         type: deletedForm.type,
       },
-      // { session },
+      { session },
     );
 
-    //  await session.commitTransaction();
+    await session.commitTransaction();
 
     if (deletedForm) {
       res.json(createSuccessResponse('Deleted the record successfully'));
@@ -173,7 +173,7 @@ const deleteById = async (req, res, next) => {
       res.json(createSuccessResponse('No record for the given ID'));
     }
   } catch (err) {
-    // await session.abortTransaction();
+    await session.abortTransaction();
 
     changeToCustomError(err, {
       description: 'Error when deleting record with the given ID',
@@ -186,7 +186,7 @@ const deleteById = async (req, res, next) => {
 
     next(err);
   } finally {
-    // session.endSession();
+    session.endSession();
   }
 };
 

@@ -7,7 +7,7 @@ async function startDB() {
     await mongoose.connect(
       process.env.MONGODB_URI,
       {
-        // replicaSet: 'rs0',
+        replicaSet: 'rs0',
         useNewUrlParser: true,
         useUnifiedTopology: true,
       },
