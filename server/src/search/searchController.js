@@ -22,7 +22,7 @@ const searchSchema = Joi.object({
 
   searchText: Joi.string().max(128),
 
-  type: Joi.string(),
+  typeName: Joi.string(),
 
   topics: Joi.array()
     .max(5)

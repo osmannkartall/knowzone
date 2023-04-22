@@ -79,14 +79,14 @@ const ContentParts = ({ content }) => {
 };
 
 const newPostDefaultValues = (type) => ({
-  type: type ?? '',
+  type: type ?? { name: '' },
   topics: [],
   content: {},
 });
 
 const oldPostDefaultValues = (oldPost) => ({
   id: oldPost?.id ?? '',
-  type: oldPost?.type ?? '',
+  type: oldPost?.type ?? { name: '' },
   topics: oldPost?.topics ?? [],
   content: addNumericKeyPrefix(oldPost?.content) ?? {},
 });
@@ -108,7 +108,7 @@ function PostCreator({ buttonTitle, open, setOpen, handler, form, oldPost }) {
 
   return (
     <Creator
-      title={form?.type}
+      title={form?.type?.name}
       buttonTitle={buttonTitle}
       isButtonDisabled={!form?.type}
       isOpen={open}

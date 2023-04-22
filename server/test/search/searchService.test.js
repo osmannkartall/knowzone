@@ -14,7 +14,7 @@ beforeEach(() => {
 
 describe('SearchService - filter()', () => {
   const searchText = 'search this words';
-  const type = 'test type';
+  const typeName = 'test type';
   const createdAtStartDate = '2022-10-22';
   const createdAtEndDate = '2023-10-22';
   const updatedAtStartDate = '2023-01-22';
@@ -22,7 +22,7 @@ describe('SearchService - filter()', () => {
   const topics = ['topic1', 'topic2'];
 
   const topicsFilter = { $in: topics.map((topic) => new RegExp(`\\b${topic}\\b`, 'i')) };
-  const typeFilter = new RegExp(`\\b${type}\\b`, 'i');
+  const typeFilter = new RegExp(`\\b${typeName}\\b`, 'i');
   const createdAtFilter = {
     $gte: new Date(`${createdAtStartDate}T00:00:00.000Z`),
     $lte: new Date(`${createdAtEndDate}T23:59:59.999Z`),
@@ -36,10 +36,10 @@ describe('SearchService - filter()', () => {
 
   const cursor = 'id_timestamp';
 
-  it('should create query with search text, dates, type and topics', async () => {
+  it('should create query with search text, dates, type name and topics', async () => {
     const filterInfo = {
       searchText,
-      type,
+      typeName,
       createdAtStartDate,
       createdAtEndDate,
       updatedAtStartDate,
@@ -53,7 +53,7 @@ describe('SearchService - filter()', () => {
           createdAt: createdAtFilter,
           updatedAt: updatedAtFilter,
           topics: topicsFilter,
-          type: typeFilter,
+          'type.name': typeFilter,
         },
       ],
     };
@@ -63,9 +63,9 @@ describe('SearchService - filter()', () => {
     expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
-  it('should create query with only type', async () => {
-    const filterInfo = { type };
-    const expectedQuery = { type: typeFilter };
+  it('should create query with only type name', async () => {
+    const filterInfo = { typeName };
+    const expectedQuery = { 'type.name': typeFilter };
 
     await SearchService.search(filterInfo, cursor);
 
@@ -160,13 +160,13 @@ describe('SearchService - filter()', () => {
     expect(mockPostRepository.find).toHaveBeenCalledWith(expectedQuery, null, cursor);
   });
 
-  it('should create query with only type and search text', async () => {
-    const filterInfo = { type, searchText };
+  it('should create query with only type name and search text', async () => {
+    const filterInfo = { typeName, searchText };
     const expectedQuery = {
       $and: [
         textIndexQuery,
         {
-          type: typeFilter,
+          'type.name': typeFilter,
         },
       ],
     };

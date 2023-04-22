@@ -12,7 +12,9 @@ function createInvalid(form) {
   return async () => { await formRepository.create(form); };
 }
 
-const type = 'a form';
+const type = {
+  name: 'a form',
+};
 
 const ownerMock = {
   id: '222222222222222222222222',
@@ -71,14 +73,18 @@ describe('FormRepository.create() with invalid records', () => {
 
   const formWithUndefinedContent = { type, owner: ownerMock };
 
-  const formWithInvalidMaxLenType = {
+  const formWithInvalidMaxLenTypeName = {
     ...formMock,
-    type: (new Array(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE + 10)).join('-'),
+    type: {
+      name: (new Array(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE + 10)).join('-'),
+    },
   };
 
-  const formWithInvalidMinLenType = {
+  const formWithInvalidMinLenTypeName = {
     ...formMock,
-    type: (new Array(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE - 1)).join('-'),
+    type: {
+      name: (new Array(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE - 1)).join('-'),
+    },
   };
 
   const formWithInvalidTypeOfType = { ...formMock };
@@ -130,7 +136,7 @@ describe('FormRepository.create() with invalid records', () => {
 
   it('should throw error when there is no type', async () => {
     await expect(createInvalid(formWithoutType)).rejects.toThrow(
-      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('type'),
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('type.name'),
     );
   });
 
@@ -152,25 +158,25 @@ describe('FormRepository.create() with invalid records', () => {
     );
   });
 
-  it('should throw error when len of type is longer than max len', async () => {
-    await expect(createInvalid(formWithInvalidMaxLenType)).rejects.toThrow(
-      VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE),
+  it('should throw error when len of type.name is longer than max len', async () => {
+    await expect(createInvalid(formWithInvalidMaxLenTypeName)).rejects.toThrow(
+      VALIDATION_MESSAGES.MAX_LEN('type.name', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE),
     );
   });
 
-  it('should throw error when len of type is smaller than min len', async () => {
-    await expect(createInvalid(formWithInvalidMinLenType)).rejects.toThrow(
-      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('type'),
+  it('should throw error when len of type.name is smaller than min len', async () => {
+    await expect(createInvalid(formWithInvalidMinLenTypeName)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('type.name'),
     );
   });
 
-  it('should throw error when type is not string', async () => {
+  it('should throw error when type.name is not string', async () => {
     const castMessage = MONGOOSE_DEFAULT_MESSAGES.CAST('string');
 
-    formWithInvalidTypeOfType.type = [1, 2];
+    formWithInvalidTypeOfType.type.name = [1, 2];
     await expect(createInvalid(formWithInvalidTypeOfType)).rejects.toThrow(castMessage);
 
-    formWithInvalidTypeOfType.type = {};
+    formWithInvalidTypeOfType.type.name = {};
     await expect(createInvalid(formWithInvalidTypeOfType)).rejects.toThrow(castMessage);
   });
 
@@ -220,7 +226,6 @@ describe('FormRepository.create() with invalid records', () => {
 
 describe('FormRepository.create() with valid records', () => {
   const form = {
-    type,
     owner: {
       id: '222222222222222222222222',
       username: 'john_doe',
@@ -229,11 +234,9 @@ describe('FormRepository.create() with valid records', () => {
     content: {
       description: FORM_COMPONENT_TYPES.TEXT,
     },
-  };
-
-  const form2 = {
-    ...form,
-    type: 'form2',
+    type: {
+      name: 'form2',
+    },
   };
 
   it('should create the form', async () => {
@@ -241,15 +244,37 @@ describe('FormRepository.create() with valid records', () => {
   });
 
   it('should get the form after creating', async () => {
-    await formRepository.create(form2);
-    const newForm = await formRepository.findOne({ type: 'form2' });
-    expect(form2.content.description).toBe(newForm.content.description);
+    const result = await formRepository.create(form);
+    const newForm = await formRepository.findOne({ 'type.id': result.type.id.toString() });
+    expect(form.content.description).toBe(newForm.content.description);
   });
 
-  it('should throw error when trying to create multiple forms with the same type', async () => {
-    await expect(async () => {
-      await formRepository.create(form);
-      await formRepository.create(form);
-    }).rejects.toThrow(/duplicate key error collection/i);
+  it('should create form with same name for the same user', async () => {
+    await formRepository.create(form);
+    await formRepository.create(form);
+    await formRepository.create(form);
+
+    const result = await formRepository.find({ 'type.name': form.type.name });
+
+    expect(result.records.length).toBe(3);
+  });
+
+  it('should create form with same name for the different users', async () => {
+    await formRepository.create(form);
+    await formRepository.create(
+      {
+        ...form,
+        owner: {
+          id: '992222222222222222222222',
+          username: 'alice',
+          name: 'alice alice',
+        },
+      },
+    );
+
+    const result = await formRepository.find({ 'type.name': form.type.name });
+    const usernames = result.records.map((record) => record.owner.username).sort();
+
+    expect(usernames).toEqual(['alice', 'john_doe']);
   });
 });

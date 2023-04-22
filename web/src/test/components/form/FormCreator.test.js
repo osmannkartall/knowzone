@@ -98,10 +98,10 @@ describe('FormCreator', () => {
   it('should submit form with only image field and form type name', async () => {
     render(<FormCreator open handler={mockHandler} />);
 
-    const type = 'test form';
+    const type = { name: 'test form' };
 
     const formTypeNameInput = screen.getByRole('textbox', { name: /form type name/i });
-    fireEvent.change(formTypeNameInput, { target: { value: type } });
+    fireEvent.change(formTypeNameInput, { target: { value: type.name } });
 
     const componentTypeDropdowns = getComponentTypeDropdowns();
     onClickMuiDropdownOption(componentTypeDropdowns[2], FORM_COMPONENT_TYPES.IMAGE);
@@ -130,10 +130,10 @@ describe('FormCreator', () => {
   it('should submit form', async () => {
     render(<FormCreator open handler={mockHandler} />);
 
-    const type = 'test form';
+    const type = { name: 'test form' };
 
     const formTypeNameInput = screen.getByRole('textbox', { name: /form type name/i });
-    fireEvent.change(formTypeNameInput, { target: { value: type } });
+    fireEvent.change(formTypeNameInput, { target: { value: type.name } });
 
     const componentTypeDropdowns = getComponentTypeDropdowns();
     onClickMuiDropdownOption(componentTypeDropdowns[2], FORM_COMPONENT_TYPES.IMAGE);

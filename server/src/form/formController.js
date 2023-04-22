@@ -17,10 +17,15 @@ const formRepository = new FormRepository();
 const postRepository = new PostRepository();
 
 const createSchema = Joi.object({
-  type: Joi.string()
-    .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
-    .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
-    .required(),
+  type: Joi.object({
+    id: Joi.string(),
+    name: Joi.string()
+      .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
+      .message(VALIDATION_MESSAGES.MAX_LEN('type.name', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE))
+      .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
+      .message(VALIDATION_MESSAGES.MIN_LEN('type.name', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE))
+      .required(),
+  }).required(),
 
   content: Joi.object()
     .unknown()
@@ -78,8 +83,7 @@ const create = async (req, res, next) => {
       name: req.session.name,
     };
 
-    await formRepository.create(form);
-    res.json(createSuccessResponse('Created the record successfully'));
+    res.json(await formRepository.create(form));
   } catch (err) {
     changeToCustomError(err, {
       description: 'Error when creating new record',
@@ -94,7 +98,7 @@ const create = async (req, res, next) => {
 const getByType = async (req, res, next) => {
   try {
     res.json(
-      await formRepository.findOne({ 'owner.id': req.session.userId, type: req.query.type }),
+      await formRepository.findOne({ 'owner.id': req.session.userId, 'type.id': req.query.typeId }),
     );
   } catch (err) {
     changeToCustomError(err, {
@@ -148,7 +152,6 @@ const deleteById = async (req, res, next) => {
   session.startTransaction();
 
   try {
-    /// TODO: form type could be included inside request body to avoid unnecessary query
     const deletedForm = await formRepository.findOneAndDelete(
       {
         _id: req.params.id,
@@ -157,13 +160,15 @@ const deleteById = async (req, res, next) => {
       { session },
     );
 
-    await postRepository.deleteMany(
-      {
-        'owner.id': req.session.userId,
-        type: deletedForm.type,
-      },
-      { session },
-    );
+    if (deletedForm) {
+      await postRepository.deleteMany(
+        {
+          'owner.id': req.session.userId,
+          'type.id': deletedForm.type.id,
+        },
+        { session },
+      );
+    }
 
     await session.commitTransaction();
 

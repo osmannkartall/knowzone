@@ -30,13 +30,13 @@ const mockOnSubmit = jest.fn((type, content, topics) => Promise.resolve({ type, 
 
 describe('PostCreator', () => {
   it('should create the post', async () => {
-    const type = 'bugfix';
+    const { type } = forms.bugfix;
 
     const file1 = new File(['file1'], 'file1.png', { type: 'image/png' });
     const file2 = new File(['file2'], 'file2.png', { type: 'image/png' });
 
     const expectedPost = {
-      type,
+      type: forms.bugfix.type,
       content: addNumericKeyPrefix(
         {
           description: 'This is the description of the error',
@@ -61,7 +61,7 @@ describe('PostCreator', () => {
         <FormProvider {...methods}>
           <PostCreator
             open
-            form={forms[type]}
+            form={forms.bugfix}
             handler={mockOnSubmit}
           />
         </FormProvider>
@@ -100,7 +100,7 @@ describe('PostCreator', () => {
   });
 
   it('should display error when all the content fields are empty', async () => {
-    const type = 'tip';
+    const { type } = forms.tip;
 
     function Component() {
       const methods = useForm({
@@ -132,7 +132,7 @@ describe('PostCreator', () => {
     function Component() {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
-        defaultValues: { type: '' },
+        defaultValues: { type: { name: '' } },
       });
       return (
         <FormProvider {...methods}>
@@ -154,36 +154,34 @@ describe('PostCreator', () => {
       });
       return (
         <FormProvider {...methods}>
-          <PostCreator open form={forms[type]} />
+          <PostCreator open form={forms[type.name]} />
         </FormProvider>
       );
     }
 
-    const { rerender } = render(<Component type="tip" />);
+    const { rerender } = render(<Component type={forms.tip.type} />);
 
     expectFormInputsAreInDocument(Object.keys(forms.tip.content));
 
-    rerender(<Component type="todo" />);
+    rerender(<Component type={forms.todo.type} />);
 
     expectFormInputsAreInDocument(Object.keys(forms.todo.content));
     expectFormInputsAreNotInDocument(Object.keys(forms.tip.content));
   });
 
   it('should display only topics error when only content.images is filled', async () => {
-    const type = 'tip';
-
     window.URL.createObjectURL = jest.fn();
 
     function Component() {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
-        defaultValues: { type: '', topics: [] },
+        defaultValues: { type: { name: '' }, topics: [] },
       });
       return (
         <FormProvider {...methods}>
           <PostCreator
             open
-            form={forms[type]}
+            form={forms.tip}
             handler={mockOnSubmit}
           />
         </FormProvider>
@@ -207,20 +205,18 @@ describe('PostCreator', () => {
   });
 
   it('should display error when there is an invalid topic', async () => {
-    const type = 'todo';
-
     window.URL.createObjectURL = jest.fn();
 
     function Component() {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
-        defaultValues: { type: '', topics: [] },
+        defaultValues: { type: { name: '' }, topics: [] },
       });
       return (
         <FormProvider {...methods}>
           <PostCreator
             open
-            form={forms[type]}
+            form={forms.todo}
             handler={mockOnSubmit}
           />
         </FormProvider>
@@ -246,7 +242,7 @@ describe('PostCreator', () => {
     function Component() {
       const methods = useForm({
         resolver: joiResolver(postCreatorSchema),
-        defaultValues: { type: '' },
+        defaultValues: { type: { name: '' } },
       });
       return (
         <FormProvider {...methods}>

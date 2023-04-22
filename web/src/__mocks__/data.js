@@ -2,15 +2,24 @@ import FORM_COMPONENT_TYPES from '../components/form/formComponentTypes';
 
 export const formTypes = [
   {
-    type: 'tip',
+    type: {
+      id: '643f4e7212464edea1c69a8d',
+      name: 'tip',
+    },
     id: '640edb2de252b234025c5030',
   },
   {
-    type: 'bugfix',
+    type: {
+      id: '143f4e7212464edea1c69a11',
+      name: 'bugfix',
+    },
     id: '640edb2de252b234025c5031',
   },
   {
-    type: 'todo',
+    type: {
+      id: '223f4e7212464edea1c69a11',
+      name: 'todo',
+    },
     id: '640edb2de252b234025c5032',
   },
 ];
@@ -22,7 +31,10 @@ export const forms = {
       username: 'test',
       name: 'test',
     },
-    type: 'tip',
+    type: {
+      id: '643f4e7212464edea1c69a8d',
+      name: 'tip',
+    },
     content: {
       description: FORM_COMPONENT_TYPES.TEXT,
       links: FORM_COMPONENT_TYPES.LIST,
@@ -38,7 +50,10 @@ export const forms = {
       username: 'test',
       name: 'test',
     },
-    type: 'bugfix',
+    type: {
+      id: '143f4e7212464edea1c69a11',
+      name: 'bugfix',
+    },
     content: {
       description: FORM_COMPONENT_TYPES.TEXT,
       links: FORM_COMPONENT_TYPES.LIST,
@@ -56,7 +71,10 @@ export const forms = {
       username: 'test',
       name: 'test',
     },
-    type: 'todo',
+    type: {
+      id: '223f4e7212464edea1c69a11',
+      name: 'todo',
+    },
     content: {
       item: FORM_COMPONENT_TYPES.TEXT,
     },
