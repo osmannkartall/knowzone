@@ -53,7 +53,7 @@ describe('SearchService - filter()', () => {
           createdAt: createdAtFilter,
           updatedAt: updatedAtFilter,
           topics: topicsFilter,
-          type: typeFilter,
+          'type.name': typeFilter,
         },
       ],
     };
@@ -65,7 +65,7 @@ describe('SearchService - filter()', () => {
 
   it('should create query with only type', async () => {
     const filterInfo = { type };
-    const expectedQuery = { type: typeFilter };
+    const expectedQuery = { 'type.name': typeFilter };
 
     await SearchService.search(filterInfo, cursor);
 
@@ -166,7 +166,7 @@ describe('SearchService - filter()', () => {
       $and: [
         textIndexQuery,
         {
-          type: typeFilter,
+          'type.name': typeFilter,
         },
       ],
     };

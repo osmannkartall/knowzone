@@ -46,7 +46,7 @@ function prepareFilterQuery(info) {
   }
 
   if (info.type) {
-    filterQuery.type = new RegExp(`\\b${info.type.trim()}\\b`, 'i');
+    filterQuery['type.name'] = new RegExp(`\\b${info.type.trim()}\\b`, 'i');
   }
 
   return filterQuery;
@@ -72,9 +72,12 @@ async function search(info, cursor) {
   }
 
   const posts = await postRepository.find(query, null, cursor);
-  const types = (posts.records ?? []).map((p) => p.type);
-  const forms = await formRepository.findAll({ type: { $in: types } }, { type: 1, content: 1 });
-  const formsObject = forms.reduce((result, item) => ({ ...result, [item.type]: item }), {});
+  const typeIds = (posts.records ?? []).map((p) => p.type.id);
+  const forms = await formRepository.findAll(
+    { 'type.id': { $in: typeIds } },
+    { type: 1, content: 1 },
+  );
+  const formsObject = forms.reduce((result, item) => ({ ...result, [item.type.name]: item }), {});
 
   return {
     records: {

@@ -14,7 +14,14 @@ const postCreatorSchema = Joi.object({
 
   owner: Joi.object(),
 
-  type: Joi.string().required(),
+  type: Joi.object({
+    id: Joi.string().required(),
+    name: Joi.string()
+      .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
+      .message(VALIDATION_MESSAGES.MAX_LEN('type.name', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE))
+      .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
+      .message(VALIDATION_MESSAGES.MIN_LEN('type.name', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)),
+  }).required(),
 
   topics: Joi.array()
     .items(

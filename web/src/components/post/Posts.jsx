@@ -60,7 +60,7 @@ function Posts({
                   <Post
                     editable={editable}
                     content={
-                      form?.content ?? (forms?.[posts[virtualRow.index].type])?.content ?? {}
+                      form?.content ?? (forms?.[posts[virtualRow.index]?.type?.name])?.content ?? {}
                     }
                     onClickDelete={() => onClickDelete(posts[virtualRow.index])}
                     onClickUpdate={() => onClickUpdate(posts[virtualRow.index])}

@@ -1,9 +1,9 @@
 import { BE_ROUTES } from '../../constants/routes';
 
-const getFormByType = async (type) => {
+const getFormByTypeId = async (typeId) => {
   try {
     const response = await fetch(
-      `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.FORMS}?type=${type}`,
+      `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.FORMS}?typeId=${typeId}`,
       {
         method: 'GET',
         headers: {
@@ -20,4 +20,4 @@ const getFormByType = async (type) => {
   }
 };
 
-export default getFormByType;
+export default getFormByTypeId;

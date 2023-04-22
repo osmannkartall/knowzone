@@ -17,16 +17,16 @@ const getFormTypes = rest.post(
   async (req, res, ctx) => res(ctx.json(formTypes)),
 );
 
-const getFormByType = rest.get(
+const getFormByTypeId = rest.get(
   `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.FORMS}`,
-  (req, res, ctx) => res(ctx.json(forms[req.url.searchParams.get('type')])),
+  (req, res, ctx) => res(ctx.json(forms[req.url.searchParams.get('typeId')])),
 );
 
 const api = [
   getForms,
   createForm,
   getFormTypes,
-  getFormByType,
+  getFormByTypeId,
 ];
 
 export default api;

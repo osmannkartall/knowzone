@@ -12,7 +12,7 @@ import postValidators from './postValidators.js';
 
 async function getFormOfPostOrInvalidate(post) {
   const formRecord = await Form.findOne(
-    { type: post.type, 'owner.id': post.owner.id },
+    { 'type.id': post.type.id, 'owner.id': post.owner.id },
     { type: 0, createdAt: 0, updatedAt: 0 },
   );
 

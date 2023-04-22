@@ -11,10 +11,7 @@ import formValidators from './formValidators.js';
 const formSchema = Schema(
   {
     owner,
-    type: {
-      ...type,
-      unique: true,
-    },
+    type,
     content: {
       type: Schema.Types.Mixed,
       required: true,

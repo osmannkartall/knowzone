@@ -302,7 +302,7 @@ function Post({ editable, content, post, onClickUpdate, onClickDelete }) {
       <div className={classes.container}>
         <PostTopbar
           editable={editable}
-          type={post.type}
+          type={post.type?.name}
           onClickUpdate={onClickUpdate}
           onClickDelete={onClickDelete}
         />
