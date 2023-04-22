@@ -1,13 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  Button,
-  IconButton,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-} from '@mui/material';
+import { Button, IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { toast } from 'react-toastify';
@@ -35,7 +28,7 @@ function PostsByOwner() {
   const open = Boolean(anchorEl);
 
   const location = useLocation();
-  const type = location.state;
+  const { type } = location.state;
 
   const { data, setData, getNextPage, status, errorMessage } = usePagination({
     url: `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}`,

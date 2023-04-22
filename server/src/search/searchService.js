@@ -45,8 +45,8 @@ function prepareFilterQuery(info) {
     };
   }
 
-  if (info.type) {
-    filterQuery['type.name'] = new RegExp(`\\b${info.type.trim()}\\b`, 'i');
+  if (info.typeName) {
+    filterQuery['type.name'] = new RegExp(`\\b${info.typeName.trim()}\\b`, 'i');
   }
 
   return filterQuery;

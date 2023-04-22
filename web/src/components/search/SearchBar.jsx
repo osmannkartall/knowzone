@@ -78,7 +78,7 @@ const Root = styled(Grid)(({ theme }) => ({
 function SearchBar() {
   const emptySearchOptions = {
     searchText: '',
-    type: '',
+    typeName: '',
     topics: [],
     createdAtStartDate: null,
     createdAtEndDate: null,
@@ -132,7 +132,7 @@ function SearchBar() {
     });
 
     hideSearchOptionsMenu();
-    navigate(`/${FE_ROUTES.SEARCH_RESULTS}`, { state: searchOptionsBodyState });
+    navigate(`/${FE_ROUTES.SEARCH_RESULTS}`, { state: { searchOptionsBodyState } });
   };
 
   const searchOrGiveError = () => {
@@ -159,10 +159,12 @@ function SearchBar() {
     let mounted = true;
 
     if (mounted) {
+      const { searchOptionsBodyState } = location.state ?? {};
+
       if (location.pathname !== `/${FE_ROUTES.SEARCH_RESULTS}` && checkAllSearchOptions()) {
         handleResetOnClick();
       } else if (location.state !== undefined) {
-        setSearchOptions({ ...emptySearchOptions, ...location.state });
+        setSearchOptions({ ...emptySearchOptions, ...searchOptionsBodyState });
       }
     }
     return function cleanup() {

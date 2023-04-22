@@ -64,7 +64,7 @@ function SidebarItem({ type }) {
   return (
     <ListItemButton
       selected={isActiveRoute()}
-      onClick={() => navigate(`/posts/${type?.id}`, { state: type })}
+      onClick={() => navigate(`/posts/${type?.id}`, { state: { type } })}
       key={type?.id}
       sx={{ borderRadius: 2 }}
     >
