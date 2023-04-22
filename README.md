@@ -20,6 +20,7 @@ Knowzone is a knowledge sharing application. You can share your recent bugfixes 
   - [Using the App](#using-the-app)
   - [Installations](#installations)
   - [Running](#running)
+    - [MongoDB](#mongodb)
     - [Node Express](#node-express)
     - [React](#react)
   - [Running on local Kubernetes cluster](#running-on-local-kubernetes-cluster)
@@ -56,16 +57,11 @@ Run `docker-compose up -d` command once and it's ready to go. You can access the
 
 ### MongoDB
 
-Run a mongo db in a docker container with a persistent volume called `dev-mongo-data`.
+Run a mongo db in a docker container with a persistent volume called `dev-mongo-data`. **Note:** This will create a single node replica set. This is necessary to run transactions in MongoDB.
 
 ```bash
-docker run -d \
-    -p 27017:27017 \
-    --name dev-mongo \
-    -v dev-mongo-data:/data/db \
-    -e MONGODB_INITDB_ROOT_USERNAME=user \
-    -e MONGODB_INITDB_ROOT_PASSWORD=pass \
-    mongo:latest
+cd server 
+./init-db.sh
 ```
 
 **Optional**: Create a connection from MongoDB Compass. Set URI to `mongodb://localhost:27017` and press the connect button.

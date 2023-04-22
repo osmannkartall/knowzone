@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import Joi from 'joi';
+import mongoose from 'mongoose';
 import FormRepository from './formRepository.js';
+import PostRepository from '../post/postRepository.js';
 import { createSuccessResponse } from '../common/utils.js';
 import { KNOWZONE_ERROR_TYPES, changeToCustomError } from '../common/knowzoneErrorHandler.js';
 import checkAuthentication from '../auth/checkAuthentication.js';
@@ -12,6 +14,7 @@ import FORM_VALIDATION_MESSAGES from './formValidationMessages.js';
 
 const router = Router();
 const formRepository = new FormRepository();
+const postRepository = new PostRepository();
 
 const createSchema = Joi.object({
   type: Joi.string()
@@ -141,17 +144,37 @@ const filter = async (req, res, next) => {
 };
 
 const deleteById = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const queryResult = await formRepository.deleteOne(
-      { _id: req.params.id, 'owner.id': req.session.userId },
+    /// TODO: form type could be included inside request body to avoid unnecessary query
+    const deletedForm = await formRepository.findOneAndDelete(
+      {
+        _id: req.params.id,
+        'owner.id': req.session.userId,
+      },
+      { session },
     );
 
-    if (queryResult.deletedCount > 0) {
+    await postRepository.deleteMany(
+      {
+        'owner.id': req.session.userId,
+        type: deletedForm.type,
+      },
+      { session },
+    );
+
+    await session.commitTransaction();
+
+    if (deletedForm) {
       res.json(createSuccessResponse('Deleted the record successfully'));
     } else {
       res.json(createSuccessResponse('No record for the given ID'));
     }
   } catch (err) {
+    await session.abortTransaction();
+
     changeToCustomError(err, {
       description: 'Error when deleting record with the given ID',
       statusCode: 500,
@@ -162,6 +185,8 @@ const deleteById = async (req, res, next) => {
     });
 
     next(err);
+  } finally {
+    session.endSession();
   }
 };
 

@@ -8,12 +8,12 @@ export default class BaseRepository {
     return this.model.create(record);
   }
 
-  async findAll(filter, projection) {
-    return this.model.find(filter, projection);
+  async findAll(filter, projection, options) {
+    return this.model.find(filter, projection, options);
   }
 
-  async findById(id) {
-    return this.model.findById(id);
+  async findById(id, projection, options) {
+    return this.model.findById(id, projection, options);
   }
 
   async find(filter, projection, cursor) {
@@ -46,8 +46,12 @@ export default class BaseRepository {
     return { records, hasNext, cursor: newCursor, noResult };
   }
 
-  async findOne(conditions, projection) {
-    return this.model.findOne(conditions, projection);
+  async findOne(conditions, projection, options) {
+    return this.model.findOne(conditions, projection, options);
+  }
+
+  async findOneAndDelete(conditions, options) {
+    return this.model.findOneAndDelete(conditions, options);
   }
 
   async updateById(filter, updateQuery, options) {
@@ -58,7 +62,7 @@ export default class BaseRepository {
     return this.model.deleteOne(conditions);
   }
 
-  async deleteMany(conditions) {
-    return this.model.deleteMany(conditions);
+  async deleteMany(conditions, options) {
+    return this.model.deleteMany(conditions, options);
   }
 }

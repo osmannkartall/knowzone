@@ -1,15 +1,24 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Dialog, DialogActions, DialogTitle, Button } from '@mui/material';
-import { toast } from 'react-toastify';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import DeleteIcon from '@mui/icons-material/Delete'; import { toast } from 'react-toastify';
 import PostCreator from '../components/post/PostCreator';
-import { IRREVERSIBLE_ACTION, WHITE } from '../constants/colors';
+import { IRREVERSIBLE_ACTION } from '../constants/colors';
 import LinearProgressModal from '../components/common/LinearProgressModal';
-import { BE_ROUTES } from '../constants/routes';
+import { BE_ROUTES, FE_ROUTES } from '../constants/routes';
 import { removeNumericKeyPrefix } from '../components/post/postCreatorUtils';
 import getFormByType from '../api/forms/getFormByType';
 import usePagination from '../hooks/usePagination';
 import Posts from '../components/post/Posts';
+import ConfirmDialog from '../components/common/ConfirmDialog';
 
 const isNewImage = (image) => image instanceof File;
 
@@ -17,9 +26,12 @@ function PostsByOwner() {
   const [form, setForm] = useState({});
   const [openForUpdate, setOpenForUpdate] = useState(false);
   const [openForAdd, setOpenForAdd] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openPostDeleteDialog, setOpenPostDeleteDialog] = useState(false);
+  const [openFormDeleteDialog, setOpenFormDeleteDialog] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
   const { type } = useParams();
 
@@ -28,6 +40,13 @@ function PostsByOwner() {
     method: 'GET',
     queryParameters: { type },
   });
+
+  const navigate = useNavigate();
+
+  const deleteFormDialogTitle = 'Are you sure you want to delete the form?'
+    + ' This will cause the deletion of all associated posts.';
+
+  const deletePostDialogTitle = 'Are you sure you want to delete the post?';
 
   useEffect(() => {
     let isMounted = true;
@@ -44,7 +63,13 @@ function PostsByOwner() {
     };
   }, [type]);
 
-  const handleClose = () => setOpenDialog(false);
+  const handleMenu = (event) => setAnchorEl(event.currentTarget);
+
+  const handleCloseMenu = () => setAnchorEl(null);
+
+  const handlePostDeleteCancel = () => setOpenPostDeleteDialog(false);
+
+  const handleFormDeleteDialogCancel = () => setOpenFormDeleteDialog(false);
 
   const setForUpdate = (post) => {
     if (post) {
@@ -56,7 +81,7 @@ function PostsByOwner() {
   const setForDelete = (post) => {
     if (post) {
       setSelectedPost(post);
-      setOpenDialog(true);
+      setOpenPostDeleteDialog(true);
     }
   };
 
@@ -111,7 +136,7 @@ function PostsByOwner() {
     } catch (error) {
       console.log(error);
     } finally {
-      setOpenDialog(false);
+      setOpenPostDeleteDialog(false);
       setIsLinearProgressModalOpen(false);
     }
 
@@ -140,7 +165,7 @@ function PostsByOwner() {
           const newPosts = [...data];
           newPosts.splice(idx, 1);
           setData(newPosts);
-          setOpenDialog(false);
+          setOpenPostDeleteDialog(false);
         }
       }
     } catch (error) {
@@ -204,7 +229,39 @@ function PostsByOwner() {
     return isAddPostSuccessful;
   };
 
-  const handleConfirm = () => deletePost();
+  const deleteForm = async () => {
+    setIsLinearProgressModalOpen(true);
+
+    try {
+      if (form) {
+        const response = await fetch(
+          `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.FORMS}/${form?.id}`,
+          {
+            headers: { 'Content-Type': 'application/json' },
+            method: 'DELETE',
+            credentials: 'include',
+          },
+        );
+        const result = await response.json();
+
+        if (response.ok) {
+          navigate(`/${FE_ROUTES.HOME}`);
+          window.location.reload();
+        } else {
+          toast.error(result?.message);
+        }
+        setOpenFormDeleteDialog(false);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsLinearProgressModalOpen(false);
+    }
+  };
+
+  const handlePostDeleteConfirm = () => deletePost();
+
+  const handleFormDeleteConfirm = () => deleteForm();
 
   return (
     <LinearProgressModal isOpen={isLinearProgressModalOpen}>
@@ -215,15 +272,53 @@ function PostsByOwner() {
         getNextPage={getNextPage}
         LeftHeader={<h2>{type}</h2>}
         RightHeader={form ? (
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => setOpenForAdd(true)}
-            size="small"
-            style={{ height: 40 }}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
           >
-            Create Post
-          </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => setOpenForAdd(true)}
+              size="small"
+              style={{ height: 40 }}
+            >
+              Create Post
+            </Button>
+            <div style={{ marginLeft: '8px' }}>
+              <IconButton
+                aria-label="update post"
+                aria-controls="post-menu"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                size="large"
+              >
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                id="post-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={open}
+                onClose={handleCloseMenu}
+              >
+                <MenuItem onClick={() => {
+                  setOpenFormDeleteDialog(true);
+                  handleCloseMenu();
+                }}
+                >
+                  <ListItemIcon style={{ color: IRREVERSIBLE_ACTION }}>
+                    <DeleteIcon />
+                  </ListItemIcon>
+                  <ListItemText style={{ color: IRREVERSIBLE_ACTION }}>Delete Form</ListItemText>
+                </MenuItem>
+              </Menu>
+            </div>
+          </div>
         ) : null}
         onClickDelete={setForDelete}
         onClickUpdate={setForUpdate}
@@ -250,32 +345,20 @@ function PostsByOwner() {
           form={form}
         />
       )}
-      <Dialog
-        open={openDialog}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Are you sure you want to delete the post?
-        </DialogTitle>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleConfirm}
-            style={{
-              backgroundColor: IRREVERSIBLE_ACTION,
-              color: WHITE,
-            }}
-            autoFocus
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmDialog
+        open={openPostDeleteDialog}
+        dialogTitle={deletePostDialogTitle}
+        onClickCancel={handlePostDeleteCancel}
+        onClickConfirm={handlePostDeleteConfirm}
+        confirmButtonTitle="Delete"
+      />
+      <ConfirmDialog
+        open={openFormDeleteDialog}
+        dialogTitle={deleteFormDialogTitle}
+        onClickCancel={handleFormDeleteDialogCancel}
+        onClickConfirm={handleFormDeleteConfirm}
+        confirmButtonTitle="Delete"
+      />
     </LinearProgressModal>
   );
 }
