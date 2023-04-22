@@ -32,7 +32,7 @@ Knowzone is a knowledge sharing application. You can share your recent bugfixes 
 
 **Caution**: This is for development or local use.
 
-Run `docker-compose up -d` command once and it's ready to go. You can access the application from the browser via `http://localhost:3000`.
+Run `docker compose up -d` command once and it's ready to go. You can access the application from the browser via `http://localhost:3000`.
 
 ## Installations
 
