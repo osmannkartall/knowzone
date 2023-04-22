@@ -1,21 +1,15 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Button,
-  IconButton,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-} from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Button, IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import DeleteIcon from '@mui/icons-material/Delete'; import { toast } from 'react-toastify';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { toast } from 'react-toastify';
 import PostCreator from '../components/post/PostCreator';
 import { IRREVERSIBLE_ACTION } from '../constants/colors';
 import LinearProgressModal from '../components/common/LinearProgressModal';
 import { BE_ROUTES, FE_ROUTES } from '../constants/routes';
 import { removeNumericKeyPrefix } from '../components/post/postCreatorUtils';
-import getFormByType from '../api/forms/getFormByType';
+import getFormByTypeId from '../api/forms/getFormByTypeId';
 import usePagination from '../hooks/usePagination';
 import Posts from '../components/post/Posts';
 import ConfirmDialog from '../components/common/ConfirmDialog';
@@ -33,12 +27,13 @@ function PostsByOwner() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const { type } = useParams();
+  const location = useLocation();
+  const { type } = location.state;
 
   const { data, setData, getNextPage, status, errorMessage } = usePagination({
     url: `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.POSTS}`,
     method: 'GET',
-    queryParameters: { type },
+    queryParameters: { typeId: type?.id },
   });
 
   const navigate = useNavigate();
@@ -53,7 +48,7 @@ function PostsByOwner() {
 
     if (isMounted) {
       const initialize = async () => {
-        setForm(await getFormByType(type));
+        setForm(await getFormByTypeId(type?.id));
       };
       initialize();
     }
@@ -61,7 +56,7 @@ function PostsByOwner() {
     return function cleanup() {
       isMounted = false;
     };
-  }, [type]);
+  }, [type?.id]);
 
   const handleMenu = (event) => setAnchorEl(event.currentTarget);
 
@@ -180,7 +175,7 @@ function PostsByOwner() {
     setIsLinearProgressModalOpen(true);
 
     try {
-      if (values?.type !== '') {
+      if (type) {
         const fd = new FormData();
         const { topics, content } = values;
         const { images, ...rest } = removeNumericKeyPrefix(content);
@@ -270,7 +265,7 @@ function PostsByOwner() {
         errorMessage={errorMessage}
         form={form}
         getNextPage={getNextPage}
-        LeftHeader={<h2>{type}</h2>}
+        LeftHeader={<h2>{type?.name ?? ''}</h2>}
         RightHeader={form ? (
           <div
             style={{
@@ -323,7 +318,6 @@ function PostsByOwner() {
         onClickDelete={setForDelete}
         onClickUpdate={setForUpdate}
         posts={data}
-        showType
         status={status}
       />
       {openForUpdate && (

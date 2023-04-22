@@ -12,8 +12,8 @@ import postValidators from './postValidators.js';
 
 async function getFormOfPostOrInvalidate(post) {
   const formRecord = await Form.findOne(
-    { type: post.type, 'owner.id': post.owner.id },
-    { type: 0, createdAt: 0, updatedAt: 0 },
+    { 'type.id': post.type.id, 'owner.id': post.owner.id },
+    { createdAt: 0, updatedAt: 0 },
   );
 
   if (!formRecord) {
@@ -75,6 +75,8 @@ const postSchema = new Schema(
             postValidators.validateContentFields(content, formRecord);
 
             postValidators.validateValueOfContentFields(content, formRecord);
+
+            this.type = formRecord.type;
 
             return true;
           },

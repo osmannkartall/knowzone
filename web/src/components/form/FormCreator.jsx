@@ -74,7 +74,7 @@ function FormCreator({ open, setOpen, handler }) {
 
   const { getValues, formState: { errors }, control, handleSubmit, watch, reset } = useForm({
     resolver: joiResolver(formCreatorSchema),
-    defaultValues: { type: '', content: defaultContent },
+    defaultValues: { type: { name: '' }, content: defaultContent },
   });
 
   const watchedContent = watch('content');
@@ -111,15 +111,15 @@ function FormCreator({ open, setOpen, handler }) {
                 />
               )}
               control={control}
-              name="type"
+              name="type.name"
               shouldUnregister
             />
           </FormDataRow>
           <FormDataRow>
-            {errors.type && (
-            <FormHelperText role="alert" error={errors.type !== undefined}>
-              {errors.type?.message}
-            </FormHelperText>
+            {errors.type?.name && (
+              <FormHelperText role="alert" error={errors.type?.name !== undefined}>
+                {errors.type?.name?.message}
+              </FormHelperText>
             )}
           </FormDataRow>
           <FormDataRow>
@@ -217,7 +217,11 @@ function FormCreator({ open, setOpen, handler }) {
             if (ContentPreview) {
               return (
                 <div data-testid="component-type-preview" style={{ margin: '16px 0px' }} key={k}>
-                  {v.name && <ContentPreviewLabel>{v.name}</ContentPreviewLabel>}
+                  {v.name && (
+                    <ContentPreviewLabel>
+                      {v.type === IMAGE ? 'images' : v.name}
+                    </ContentPreviewLabel>
+                  )}
                   <ContentPreview />
                 </div>
               );

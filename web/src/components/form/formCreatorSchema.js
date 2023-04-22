@@ -4,12 +4,15 @@ import FORM_SCHEMA_CONFIGS from './formSchemaConfigs';
 import VALIDATION_MESSAGES from '../../common/validationMessages';
 
 const formCreatorSchema = Joi.object({
-  type: Joi.string()
-    .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
-    .message(VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE))
-    .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
-    .message(VALIDATION_MESSAGES.MIN_LEN('type', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE))
-    .required(),
+  type: Joi.object({
+    id: Joi.string(),
+    name: Joi.string()
+      .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
+      .message(VALIDATION_MESSAGES.MAX_LEN('type.name', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE))
+      .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
+      .message(VALIDATION_MESSAGES.MIN_LEN('type.name', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE))
+      .required(),
+  }).required(),
 
   content: Joi.object()
     .unknown()

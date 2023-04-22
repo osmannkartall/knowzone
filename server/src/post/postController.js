@@ -16,12 +16,14 @@ const router = express.Router();
 const postRepository = new PostRepository();
 
 const typeSchemaPart = (
-  Joi.string()
-    .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
-    .message(VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE))
-    .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
-    .message(VALIDATION_MESSAGES.MIN_LEN('type', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE))
-    .required()
+  Joi.object({
+    id: Joi.string().required(),
+    name: Joi.string()
+      .max(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE)
+      .message(VALIDATION_MESSAGES.MAX_LEN('type.name', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE))
+      .min(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)
+      .message(VALIDATION_MESSAGES.MIN_LEN('type.name', FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE)),
+  }).required()
 );
 
 const updateSchema = Joi.object({
@@ -93,12 +95,11 @@ const create = async (_, res, next) => {
 
 const findAll = async (req, res, next) => {
   try {
-    const { type, cursor } = req.query;
+    const { typeId, cursor } = req.query;
     const { userId } = req.session;
 
-    if (type) {
-      await typeSchemaPart.validateAsync(type);
-      res.json(await postRepository.find({ type, 'owner.id': userId }, null, cursor));
+    if (typeId) {
+      res.json(await postRepository.find({ 'type.id': typeId, 'owner.id': userId }, null, cursor));
     } else {
       res.json([]);
     }

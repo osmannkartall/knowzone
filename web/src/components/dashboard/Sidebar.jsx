@@ -1,7 +1,7 @@
 import { useLayoutEffect, useState, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import { List, ListItemText, Button, ListItemIcon, ListItemButton } from '@mui/material';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import BookmarkBorder from '@mui/icons-material/BookmarkBorder';
 import Bookmark from '@mui/icons-material/Bookmark';
 import { toast } from 'react-toastify';
@@ -53,19 +53,19 @@ const Root = styled('div')(({ theme }) => ({
   },
 }));
 
-function SidebarItem({ text }) {
+function SidebarItem({ type }) {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActiveRoute = () => (
-    decodeURIComponent(location.pathname.replace(/\+/g, ' ')) === `/posts/${text}`
+    decodeURIComponent(location.pathname.replace(/\+/g, ' ')) === `/posts/${type?.id}`
   );
 
   return (
     <ListItemButton
       selected={isActiveRoute()}
-      component={Link}
-      key={text}
-      to={`/posts/${text}`}
+      onClick={() => navigate(`/posts/${type?.id}`, { state: { type } })}
+      key={type?.id}
       sx={{ borderRadius: 2 }}
     >
       <ListItemIcon
@@ -78,7 +78,7 @@ function SidebarItem({ text }) {
         {isActiveRoute() ? <Bookmark fontSize="small" /> : <BookmarkBorder fontSize="small" />}
       </ListItemIcon>
       <ListItemText
-        primary={text}
+        primary={type?.name}
         style={{
           whiteSpace: 'nowrap',
           overflow: 'hidden',
@@ -135,7 +135,7 @@ function Sidebar({ isSidebarOpen }) {
         toast.error(result?.message);
       } else {
         setIsFormCreatorOpen(false);
-        setData((prev) => [{ id: type, type }, ...prev]);
+        setData((prev) => [{ type: result.type }, ...prev]);
         isAddFormSuccessful = true;
       }
     } catch (error) {
@@ -183,7 +183,7 @@ function Sidebar({ isSidebarOpen }) {
                         transform: `translateY(${virtualRow.start}px)`,
                       }}
                     >
-                      <SidebarItem text={data?.[virtualRow.index].type} />
+                      <SidebarItem type={data?.[virtualRow.index].type} />
                     </div>
                   ))}
                 </div>

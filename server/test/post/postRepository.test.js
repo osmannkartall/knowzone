@@ -19,13 +19,21 @@ async function create(post) {
   const result = await postRepository.create(post);
   const { _id, __v, createdAt, updatedAt, ...data } = result.toObject();
   data.owner.id = data.owner.id.toString();
+  data.type.id = data.type.id.toString();
   return data;
 }
 
 const emptyPostsResult = { cursor: null, hasNext: false, noResult: true, records: [] };
 
-const myType = 'my type';
-const notMyType = 'not my type';
+const myType = {
+  id: '643f4e7212464edea1c69a8d',
+  name: 'my type',
+};
+
+const notMyType = {
+  id: '643f4e7212464edea1c69a8f',
+  name: 'not my type',
+};
 
 const myForm = {
   type: myType,
@@ -119,17 +127,21 @@ describe('PostRepository.create() with invalid records', () => {
 
   const postWithUndefinedContent = { owner: ownerMock, type: myType, topics: topicsMock };
 
-  const postWithInvalidMaxLenType = {
+  const postWithInvalidMaxLenTypeName = {
     ...postMock,
-    type: (new Array(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE + 10)).join('-'),
+    type: {
+      name: (new Array(FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE + 10)).join('-'),
+    },
   };
 
-  const postWithInvalidMinLenType = {
+  const postWithInvalidMinLenTypeName = {
     ...postMock,
-    type: (new Array(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE - 1)).join('-'),
+    type: {
+      name: (new Array(FORM_SCHEMA_CONFIGS.MIN_LEN_TYPE - 1)).join('-'),
+    },
   };
 
-  const postWithInvalidTypeOfType = { ...postMock, type: [1, 2] };
+  const postWithInvalidTypeOfTypeName = { ...postMock, type: { name: [1, 2] } };
 
   const postWithInvalidTypeOfContentFields = { ...postMock, content: [1, 2] };
 
@@ -157,7 +169,13 @@ describe('PostRepository.create() with invalid records', () => {
     topics: ['1', '2', '1'],
   };
 
-  const postOfNonExistingForm = { ...postMock, type: 'no type' };
+  const postOfNonExistingForm = {
+    ...postMock,
+    type: {
+      id: '000000000000000000000000',
+      name: 'no type',
+    },
+  };
 
   const postWithInvalidMaxLenTextValue = {
     ...postMock,
@@ -227,7 +245,7 @@ describe('PostRepository.create() with invalid records', () => {
 
   it('should throw error when there is no type', async () => {
     await expect(createInvalid(postWithoutType)).rejects.toThrow(
-      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('type'),
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('type.name'),
     );
   });
 
@@ -249,25 +267,25 @@ describe('PostRepository.create() with invalid records', () => {
     );
   });
 
-  it('should throw error when len of type is longer than max len', async () => {
-    await expect(createInvalid(postWithInvalidMaxLenType)).rejects.toThrow(
-      VALIDATION_MESSAGES.MAX_LEN('type', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE),
+  it('should throw error when len of type name is longer than max len', async () => {
+    await expect(createInvalid(postWithInvalidMaxLenTypeName)).rejects.toThrow(
+      VALIDATION_MESSAGES.MAX_LEN('type.name', FORM_SCHEMA_CONFIGS.MAX_LEN_TYPE),
     );
   });
 
-  it('should throw error when len of type is shorter than min len', async () => {
-    await expect(createInvalid(postWithInvalidMinLenType)).rejects.toThrow(
-      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('type'),
+  it('should throw error when len of type name is shorter than min len', async () => {
+    await expect(createInvalid(postWithInvalidMinLenTypeName)).rejects.toThrow(
+      MONGOOSE_DEFAULT_MESSAGES.REQUIRED('type.name'),
     );
   });
 
-  it('should throw error when type is not string', async () => {
+  it('should throw error when type name is not string', async () => {
     const castMessage = MONGOOSE_DEFAULT_MESSAGES.CAST('string');
 
-    await expect(createInvalid(postWithInvalidTypeOfType)).rejects.toThrow(castMessage);
+    await expect(createInvalid(postWithInvalidTypeOfTypeName)).rejects.toThrow(castMessage);
 
-    postWithInvalidTypeOfType.type = {};
-    await expect(createInvalid(postWithInvalidTypeOfType)).rejects.toThrow(castMessage);
+    postWithInvalidTypeOfTypeName.type = { name: {} };
+    await expect(createInvalid(postWithInvalidTypeOfTypeName)).rejects.toThrow(castMessage);
   });
 
   it('should throw error when content is not object', async () => {
@@ -470,8 +488,11 @@ describe('PostRepository.find()', () => {
       create(postWithNotMyType),
     ]);
 
-    const result = await postRepository.find({ 'owner.id': postMock.owner.id, type: myType });
-    expect(result.records.every((obj) => obj.type === myType)).toBe(true);
+    const result = await postRepository.find({
+      'owner.id': postMock.owner.id,
+      'type.id': myType.id,
+    });
+    expect(result.records.every((obj) => obj.type.id.toString() === myType.id)).toBe(true);
   });
 });
 
@@ -501,8 +522,8 @@ describe('PostRepository.findOne()', () => {
       create(postWithNotMyType),
     ]);
 
-    const result = await postRepository.findOne({ type: postMock.type });
-    expect(result.type === postMock.type).toBe(true);
+    const result = await postRepository.findOne({ 'type.id': postMock.type.id });
+    expect(result.type.id.toString() === postMock.type.id).toBe(true);
   });
 
   it('should return post with given type and owner id', async () => {
@@ -513,12 +534,14 @@ describe('PostRepository.findOne()', () => {
       create(postWithNotMyType),
     ]);
 
-    const result = await postRepository.findOne(
-      { 'owner.id': postMock.owner.id, type: postMock.type },
-    );
-
-    expect(result.type === postMock.type
-      && result.owner.id.toString() === postMock.owner.id).toBe(true);
+    const result = await postRepository.findOne({
+      'owner.id': postMock.owner.id,
+      'type.id': postMock.type.id,
+    });
+    expect(
+      result.type.id.toString() === postMock.type.id
+      && result.owner.id.toString() === postMock.owner.id,
+    ).toBe(true);
   });
 });
 

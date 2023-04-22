@@ -85,7 +85,7 @@ function generateType() {
   }
   types.add(type);
 
-  return type;
+  return { name: type };
 }
 
 async function createUsers(num = 1) {

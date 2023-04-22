@@ -102,8 +102,8 @@ function SearchOptions({
         <SearchOptionRow label="Type">
           <TextField
             variant="standard"
-            value={options.type}
-            onChange={handleOptionChange('type')}
+            value={options.typeName}
+            onChange={handleOptionChange('typeName')}
             fullWidth
           />
         </SearchOptionRow>
