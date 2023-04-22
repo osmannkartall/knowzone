@@ -17,11 +17,13 @@ const NUM_BULK_INSERTS = 2;
 
 async function startDB() {
   try {
-    await mongoose.connect('mongodb://localhost:27017/knowzone-mock', {
-      replicaSet: 'rs0',
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(
+      'mongodb://localhost:27017/knowzone?replicaSet=rs0&directConnection=true',
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      },
+    );
     console.log('Connected to the database!');
   } catch (err) {
     console.log('Cannot connect to the database!', err);

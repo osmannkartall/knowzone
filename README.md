@@ -30,7 +30,9 @@ Knowzone is a knowledge sharing application. You can share your recent bugfixes 
 
 ## Using the App
 
-Run `docker-compose up -d` command once and it's ready to go. You can access the application from the browser via `http://localhost:3000`.
+**Caution**: This is for development or local use.
+
+Run `docker compose up -d` command once and it's ready to go. You can access the application from the browser via `http://localhost:3000`.
 
 ## Installations
 
@@ -57,14 +59,15 @@ Run `docker-compose up -d` command once and it's ready to go. You can access the
 
 ### MongoDB
 
-Run a mongo db in a docker container with a persistent volume called `dev-mongo-data`. **Note:** This will create a single node replica set. This is necessary to run transactions in MongoDB.
+> **Caution**: This is not production setup. You can refer to [Authentication](https://www.mongodb.com/docs/manual/core/authentication/) and [Deploy Replica Set With Keyfile Authentication](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set-with-keyfile-access-control/) for additional information.
+
+Run a mongo db in a docker container with a persistent volume called `dev-mongo-data`. This will create a single node replica set. This is necessary to run transactions in MongoDB.
 
 ```bash
-cd server 
 ./init-db.sh
 ```
 
-**Optional**: Create a connection from MongoDB Compass. Set URI to `mongodb://localhost:27017` and press the connect button.
+**Optional**: Create a connection from MongoDB Compass. Set URI to `mongodb://localhost:27017/?replicaSet=rs0&directConnection=true` and press the connect button.
 
 ### Node Express
 
@@ -76,7 +79,7 @@ Create `.env` file with the values below. **Note**: Ideally, this file should no
 
 ```bash
 PORT=8000
-MONGODB_URI=mongodb://localhost:27017/knowzone
+MONGODB_URI=mongodb://localhost:27017/knowzone?replicaSet=rs0&directConnection=true
 REACT_URL=http://localhost:3000
 SESSION_SECRET=knowzone-auth-secret
 SESSION_NAME=sid

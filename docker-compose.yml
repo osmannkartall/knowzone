@@ -14,7 +14,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGODB_URI=mongodb://db:27017/knowzone
+      - MONGODB_URI=mongodb://db:27017/knowzone?replicaSet=rs0
       - REACT_URL=http://localhost:3000
       - SESSION_SECRET=knowzone-auth-secret
       - SESSION_NAME=sid
@@ -31,11 +31,15 @@ services:
     image: mongo
     restart: always
     volumes:
-      - type: bind
-        source: ./db/data
-        target: /data/db
+      - mongo_data:/data/db
     ports:
-      - "27017:27017"
+     - "27017:27017"
+    command: mongod --replSet rs0 --bind_ip_all
+    healthcheck:
+      test: >
+        mongosh --eval "try { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'db:27017' }] }) } catch(e) { rs.status().ok }"
+      interval: 3s
 
 volumes:
   uploads:
+  mongo_data:
