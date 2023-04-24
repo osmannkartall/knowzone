@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { IconButton, MenuItem, Menu, Avatar } from '@mui/material';
+import { IconButton, MenuItem, Menu, Avatar, ListItemIcon, ListItemText } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
 import SearchBar from '../search/SearchBar';
 import { GRAY1, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
 import { FE_ROUTES } from '../../constants/routes';
@@ -176,8 +178,14 @@ function Topbar({ openSidebar }) {
             open={isMenuOpen}
             onClose={closeMenu}
           >
-            <MenuItem onClick={onClickAccount}>Account</MenuItem>
-            <MenuItem onClick={onClickLogout}>Logout</MenuItem>
+            <MenuItem onClick={onClickAccount}>
+              <ListItemIcon><AccountCircleIcon fontSize="small" /></ListItemIcon>
+              <ListItemText>Account</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={onClickLogout}>
+              <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
+              <ListItemText>Logout</ListItemText>
+            </MenuItem>
           </Menu>
         </div>
       </Root>

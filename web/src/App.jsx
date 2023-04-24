@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme, StyledEngineProvider } from '@mui/material/styles';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Dashboard from './components/dashboard/Dashboard';
 import SearchResults from './pages/SearchResults';
@@ -125,11 +125,15 @@ function Wrapper() {
       </BrowserRouter>
       <ToastContainer
         position="top-center"
-        autoClose={4000}
+        autoClose={3000}
         draggable={false}
-        progressStyle={undefined}
         limit={3}
-        style={{ width: '600px' }}
+        transition={Flip}
+        newestOnTop={false}
+        pauseOnFocusLoss={false}
+        pauseOnHover={false}
+        closeOnClick={false}
+        hideProgressBar
       />
     </>
   );

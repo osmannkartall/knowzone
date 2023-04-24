@@ -1,12 +1,26 @@
 import { useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { IconButton, Menu, MenuItem, Divider, Avatar } from '@mui/material';
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  Divider,
+  Avatar,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
 import MoreHoriz from '@mui/icons-material/MoreHoriz';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import ShareIcon from '@mui/icons-material/Share';
 import Bookmark from '@mui/icons-material/Bookmark';
+import { toast } from 'react-toastify';
 import { GRAY3, GRAY4, PRIMARY } from '../../constants/colors';
 import MarkdownPreview from '../common/MarkdownPreview';
 import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
 import ReadOnlyChips from '../common/ReadOnlyChips';
+
+const copyToClipboardMessage = 'Link copied to clipboard.';
 
 const PREFIX = 'Post';
 
@@ -15,7 +29,6 @@ const classes = {
   postTopbar: `${PREFIX}-postTopbar`,
   postTypeContainer: `${PREFIX}-postTypeContainer`,
   postTypeText: `${PREFIX}-postTypeText`,
-  actionButton: `${PREFIX}-actionButton`,
   ownerTopbar: `${PREFIX}-ownerTopbar`,
   ownerTitle: `${PREFIX}-ownerTitle`,
   postBodyContainer: `${PREFIX}-postBodyContainer`,
@@ -51,10 +64,6 @@ const Root = styled('div')(({ theme }) => ({
   [`& .${classes.postTypeText}`]: {
     fontWeight: 'bold',
     marginLeft: theme.spacing(1),
-  },
-
-  [`& .${classes.actionButton}`]: {
-    color: PRIMARY,
   },
 
   [`& .${classes.ownerTopbar}`]: {
@@ -238,13 +247,19 @@ function TimestampBar({ post }) {
   );
 }
 
-function PostTopbar({ editable, type, onClickUpdate, onClickDelete }) {
+function PostTopbar({ postId, editable, type, onClickUpdate, onClickDelete }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   const handleMenu = (event) => setAnchorEl(event.currentTarget);
 
   const handleClose = () => setAnchorEl(null);
+
+  const onClickShare = () => {
+    const postLink = `${window.location.origin}/posts/share/${postId}`;
+    navigator.clipboard.writeText(postLink);
+    toast.success(copyToClipboardMessage, { position: 'bottom-right', toastId: 'share-post' });
+  };
 
   return (
     <>
@@ -262,9 +277,7 @@ function PostTopbar({ editable, type, onClickUpdate, onClickDelete }) {
               aria-controls="post-menu"
               aria-haspopup="true"
               onClick={handleMenu}
-              className={classes.actionButton}
-              style={{ width: 30, height: 30 }}
-              size="large"
+              color="primary"
             >
               <MoreHoriz />
             </IconButton>
@@ -275,8 +288,18 @@ function PostTopbar({ editable, type, onClickUpdate, onClickDelete }) {
               open={open}
               onClose={handleClose}
             >
-              <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>Update</MenuItem>
-              <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>Delete</MenuItem>
+              <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>
+                <ListItemIcon><EditIcon fontSize="small" /></ListItemIcon>
+                <ListItemText>Update</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>
+                <ListItemIcon><DeleteIcon fontSize="small" /></ListItemIcon>
+                <ListItemText>Delete</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={() => { onClickShare(); handleClose(); }}>
+                <ListItemIcon><ShareIcon fontSize="small" /></ListItemIcon>
+                <ListItemText>Share</ListItemText>
+              </MenuItem>
             </Menu>
           </div>
         )}
@@ -301,6 +324,7 @@ function Post({ editable, content, post, onClickUpdate, onClickDelete }) {
     <Root>
       <div className={classes.container}>
         <PostTopbar
+          postId={post?.id}
           editable={editable}
           type={post.type?.name}
           onClickUpdate={onClickUpdate}
