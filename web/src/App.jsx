@@ -16,6 +16,7 @@ import LinearProgressModal from './components/common/LinearProgressModal';
 import Home from './pages/Home';
 import PostsByTopics from './pages/PostsByTopics';
 import PostsByOwner from './pages/PostsByOwner';
+import SinglePost from './pages/SinglePost';
 
 const theme = createTheme(({
   palette: {
@@ -97,6 +98,15 @@ function Wrapper() {
             element={(
               <AuthRouteComponent
                 Success={<Dashboard><PostsByOwner /></Dashboard>}
+                Terminated={<Navigate to={`/${FE_ROUTES.LOGIN}`} />}
+              />
+            )}
+          />
+          <Route
+            path={`/${FE_ROUTES.POSTS}/share/:postId`}
+            element={(
+              <AuthRouteComponent
+                Success={<Dashboard><SinglePost /></Dashboard>}
                 Terminated={<Navigate to={`/${FE_ROUTES.LOGIN}`} />}
               />
             )}

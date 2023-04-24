@@ -95,10 +95,10 @@ const create = async (req, res, next) => {
   }
 };
 
-const getByType = async (req, res, next) => {
+const getByTypeId = async (req, res, next) => {
   try {
     res.json(
-      await formRepository.findOne({ 'owner.id': req.session.userId, 'type.id': req.query.typeId }),
+      await formRepository.findOne({ 'type.id': req.query.typeId }),
     );
   } catch (err) {
     changeToCustomError(err, {
@@ -213,7 +213,7 @@ const deleteAll = async (req, res, next) => {
 
 router.post('/', checkAuthentication, create);
 
-router.get('/', checkAuthentication, getByType);
+router.get('/', checkAuthentication, getByTypeId);
 
 router.post('/filter', checkAuthentication, filter);
 

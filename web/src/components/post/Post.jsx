@@ -206,10 +206,10 @@ function TopicsPart({ topics }) {
 function OwnerTopbar({ owner }) {
   return (
     <div className={classes.ownerTopbar}>
-      <Avatar alt={owner.name} src="https://loremflickr.com/640/480/cats" />
+      <Avatar alt={owner?.name} src="https://loremflickr.com/640/480/cats" />
       <div style={{ marginLeft: 8 }}>
-        <div className={classes.ownerTitle}>{owner.name}</div>
-        <div>{owner.username}</div>
+        <div className={classes.ownerTitle}>{owner?.name}</div>
+        <div>{owner?.username}</div>
       </div>
     </div>
   );
@@ -270,39 +270,41 @@ function PostTopbar({ postId, editable, type, onClickUpdate, onClickDelete }) {
             { type }
           </div>
         </div>
-        {editable && (
-          <div>
-            <IconButton
-              aria-label="update post"
-              aria-controls="post-menu"
-              aria-haspopup="true"
-              onClick={handleMenu}
-              color="primary"
-            >
-              <MoreHoriz />
-            </IconButton>
-            <Menu
-              id="post-menu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={open}
-              onClose={handleClose}
-            >
+        <div>
+          <IconButton
+            aria-label="update post"
+            aria-controls="post-menu"
+            aria-haspopup="true"
+            onClick={handleMenu}
+            color="primary"
+          >
+            <MoreHoriz />
+          </IconButton>
+          <Menu
+            id="post-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={open}
+            onClose={handleClose}
+          >
+            {editable && (
               <MenuItem onClick={() => { onClickUpdate(); handleClose(); }}>
                 <ListItemIcon><EditIcon fontSize="small" /></ListItemIcon>
                 <ListItemText>Update</ListItemText>
               </MenuItem>
+            )}
+            {editable && (
               <MenuItem onClick={() => { onClickDelete(); handleClose(); }}>
                 <ListItemIcon><DeleteIcon fontSize="small" /></ListItemIcon>
                 <ListItemText>Delete</ListItemText>
               </MenuItem>
-              <MenuItem onClick={() => { onClickShare(); handleClose(); }}>
-                <ListItemIcon><ShareIcon fontSize="small" /></ListItemIcon>
-                <ListItemText>Share</ListItemText>
-              </MenuItem>
-            </Menu>
-          </div>
-        )}
+            )}
+            <MenuItem onClick={() => { onClickShare(); handleClose(); }}>
+              <ListItemIcon><ShareIcon fontSize="small" /></ListItemIcon>
+              <ListItemText>Share</ListItemText>
+            </MenuItem>
+          </Menu>
+        </div>
       </div>
       <Divider />
     </>
