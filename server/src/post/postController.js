@@ -116,7 +116,7 @@ const findAll = async (req, res, next) => {
 
 const findById = async (req, res, next) => {
   try {
-    res.send(await postRepository.findOne({ _id: req.params.id, 'owner.id': req.session.userId }));
+    res.send(await postRepository.findOne({ _id: req.params.id }));
   } catch (err) {
     changeToCustomError(err, {
       description: 'Error when finding record with the given ID',

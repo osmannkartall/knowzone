@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 import { toast } from 'react-toastify';
 import PostCreator from '../components/post/PostCreator';
 import { IRREVERSIBLE_ACTION } from '../constants/colors';
@@ -280,7 +281,7 @@ function PostsByOwner() {
               color="primary"
               onClick={() => setOpenForAdd(true)}
               size="small"
-              style={{ height: 40 }}
+              startIcon={<PostAddIcon />}
             >
               Create Post
             </Button>
@@ -290,7 +291,7 @@ function PostsByOwner() {
                 aria-controls="post-menu"
                 aria-haspopup="true"
                 onClick={handleMenu}
-                size="large"
+                color="primary"
               >
                 <MoreVertIcon />
               </IconButton>
@@ -307,7 +308,7 @@ function PostsByOwner() {
                 }}
                 >
                   <ListItemIcon style={{ color: IRREVERSIBLE_ACTION }}>
-                    <DeleteIcon />
+                    <DeleteIcon fontSize="small" />
                   </ListItemIcon>
                   <ListItemText style={{ color: IRREVERSIBLE_ACTION }}>Delete Form</ListItemText>
                 </MenuItem>

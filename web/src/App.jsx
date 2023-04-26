@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme, StyledEngineProvider } from '@mui/material/styles';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, Flip } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Dashboard from './components/dashboard/Dashboard';
 import SearchResults from './pages/SearchResults';
@@ -16,6 +16,7 @@ import LinearProgressModal from './components/common/LinearProgressModal';
 import Home from './pages/Home';
 import PostsByTopics from './pages/PostsByTopics';
 import PostsByOwner from './pages/PostsByOwner';
+import SinglePost from './pages/SinglePost';
 
 const theme = createTheme(({
   palette: {
@@ -102,6 +103,15 @@ function Wrapper() {
             )}
           />
           <Route
+            path={`/${FE_ROUTES.POSTS}/share/:postId`}
+            element={(
+              <AuthRouteComponent
+                Success={<Dashboard><SinglePost /></Dashboard>}
+                Terminated={<Navigate to={`/${FE_ROUTES.LOGIN}`} />}
+              />
+            )}
+          />
+          <Route
             path={`/${FE_ROUTES.TOPICS}/:topic`}
             element={(
               <AuthRouteComponent
@@ -125,11 +135,15 @@ function Wrapper() {
       </BrowserRouter>
       <ToastContainer
         position="top-center"
-        autoClose={4000}
+        autoClose={3000}
         draggable={false}
-        progressStyle={undefined}
         limit={3}
-        style={{ width: '600px' }}
+        transition={Flip}
+        newestOnTop={false}
+        pauseOnFocusLoss={false}
+        pauseOnHover={false}
+        closeOnClick={false}
+        hideProgressBar
       />
     </>
   );

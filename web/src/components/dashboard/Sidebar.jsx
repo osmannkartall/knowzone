@@ -204,6 +204,7 @@ function Sidebar({ isSidebarOpen }) {
               color="primary"
               fullWidth
               onClick={() => setIsFormCreatorOpen(true)}
+              startIcon={<Bookmark fontSize="small" />}
             >
               Create Form
             </Button>
