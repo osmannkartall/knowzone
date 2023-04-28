@@ -24,10 +24,10 @@ export default class BaseRepository {
         filter,
         {
           $or: [{
-            _id: { $lt: nextId },
-          }, {
-            _id: nextId,
             createdAt: { $lt: new Date(nextCreatedAt) },
+          }, {
+            createdAt: new Date(nextCreatedAt),
+            _id: { $lt: nextId },
           }],
         },
       ],
@@ -35,7 +35,7 @@ export default class BaseRepository {
     if (projection && !projection.createdAt) {
       projection.createdAt = 1;
     }
-    const options = { sort: { _id: -1, createdAt: -1 }, limit: this.limit };
+    const options = { sort: { createdAt: -1, _id: -1 }, limit: this.limit };
 
     const records = await this.model.find(newFilter, projection, options);
     const hasNext = records.length === this.limit;
