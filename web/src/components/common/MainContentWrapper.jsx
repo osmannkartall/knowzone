@@ -2,12 +2,12 @@ import { styled } from '@mui/material/styles';
 import { topbarHeight } from '../../constants/styles';
 import { GRAY3, WHITE } from '../../constants/colors';
 
-const ContentWrapperContainer = styled('div')(({ theme }) => ({
+const MainContentWrapperContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 2),
 }));
 
-const ContentWrapperHeaderContainer = styled('div')(({ theme }) => ({
-  position: 'sticky',
+const MainContentWrapperHeaderContainer = styled('div')(({ theme, $staticHeader }) => ({
+  position: $staticHeader ? 'static' : 'sticky',
   top: topbarHeight,
   display: 'flex',
   flexDirection: 'row',
@@ -15,22 +15,23 @@ const ContentWrapperHeaderContainer = styled('div')(({ theme }) => ({
   alignItems: 'center',
   padding: theme.spacing(1, 2),
   margin: theme.spacing(2, 0),
+  marginTop: $staticHeader ? 0 : theme.spacing(2),
   border: `1px solid ${GRAY3}`,
   borderRadius: 4,
   backgroundColor: WHITE,
   zIndex: 100,
 }));
 
-function ContentWrapper({ LeftHeader, RightHeader, children }) {
+function MainContentWrapper({ LeftHeader, RightHeader, children, staticHeader }) {
   return (
-    <ContentWrapperContainer>
-      <ContentWrapperHeaderContainer>
+    <MainContentWrapperContainer>
+      <MainContentWrapperHeaderContainer $staticHeader={staticHeader}>
         {LeftHeader}
         {RightHeader}
-      </ContentWrapperHeaderContainer>
+      </MainContentWrapperHeaderContainer>
       {children}
-    </ContentWrapperContainer>
+    </MainContentWrapperContainer>
   );
 }
 
-export default ContentWrapper;
+export default MainContentWrapper;

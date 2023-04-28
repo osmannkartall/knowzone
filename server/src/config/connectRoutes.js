@@ -8,14 +8,26 @@ function connectRoutes(app) {
     res.send('Knowzone Backend');
   });
 
-  const controllers = {
-    '/forms': formController,
-    '/posts': postController,
-    '/search': searchController,
-    '/': authController,
-  };
+  const controllers = [
+    {
+      path: '/forms',
+      routes: formController,
+    },
+    {
+      path: '/posts',
+      routes: postController,
+    },
+    {
+      path: '/',
+      routes: searchController,
+    },
+    {
+      path: '/',
+      routes: authController,
+    },
+  ];
 
-  Object.entries(controllers).forEach(([k, v]) => app.use(k, v));
+  controllers.forEach((c) => app.use(c.path, c.routes));
 }
 
 export default connectRoutes;

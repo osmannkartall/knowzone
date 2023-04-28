@@ -1,22 +1,16 @@
 import { Chip } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 
-function ReadOnlyChips({ chips }) {
-  const navigate = useNavigate();
-
-  const handleChipClick = (chip) => navigate(`/topics/${chip}`);
-
+function ReadOnlyChips({ chips, onClick, selectedIndex }) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-      {(chips ?? []).map((chip) => (
+      {(chips ?? []).map((chip, index) => (
         <Chip
-          size="small"
-          variant="outlined"
-          color="primary"
+          variant="contained"
+          color={selectedIndex === index ? 'primary' : 'default'}
           key={chip}
           label={chip}
           clickable
-          onClick={() => handleChipClick(chip)}
+          onClick={(e) => onClick(e, index)}
           sx={{ margin: '4px' }}
         />
       ))}

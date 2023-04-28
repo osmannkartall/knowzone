@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import Post from './Post';
-import ContentWrapper from '../common/ContentWrapper';
+import MainContentWrapper from '../common/MainContentWrapper';
 import FetchResult from '../common/FetchResult';
 
 function Posts({
@@ -16,6 +16,7 @@ function Posts({
   onClickUpdate,
   posts,
   status,
+  staticHeader,
 }) {
   const handleOnClickShowMore = () => getNextPage();
   const parentRef = useRef(null);
@@ -30,7 +31,11 @@ function Posts({
   });
 
   return (
-    <ContentWrapper LeftHeader={LeftHeader} RightHeader={RightHeader}>
+    <MainContentWrapper
+      LeftHeader={LeftHeader}
+      RightHeader={RightHeader}
+      staticHeader={staticHeader}
+    >
       {posts && (
         <div ref={parentRef}>
           <div
@@ -60,7 +65,7 @@ function Posts({
                   <Post
                     editable={editable}
                     content={
-                      form?.content ?? (forms?.[posts[virtualRow.index]?.type?.name])?.content ?? {}
+                      form?.content ?? (forms?.[posts[virtualRow.index]?.type?.id])?.content ?? {}
                     }
                     onClickDelete={() => onClickDelete(posts[virtualRow.index])}
                     onClickUpdate={() => onClickUpdate(posts[virtualRow.index])}
@@ -80,7 +85,7 @@ function Posts({
           noNextText="Retrieved all the posts"
         />
       </div>
-    </ContentWrapper>
+    </MainContentWrapper>
   );
 }
 

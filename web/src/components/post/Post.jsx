@@ -18,7 +18,7 @@ import { toast } from 'react-toastify';
 import { GRAY3, GRAY4, PRIMARY } from '../../constants/colors';
 import MarkdownPreview from '../common/MarkdownPreview';
 import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
-import ReadOnlyChips from '../common/ReadOnlyChips';
+import TopicChips from '../common/TopicChips';
 
 const copyToClipboardMessage = 'Link copied to clipboard.';
 
@@ -200,7 +200,7 @@ function ImagePart({ images }) {
 }
 
 function TopicsPart({ topics }) {
-  return <div className={classes.topicsContainer}><ReadOnlyChips chips={topics} /></div>;
+  return <div className={classes.topicsContainer}><TopicChips chips={topics} /></div>;
 }
 
 function OwnerTopbar({ owner }) {

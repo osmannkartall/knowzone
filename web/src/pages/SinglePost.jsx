@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import Post from '../components/post/Post';
 import getPostById from '../api/posts/getPostById';
 import getFormByTypeId from '../api/forms/getFormByTypeId';
 
 function SinglePost() {
+  const { preFetchedForm, preFetchedPost } = useLocation().state ?? {};
+  const { postId } = useParams();
+
   const [post, setPost] = useState({});
   const [form, setForm] = useState({});
-
-  const { postId } = useParams();
 
   useEffect(() => {
     let mounted = true;
 
-    async function fetchData() {
+    async function fetchPostAndForm() {
       const postResult = await getPostById(postId);
       const formResult = await getFormByTypeId(postResult?.type?.id);
 
@@ -23,12 +24,17 @@ function SinglePost() {
       }
     }
 
-    fetchData();
+    if (!preFetchedForm && !preFetchedPost) {
+      fetchPostAndForm();
+    } else {
+      setPost(preFetchedPost);
+      setForm(preFetchedForm);
+    }
 
     return () => {
       mounted = false;
     };
-  }, [postId]);
+  }, [postId, preFetchedForm, preFetchedPost]);
 
   return (
     <div style={{ padding: 16 }}>

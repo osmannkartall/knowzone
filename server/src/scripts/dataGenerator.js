@@ -290,9 +290,8 @@ function createNPostsFromForm(form) {
   const n = getRandomInt(1, MAX_NUM_POSTS_PER_FORM);
 
   for (let i = 0; i < n; i++) {
-    const createdAt = faker.date.past(3);
-    const updatedAt = new Date(createdAt);
-    updatedAt.setDate(updatedAt.getDate() + getRandomInt(0, 400));
+    const createdAt = faker.date.between('2020-01-01T00:00:00.000Z', new Date().toISOString());
+    const updatedAt = faker.date.between(createdAt.toISOString(), new Date().toISOString());
 
     const post = new Post({
       content: generateObjectWithRandomValues(form.content),

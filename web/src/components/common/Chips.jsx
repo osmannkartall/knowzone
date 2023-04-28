@@ -1,6 +1,5 @@
 import { Chip } from '@mui/material';
 import { useState } from 'react';
-import { GRAY3 } from '../../constants/colors';
 
 function Chips({ chips, setChips, placeholder, disabled, border, borderColor, inputId }) {
   const [text, setText] = useState('');
@@ -30,7 +29,7 @@ function Chips({ chips, setChips, placeholder, disabled, border, borderColor, in
     <div
       style={
         border ? {
-          border: `1px solid ${borderColor || GRAY3}`,
+          border: `1px solid ${borderColor || '#bdbdbd'}`,
           padding: '12px',
           borderRadius: '4px',
         } : {}

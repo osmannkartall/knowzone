@@ -1,7 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { IconButton, MenuItem, Menu, Avatar, ListItemIcon, ListItemText } from '@mui/material';
+import {
+  IconButton,
+  MenuItem,
+  Menu,
+  Avatar,
+  ListItemIcon,
+  ListItemText,
+  Button,
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -92,7 +100,7 @@ function AppLogoWithTitle() {
   );
 }
 
-function Topbar({ openSidebar }) {
+function Topbar({ toggleSidebar }) {
   const [anchorMenu, setAnchorMenu] = useState(null);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -143,7 +151,7 @@ function Topbar({ openSidebar }) {
             className={classes.menuButton}
             color="inherit"
             aria-label="menu"
-            onClick={openSidebar}
+            onClick={toggleSidebar}
             size="large"
           >
             <MenuIcon />
@@ -151,42 +159,50 @@ function Topbar({ openSidebar }) {
           <AppLogoWithTitle />
         </div>
         <SearchBar />
-        <div className={classes.accountButton}>
-          <IconButton
-            aria-label="account of current user"
-            aria-controls="menu-topbar"
-            aria-haspopup="true"
-            onClick={toggleMenu}
-            color="inherit"
-            style={{ width: 40, height: 40 }}
-            size="large"
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Button
+            sx={{ ml: 2, textTransform: 'none' }}
+            onClick={() => navigate(`/${FE_ROUTES.EXPLORE}`)}
           >
-            <Avatar alt="profile picture" src="https://loremflickr.com/640/480/cats" />
-          </IconButton>
-          <Menu
-            id="menu-topbar"
-            anchorEl={anchorMenu}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={isMenuOpen}
-            onClose={closeMenu}
-          >
-            <MenuItem onClick={onClickAccount}>
-              <ListItemIcon><AccountCircleIcon fontSize="small" /></ListItemIcon>
-              <ListItemText>Account</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={onClickLogout}>
-              <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
-              <ListItemText>Logout</ListItemText>
-            </MenuItem>
-          </Menu>
+            Explore
+          </Button>
+          <div className={classes.accountButton}>
+            <IconButton
+              aria-label="account of current user"
+              aria-controls="menu-topbar"
+              aria-haspopup="true"
+              onClick={toggleMenu}
+              color="inherit"
+              style={{ width: 40, height: 40 }}
+              size="large"
+            >
+              <Avatar alt="profile picture" src="https://loremflickr.com/640/480/cats" />
+            </IconButton>
+            <Menu
+              id="menu-topbar"
+              anchorEl={anchorMenu}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={isMenuOpen}
+              onClose={closeMenu}
+            >
+              <MenuItem onClick={onClickAccount}>
+                <ListItemIcon><AccountCircleIcon fontSize="small" /></ListItemIcon>
+                <ListItemText>Account</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={onClickLogout}>
+                <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
+                <ListItemText>Logout</ListItemText>
+              </MenuItem>
+            </Menu>
+          </div>
         </div>
       </Root>
     </LinearProgressModal>
