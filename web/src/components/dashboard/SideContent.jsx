@@ -9,7 +9,7 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
 
 function SideContent({ children }) {
   return (
-    <BoxWrapper sx={{ width: '25%' }}>
+    <BoxWrapper sx={{ width: '30%' }}>
       {children}
     </BoxWrapper>
   );
