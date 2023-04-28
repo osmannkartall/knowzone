@@ -3,6 +3,7 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import Post from './Post';
 import MainContentWrapper from '../common/MainContentWrapper';
 import FetchResult from '../common/FetchResult';
+import STYLES from '../../constants/styles';
 
 function Posts({
   editable,
@@ -60,7 +61,7 @@ function Posts({
                   key={virtualRow.key}
                   data-index={virtualRow.index}
                   ref={virtualizer.measureElement}
-                  style={{ paddingBottom: 16 }}
+                  style={{ paddingBottom: STYLES.MUI_SPACING_UNIT }}
                 >
                   <Post
                     editable={editable}
@@ -77,7 +78,13 @@ function Posts({
           </div>
         </div>
       )}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: STYLES.MUI_SPACING_UNIT,
+        }}
+      >
         <FetchResult
           status={status}
           errorMessage={errorMessage}

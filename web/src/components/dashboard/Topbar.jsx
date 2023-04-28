@@ -16,7 +16,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import SearchBar from '../search/SearchBar';
 import { GRAY1, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
 import { FE_ROUTES } from '../../constants/routes';
-import { sidebarWidth, topbarHeight } from '../../constants/styles';
+import STYLES from '../../constants/styles';
 import AppLogo from '../common/AppLogo';
 import { useAuthDispatch } from '../../contexts/AuthContext';
 import { logout } from '../../contexts/AuthActions';
@@ -44,7 +44,7 @@ const Root = styled('div')(({ theme }) => ({
   zIndex: 1005,
   position: 'sticky',
   top: 0,
-  height: topbarHeight,
+  height: STYLES.TOPBAR_HEIGHT,
   backgroundColor: WHITE,
 
   [`& .${classes.accountButton}`]: {
@@ -52,8 +52,8 @@ const Root = styled('div')(({ theme }) => ({
   },
 
   [`& .${classes.topbarLeftContainer}`]: {
-    height: topbarHeight,
-    width: sidebarWidth,
+    height: STYLES.TOPBAR_HEIGHT,
+    width: STYLES.SIDEBAR_WIDTH,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',

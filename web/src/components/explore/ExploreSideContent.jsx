@@ -3,19 +3,19 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import PostAddIcon from '@mui/icons-material/PostAdd';
-import { topbarHeight } from '../../constants/styles';
 import { GRAY1, GRAY3, WHITE } from '../../constants/colors';
 import usePagination from '../../hooks/usePagination';
 import { BE_ROUTES, FE_ROUTES } from '../../constants/routes';
 import PopularTopics from './PopularTopics';
+import STYLES from '../../constants/styles';
 
 const Container = styled('div')(({ theme }) => ({
   position: 'sticky',
-  top: topbarHeight + 16 + 1,
+  top: STYLES.TOPBAR_HEIGHT + STYLES.MUI_SPACING_UNIT + 1,
   border: `1px solid ${GRAY3}`,
   borderRadius: 4,
   backgroundColor: WHITE,
-  height: `calc(100vh - ${topbarHeight + 32 + 3}px)`,
+  height: `calc(100vh - ${STYLES.TOPBAR_HEIGHT + STYLES.MUI_SPACING_UNIT * 2 + 3}px)`,
   overflowY: 'auto',
   marginRight: theme.spacing(2),
 }));

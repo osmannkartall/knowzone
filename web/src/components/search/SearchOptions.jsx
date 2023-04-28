@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import { searchBarHeight } from '../../constants/styles';
+import STYLES from '../../constants/styles';
 import { WHITE } from '../../constants/colors';
 import Chips from '../common/Chips';
 
@@ -25,12 +25,13 @@ const Root = styled('div')(({ theme }) => ({
     flexDirection: 'column',
     width: '100%',
     position: 'absolute',
-    top: searchBarHeight,
+    top: STYLES.SEARCH_BAR_HEIGHT,
     left: 0,
     maxHeight: `calc(80vh - ${theme.spacing(4)}px)`,
     minHeight: 100,
     backgroundColor: WHITE,
-    boxShadow: ' 0px 8px 10px 2px rgb(101 119 134 / 20%)',
+    boxShadow: '0px 8px 10px 2px rgb(101 119 134 / 20%)',
+    borderRadius: 4,
   },
 
   [`& .${classes.topContainer}`]: {

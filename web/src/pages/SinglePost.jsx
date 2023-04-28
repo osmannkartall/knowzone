@@ -3,6 +3,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import Post from '../components/post/Post';
 import getPostById from '../api/posts/getPostById';
 import getFormByTypeId from '../api/forms/getFormByTypeId';
+import STYLES from '../constants/styles';
 
 function SinglePost() {
   const { preFetchedForm, preFetchedPost } = useLocation().state ?? {};
@@ -37,7 +38,7 @@ function SinglePost() {
   }, [postId, preFetchedForm, preFetchedPost]);
 
   return (
-    <div style={{ padding: 16 }}>
+    <div style={{ padding: STYLES.MUI_SPACING_UNIT }}>
       <Post content={form?.content} post={post} />
     </div>
   );

@@ -9,6 +9,7 @@ import FORM_SCHEMA_CONFIGS from './formSchemaConfigs';
 import formCreatorSchema from './formCreatorSchema';
 import getContentPreview from './contentPreviews/getContentPreview';
 import Creator from '../common/Creator';
+import STYLES from '../../constants/styles';
 
 const { IMAGE, ...rest } = FORM_COMPONENT_TYPES;
 
@@ -216,7 +217,11 @@ function FormCreator({ open, setOpen, handler }) {
 
             if (ContentPreview) {
               return (
-                <div data-testid="component-type-preview" style={{ margin: '16px 0px' }} key={k}>
+                <div
+                  data-testid="component-type-preview"
+                  style={{ margin: `${STYLES.MUI_SPACING_UNIT}px 0px` }}
+                  key={k}
+                >
                   {v.name && (
                     <ContentPreviewLabel>
                       {v.type === IMAGE ? 'images' : v.name}

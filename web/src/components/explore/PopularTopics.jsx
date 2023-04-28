@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import TopicChips from '../common/TopicChips';
 import getPopularTopics from '../../api/search/getPopularTopics';
+import STYLES from '../../constants/styles';
 
 function PopularTopics() {
   const [popularTopics, setPopularTopics] = useState([]);
@@ -24,7 +25,7 @@ function PopularTopics() {
   return (
     <>
       <div style={{ fontWeight: 'bold', fontSize: 18 }}>Popular Topics</div>
-      <div style={{ margin: '16px 0px' }}>
+      <div style={{ margin: `${STYLES.MUI_SPACING_UNIT}px 0px` }}>
         <TopicChips chips={(popularTopics ?? []).map((pT) => pT.topic)} />
       </div>
     </>

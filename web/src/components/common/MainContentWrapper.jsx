@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles';
-import { topbarHeight } from '../../constants/styles';
 import { GRAY3, WHITE } from '../../constants/colors';
+import STYLES from '../../constants/styles';
 
 const MainContentWrapperContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 2),
@@ -8,7 +8,7 @@ const MainContentWrapperContainer = styled('div')(({ theme }) => ({
 
 const MainContentWrapperHeaderContainer = styled('div')(({ theme, $staticHeader }) => ({
   position: $staticHeader ? 'static' : 'sticky',
-  top: topbarHeight,
+  top: STYLES.TOPBAR_HEIGHT,
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-between',

@@ -7,7 +7,7 @@ import Bookmark from '@mui/icons-material/Bookmark';
 import { toast } from 'react-toastify';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { GRAY2, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
-import STYLES, { sidebarWidth, topbarHeight } from '../../constants/styles';
+import STYLES from '../../constants/styles';
 import LinearProgressModal from '../common/LinearProgressModal';
 import FormCreator from '../form/FormCreator';
 import createForm from '../../api/forms/createForm';
@@ -42,9 +42,9 @@ const Root = styled('div')(({ theme }) => ({
       position: 'fixed',
       zIndex: 1000,
     },
-    top: topbarHeight + 1,
-    height: `calc(100vh - ${topbarHeight + 1}px)`,
-    width: sidebarWidth,
+    top: STYLES.TOPBAR_HEIGHT + 1,
+    height: `calc(100vh - ${STYLES.TOPBAR_HEIGHT + 1}px)`,
+    width: STYLES.SIDEBAR_WIDTH,
     backgroundColor: WHITE,
     borderRight: `1px solid ${GRAY3}`,
   },
@@ -212,7 +212,13 @@ function Sidebar({ isSidebarOpen, handleIsSidebarOpen }) {
                   </div>
                 </div>
               </List>
-              <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  margin: `${STYLES.MUI_SPACING_UNIT}px 0px`,
+                }}
+              >
                 <FetchResult
                   status={status}
                   errorMessage={errorMessage}
