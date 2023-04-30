@@ -2,6 +2,8 @@
 
 [![Build and deploy backend to AKS](https://github.com/osmannkartall/knowzone/actions/workflows/aks-deploy-backend.yml/badge.svg?branch=master)](https://github.com/osmannkartall/knowzone/actions/workflows/aks-deploy-backend.yml)  
 [![Build and deploy frontend to AKS](https://github.com/osmannkartall/knowzone/actions/workflows/aks-deploy-frontend.yml/badge.svg?branch=master)](https://github.com/osmannkartall/knowzone/actions/workflows/aks-deploy-frontend.yml)  
+[![Test Knowzone server](https://github.com/osmannkartall/knowzone/actions/workflows/test-knowzone-server.yml/badge.svg?branch=master)](https://github.com/osmannkartall/knowzone/actions/workflows/test-knowzone-server.yml)  
+[![Test Knowzone UI](https://github.com/osmannkartall/knowzone/actions/workflows/test-knowzone-ui.yml/badge.svg?branch=master)](https://github.com/osmannkartall/knowzone/actions/workflows/test-knowzone-ui.yml)  
 
 Knowzone is a knowledge sharing application. Create your custom forms and share with others.
 
