@@ -3,13 +3,9 @@
 [![Build and deploy backend to AKS](https://github.com/osmannkartall/knowzone/actions/workflows/aks-deploy-backend.yml/badge.svg?branch=master)](https://github.com/osmannkartall/knowzone/actions/workflows/aks-deploy-backend.yml)  
 [![Build and deploy frontend to AKS](https://github.com/osmannkartall/knowzone/actions/workflows/aks-deploy-frontend.yml/badge.svg?branch=master)](https://github.com/osmannkartall/knowzone/actions/workflows/aks-deploy-frontend.yml)  
 
-Knowzone is a knowledge sharing application. You can share your recent bugfixes or any new tips with others.
+Knowzone is a knowledge sharing application. Create your custom forms and share with others.
 
-| Create Post                            | Browse & Search Posts                          |
-| -------------------------------------- | ------------------------------------------------ |
-| ![create-post](assets/create-post.gif) | ![posts-and-search](assets/posts-and-search.gif) |
-
-- We started this project to practice MERN stack and k8s. As we move on the project, we came up with new ideas to make the application more useful. If you want to help us you can contribute to the repository.
+![demo](assets/demo.png)
 
 - Knowzone is not available as a service, but you can find instructions for running it locally or on Azure below.
 
