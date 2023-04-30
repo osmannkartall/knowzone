@@ -17,6 +17,7 @@ import Home from './pages/Home';
 import PostsByTopics from './pages/PostsByTopics';
 import PostsByOwner from './pages/PostsByOwner';
 import SinglePost from './pages/SinglePost';
+import Explore from './pages/Explore';
 
 const theme = createTheme(({
   palette: {
@@ -98,6 +99,15 @@ function Wrapper() {
             element={(
               <AuthRouteComponent
                 Success={<Dashboard><PostsByOwner /></Dashboard>}
+                Terminated={<Navigate to={`/${FE_ROUTES.LOGIN}`} />}
+              />
+            )}
+          />
+          <Route
+            path={`/${FE_ROUTES.EXPLORE}`}
+            element={(
+              <AuthRouteComponent
+                Success={<Dashboard><Explore /></Dashboard>}
                 Terminated={<Navigate to={`/${FE_ROUTES.LOGIN}`} />}
               />
             )}

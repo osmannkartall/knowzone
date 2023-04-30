@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Button } from '@mui/material';
 import { GRAY3, GRAY4 } from '../../constants/colors';
+import STYLES from '../../constants/styles';
 import MarkdownPreview from './MarkdownPreview';
 
 const TITLE_HEIGHT = 30;
@@ -55,6 +56,7 @@ const Root = styled('div')(({ theme, $containerMaxHeight }) => ({
     display: 'flex',
     overflowWrap: 'break-word',
     height: `calc(${$containerMaxHeight} - ${TITLE_HEIGHT}px)`,
+    padding: theme.spacing(1),
   },
 
   [`& .${classes.editor}`]: {
@@ -83,7 +85,7 @@ const Root = styled('div')(({ theme, $containerMaxHeight }) => ({
     fontWeight: '600',
     lineHeight: `${TITLE_HEIGHT}px`,
     borderBottom: `1px solid ${GRAY3}`,
-    paddingLeft: theme.spacing(1),
+    paddingLeft: theme.spacing(2),
     backgroundColor: GRAY4,
   },
 }));
@@ -134,7 +136,9 @@ function MarkdownEditor({ id, text, onChangeText, containerMaxHeight }) {
               <div className={classes.title}>
                 Preview
               </div>
-              <MarkdownPreview text={text} />
+              <div style={{ padding: STYLES.MUI_SPACING_UNIT }}>
+                <MarkdownPreview text={text} />
+              </div>
             </div>
           )
         }

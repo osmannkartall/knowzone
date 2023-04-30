@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState, useRef } from 'react';
+import { useLayoutEffect, useState, useRef, useEffect, useCallback } from 'react';
 import { styled } from '@mui/material/styles';
 import { List, ListItemText, Button, ListItemIcon, ListItemButton } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -7,13 +7,13 @@ import Bookmark from '@mui/icons-material/Bookmark';
 import { toast } from 'react-toastify';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { GRAY2, GRAY3, PRIMARY, WHITE } from '../../constants/colors';
-import { sidebarWidth, topbarHeight } from '../../constants/styles';
+import STYLES from '../../constants/styles';
 import LinearProgressModal from '../common/LinearProgressModal';
 import FormCreator from '../form/FormCreator';
 import createForm from '../../api/forms/createForm';
 import FORM_COMPONENT_TYPES from '../form/formComponentTypes';
 import usePagination from '../../hooks/usePagination';
-import { BE_ROUTES } from '../../constants/routes';
+import { BE_ROUTES, FE_ROUTES } from '../../constants/routes';
 import FetchResult from '../common/FetchResult';
 
 const PREFIX = 'Sidebar';
@@ -38,9 +38,13 @@ const Root = styled('div')(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     position: 'sticky',
-    top: topbarHeight + 1,
-    height: `calc(100vh - ${topbarHeight + 1}px)`,
-    width: sidebarWidth,
+    [theme.breakpoints.down('md')]: {
+      position: 'fixed',
+      zIndex: 1000,
+    },
+    top: STYLES.TOPBAR_HEIGHT + 1,
+    height: `calc(100vh - ${STYLES.TOPBAR_HEIGHT + 1}px)`,
+    width: STYLES.SIDEBAR_WIDTH,
     backgroundColor: WHITE,
     borderRight: `1px solid ${GRAY3}`,
   },
@@ -58,13 +62,13 @@ function SidebarItem({ type }) {
   const navigate = useNavigate();
 
   const isActiveRoute = () => (
-    decodeURIComponent(location.pathname.replace(/\+/g, ' ')) === `/posts/${type?.id}`
+    decodeURIComponent(location.pathname.replace(/\+/g, ' ')) === `/${FE_ROUTES.POSTS}/${type?.id}`
   );
 
   return (
     <ListItemButton
       selected={isActiveRoute()}
-      onClick={() => navigate(`/posts/${type?.id}`, { state: { type } })}
+      onClick={() => navigate(`/${FE_ROUTES.POSTS}/${type?.id}`, { state: { type } })}
       key={type?.id}
       sx={{ borderRadius: 2 }}
     >
@@ -89,15 +93,40 @@ function SidebarItem({ type }) {
   );
 }
 
-function Sidebar({ isSidebarOpen }) {
+function Sidebar({ isSidebarOpen, handleIsSidebarOpen }) {
   const [isFormCreatorOpen, setIsFormCreatorOpen] = useState(false);
   const [isLinearProgressModalOpen, setIsLinearProgressModalOpen] = useState(false);
+  const prevSidebarWidth = useRef(null);
 
   const { data, setData, getNextPage, status, errorMessage } = usePagination({
     url: `${process.env.REACT_APP_KNOWZONE_BE_URI}/${BE_ROUTES.FORMS}/filter`,
     method: 'POST',
     body: { projection: { type: 1 } },
   });
+
+  const memoizedHandleIsSidebarOpen = useCallback((sidebarStatus) => {
+    handleIsSidebarOpen(sidebarStatus);
+  }, [handleIsSidebarOpen]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (prevSidebarWidth.current === window.innerWidth) {
+        return;
+      }
+      if (window.innerWidth < STYLES.md) {
+        memoizedHandleIsSidebarOpen(false);
+      } else {
+        memoizedHandleIsSidebarOpen(true);
+      }
+      prevSidebarWidth.current = window.innerWidth;
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [memoizedHandleIsSidebarOpen]);
 
   const parentRef = useRef(null);
 
@@ -151,74 +180,75 @@ function Sidebar({ isSidebarOpen }) {
   const handleOnClickShowMore = () => getNextPage();
 
   return (
-    <LinearProgressModal isOpen={isLinearProgressModalOpen}>
-      <Root>
-        <div
-          className={classes.sidebarContainer}
-          style={
-            isSidebarOpen
-              ? { display: 'flex' }
-              : { display: 'none' }
-          }
-        >
-          <div className={classes.sidebar}>
-            <List disablePadding>
-              <div ref={parentRef}>
-                <div
-                  style={{
-                    height: `${virtualizer.getTotalSize()}px`,
-                    width: '100%',
-                    position: 'relative',
-                  }}
-                >
-                  {virtualizer.getVirtualItems().map((virtualRow) => (
-                    <div
-                      key={virtualRow.index}
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: `${virtualRow.size}px`,
-                        transform: `translateY(${virtualRow.start}px)`,
-                      }}
-                    >
-                      <SidebarItem type={data?.[virtualRow.index].type} />
-                    </div>
-                  ))}
+    isSidebarOpen && (
+      <LinearProgressModal isOpen={isLinearProgressModalOpen}>
+        <Root>
+          <div className={classes.sidebarContainer}>
+            <div className={classes.sidebar}>
+              <List disablePadding>
+                <div ref={parentRef}>
+                  <div
+                    style={{
+                      height: `${virtualizer.getTotalSize()}px`,
+                      width: '100%',
+                      position: 'relative',
+                    }}
+                  >
+                    {virtualizer.getVirtualItems().map((virtualRow) => (
+                      <div
+                        key={virtualRow.index}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: `${virtualRow.size}px`,
+                          transform: `translateY(${virtualRow.start}px)`,
+                        }}
+                      >
+                        <SidebarItem type={data?.[virtualRow.index].type} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              </List>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  margin: `${STYLES.MUI_SPACING_UNIT}px 0px`,
+                }}
+              >
+                <FetchResult
+                  status={status}
+                  errorMessage={errorMessage}
+                  handleOnClickShowMore={handleOnClickShowMore}
+                />
               </div>
-            </List>
-            <div style={{ display: 'flex', justifyContent: 'center', margin: '16px 0px' }}>
-              <FetchResult
-                status={status}
-                errorMessage={errorMessage}
-                handleOnClickShowMore={handleOnClickShowMore}
-              />
             </div>
+            <div className={classes.sidebarBottomContainer}>
+              <Button
+                className={classes.createButton}
+                variant="outlined"
+                color="primary"
+                fullWidth
+                onClick={() => setIsFormCreatorOpen(true)}
+                startIcon={<Bookmark fontSize="small" />}
+              >
+                Create Form
+              </Button>
+            </div>
+            {isFormCreatorOpen && (
+            <FormCreator
+              open={isFormCreatorOpen}
+              setOpen={setIsFormCreatorOpen}
+              handler={addForm}
+            />
+            )}
           </div>
-          <div className={classes.sidebarBottomContainer}>
-            <Button
-              className={classes.createButton}
-              variant="outlined"
-              color="primary"
-              fullWidth
-              onClick={() => setIsFormCreatorOpen(true)}
-              startIcon={<Bookmark fontSize="small" />}
-            >
-              Create Form
-            </Button>
-          </div>
-          {isFormCreatorOpen && (
-          <FormCreator
-            open={isFormCreatorOpen}
-            setOpen={setIsFormCreatorOpen}
-            handler={addForm}
-          />
-          )}
-        </div>
-      </Root>
-    </LinearProgressModal>
+        </Root>
+      </LinearProgressModal>
+    )
   );
 }
 

@@ -1,5 +1,6 @@
 import PostRepository from '../post/postRepository.js';
 import FormRepository from '../form/formRepository.js';
+import PostModel from '../post/post.js';
 
 const postRepository = new PostRepository();
 const formRepository = new FormRepository();
@@ -60,6 +61,62 @@ function prepareSearchTextQuery(info) {
   return {};
 }
 
+function convertFixedDate(since) {
+  if (since === 'daily') {
+    const now = new Date();
+    const startOfDay = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+    );
+    const endOfDay = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1) - 1,
+    );
+
+    return {
+      createdAtStartDate: startOfDay.toISOString(),
+      createdAtEndDate: endOfDay.toISOString(),
+    };
+  } if (since === 'weekly') {
+    const now = new Date();
+    const dayOfWeek = now.getUTCDay();
+    const startOfWeek = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1),
+      ),
+    );
+    const endOfWeek = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        startOfWeek.getUTCDate() + 6,
+        23,
+        59,
+        59,
+        999,
+      ),
+    );
+
+    return {
+      createdAtStartDate: startOfWeek.toISOString(),
+      createdAtEndDate: endOfWeek.toISOString(),
+    };
+  } if (since === 'monthly') {
+    const now = new Date();
+    const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    const endOfMonth = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999),
+    );
+
+    return {
+      createdAtStartDate: startOfMonth.toISOString(),
+      createdAtEndDate: endOfMonth.toISOString(),
+    };
+  }
+
+  return {};
+}
+
 async function search(info, cursor) {
   const filterQuery = prepareFilterQuery(info);
   const searchTextQuery = prepareSearchTextQuery(info);
@@ -77,7 +134,7 @@ async function search(info, cursor) {
     { 'type.id': { $in: typeIds } },
     { type: 1, content: 1 },
   );
-  const formsObject = forms.reduce((result, item) => ({ ...result, [item.type.name]: item }), {});
+  const formsObject = forms.reduce((result, item) => ({ ...result, [item.type.id]: item }), {});
 
   return {
     records: {
@@ -90,4 +147,18 @@ async function search(info, cursor) {
   };
 }
 
-export default { search };
+async function getPopularTopics() {
+  return PostModel.aggregate([
+    { $unwind: '$topics' },
+    { $group: { _id: '$topics', count: { $sum: 1 } } },
+    { $project: { topic: '$_id', count: 1, _id: 0 } },
+    { $sort: { count: -1 } },
+    { $limit: 10 },
+  ]);
+}
+
+export default {
+  search,
+  convertFixedDate,
+  getPopularTopics,
+};

@@ -96,10 +96,9 @@ const create = async (_, res, next) => {
 const findAll = async (req, res, next) => {
   try {
     const { typeId, cursor } = req.query;
-    const { userId } = req.session;
 
     if (typeId) {
-      res.json(await postRepository.find({ 'type.id': typeId, 'owner.id': userId }, null, cursor));
+      res.json(await postRepository.find({ 'type.id': typeId }, null, cursor));
     } else {
       res.json([]);
     }
