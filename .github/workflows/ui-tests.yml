@@ -1,6 +1,6 @@
-name: test-knowzone-ui-actions
+name: UI Tests
 
-run-name: Test - Knowzone UI
+run-name: UI Tests
 
 on:
   pull_request:

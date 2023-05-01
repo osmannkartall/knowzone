@@ -1,6 +1,6 @@
-name: test-knowzone-server-actions
+name: Backend Unit Tests
 
-run-name: Test - Knowzone Server
+run-name: Backend Unit Tests
 
 on:
   pull_request:
