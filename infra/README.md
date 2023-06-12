@@ -11,7 +11,9 @@
     - [Creating an Azure Kubernetes Service cluster](#creating-an-azure-kubernetes-service-cluster)
       - [Stopping - Starting AKS cluster](#stopping---starting-aks-cluster)
     - [Deploy Knowzone to AKS](#deploy-knowzone-to-aks)
-
+  - [Running on local Kubernetes cluster](#running-on-local-kubernetes-cluster)
+    - [Pre-requisites for Local Cluster](#pre-requisites-for-local-cluster)
+    - [Running Startup Script for Local Cluster](#running-startup-script-for-local-cluster)
 ## Running on Azure Kubernetes Service Cluster  
 
 ### Pre-requisites
@@ -174,7 +176,7 @@ Available command tree is listed below.
 Tested on Linux (Ubuntu), macOS, and Windows.  
 For Windows, running the cluster outside of WSL can cause performance issues. Install the tools in WSL and run the cluster in WSL.  
 
-### Pre-requisites  
+### Pre-requisites for Local Cluster
 
 - [Docker](https://docs.docker.com/engine/install)  
   - Only the Docker CLI is required since we are using minikube's internal registry. If you are using Docker Desktop, you can stop Docker daemon by quitting the application.
@@ -197,7 +199,7 @@ tilt version
 git --version
 ```
 
-### Running Startup Script  
+### Running Startup Script for Local Cluster
 
 ```bash
 cd infra
