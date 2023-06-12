@@ -1,24 +1,27 @@
-# Running on Azure Kubernetes Service Cluster  
+# Infrastructure
 
 ## Table of Contents
 
-- [Running on Azure Kubernetes Service Cluster](#running-on-azure-kubernetes-service-cluster)
+- [Infrastructure](#infrastructure)
   - [Table of Contents](#table-of-contents)
-  - [Pre-requisites](#pre-requisites)
-  - [Creating an Azure Container Registry](#creating-an-azure-container-registry)
-    - [Testing Azure Container Registry](#testing-azure-container-registry)
-  - [Creating an Azure Kubernetes Service cluster](#creating-an-azure-kubernetes-service-cluster)
-    - [Stopping - Starting AKS cluster](#stopping---starting-aks-cluster)
-  - [Deploy Knowzone to AKS](#deploy-knowzone-to-aks)
+  - [Running on Azure Kubernetes Service Cluster](#running-on-azure-kubernetes-service-cluster)
+    - [Pre-requisites](#pre-requisites)
+    - [Creating an Azure Container Registry](#creating-an-azure-container-registry)
+      - [Testing Azure Container Registry](#testing-azure-container-registry)
+    - [Creating an Azure Kubernetes Service cluster](#creating-an-azure-kubernetes-service-cluster)
+      - [Stopping - Starting AKS cluster](#stopping---starting-aks-cluster)
+    - [Deploy Knowzone to AKS](#deploy-knowzone-to-aks)
 
-## Pre-requisites
+## Running on Azure Kubernetes Service Cluster  
+
+### Pre-requisites
 
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)  
 - [Docker](https://docs.docker.com/engine/install/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)  
 - [git](https://git-scm.com/downloads)  
 
-## Creating an Azure Container Registry  
+### Creating an Azure Container Registry  
 
 For convenience, we can use variables for all the commands for creating resources. Set below variables to your preferred values.  
 REGISTRY_PREFIX variable should be a unique name for creating Azure Container Registry.  
@@ -47,7 +50,7 @@ az acr create --resource-group ${RESOURCE_GROUP} \
 az acr login --name ${REGISTRY_PREFIX}
 ```
 
-### Testing Azure Container Registry  
+#### Testing Azure Container Registry  
 
 ```bash
 # Pull an image from ACR
@@ -69,7 +72,7 @@ docker rmi ${REGISTRY_PREFIX}.azurecr.io/hello-world:v1
 az acr repository delete --name ${REGISTRY_PREFIX} --image hello-world:v1
 ```
 
-## Creating an Azure Kubernetes Service cluster
+### Creating an Azure Kubernetes Service cluster
 
 ```bash
 # Enable the Container Service
@@ -95,7 +98,7 @@ az aks get-credentials --resource-group ${RESOURCE_GROUP} --name ${CLUSTER_NAME}
 kubectl get nodes
 ```
 
-### Stopping - Starting AKS cluster  
+#### Stopping - Starting AKS cluster  
 
 To optimize your costs, you can stop the Kubernetes cluster when not in use.  
 
@@ -107,7 +110,7 @@ az aks stop --name ${CLUSTER_NAME} --resource-group ${RESOURCE_GROUP}
 az aks start --name ${CLUSTER_NAME} --resource-group ${RESOURCE_GROUP}
 ```
 
-## Deploy Knowzone to AKS  
+### Deploy Knowzone to AKS  
 
 To build and deploy the project to AKS, make sure you are logged in to ACR, and properly connected to AKS via kubectl.
 
@@ -165,3 +168,47 @@ Available command tree is listed below.
     - **all**  
   - **clean** *--Clean up generated manifests and cloned MongoDB repo*  
   - **help**  
+
+## Running on local Kubernetes cluster  
+
+Tested on Linux (Ubuntu), macOS, and Windows.  
+For Windows, running the cluster outside of WSL can cause performance issues. Install the tools in WSL and run the cluster in WSL.  
+
+### Pre-requisites  
+
+- [Docker](https://docs.docker.com/engine/install)  
+  - Only the Docker CLI is required since we are using minikube's internal registry. If you are using Docker Desktop, you can stop Docker daemon by quitting the application.
+- [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)  
+- [minikube](https://minikube.sigs.k8s.io/docs/start)  
+- [Tilt](https://docs.tilt.dev/install.html)  
+  - Since we are using minikube, you can skip these steps in the Tilt installation:  
+    - In the preferences, click Enable Kubernetes  
+    - Make Docker for Windows (or Mac) your local Kubernetes cluster: kubectl config use-context docker-desktop  
+
+- [git](https://git-scm.com/downloads)  
+
+Make sure they are in the path by running:  
+
+```bash
+docker --version
+kubectl version --client
+minikube version
+tilt version
+git --version
+```
+
+### Running Startup Script  
+
+```bash
+cd infra
+./init-local.sh run
+```
+
+Startup script is divided into 4 steps:  
+
+1. Create a minikube cluster  
+2. Generate Kubernetes manifests  
+3. Deploy secret and MongoDB operator  
+4. Run Tilt developer environment  
+
+You can quit Tilt by pressing Ctrl-C. This does not remove the environment, you can start the development environment again with `tilt up`. If you want to remove the whole infrastructure, run `./init-local.sh clean`. This tears down the minikube cluster, removes the generated manifests and the cloned MongoDB repository.  
