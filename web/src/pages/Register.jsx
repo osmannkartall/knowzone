@@ -38,12 +38,7 @@ const registerSchema = Joi.object({
   password: Joi.string()
     .required()
     .min(8)
-    .max(128)
-    .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&_.,][\S]*$/)
-    .messages({
-      'string.pattern.base': 'Password should be at least 8 characters and contain at least one '
-        + 'letter, one special character "@$!%*#?&_." and one integer.',
-    }),
+    .max(128),
 
   confirmPassword: Joi.string()
     .valid(Joi.ref('password'))

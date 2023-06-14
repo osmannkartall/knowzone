@@ -5,7 +5,7 @@ services:
       context: ./web
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3005:3005"
     restart: always
   server:
     build:
@@ -15,10 +15,10 @@ services:
       - "8000:8000"
     environment:
       - MONGODB_URI=mongodb://db:27017/knowzone?replicaSet=rs0
-      - REACT_URL=http://localhost:3000
+      - REACT_URL=http://localhost:3005
       - SESSION_SECRET=knowzone-auth-secret
       - SESSION_NAME=sid
-      - SESSION_LIFETIME=3600000
+      - SESSION_LIFETIME=2592000000
       - SESSION_SECURE=false
       - PUBLIC_UPLOAD_PATH=/opt/node_app/uploads
       - IMAGE_UPLOAD_SUBPATH=images

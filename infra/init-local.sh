@@ -4,7 +4,7 @@
 # Please do not modify below values.
 
 export REGISTRY_NAME="localhost:5000"
-export FRONTEND_URL="http://localhost:3000"
+export FRONTEND_URL="http://localhost:3005"
 export BACKEND_URL="http://localhost:8000"
 export MONGO_PASSWORD="simplepassword"
 export SESSION_SECRET="knowzone-auth-secret"
